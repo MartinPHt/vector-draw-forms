@@ -38,7 +38,7 @@ namespace VectorDrawForms
             set 
             { 
                 filePath = value; 
-                this.Text = string.Concat("VectorDraw", $" - {Path.GetFileName(filePath)}");
+                this.Text = string.Concat(Assembly.GetCallingAssembly().GetName().Name, $" - {Path.GetFileName(filePath)}");
             } 
         }
 
@@ -111,7 +111,7 @@ namespace VectorDrawForms
                 if (!IsChangeMade)
                     return true;
 
-                var confirmResult = MessageBox.Show($"Do you want to save changes to {FilePath}", "VectorDraw", MessageBoxButtons.YesNoCancel);
+                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(FilePath)}", "VectorDraw", MessageBoxButtons.YesNoCancel);
                 if (confirmResult == DialogResult.Yes)
                 {
                     if (!File.Exists(FilePath))
@@ -151,7 +151,7 @@ namespace VectorDrawForms
         }
 
         /// <summary>
-        /// Invalidates the entire surface of the canvas and causes it to be redrawn.
+        /// Invalidates the entire surface of the canvas, causes it to be redrawn and indicates change being made.
         /// Use when there is a change in the model.
         /// </summary>
         private void RedrawCanvas()
@@ -419,9 +419,13 @@ namespace VectorDrawForms
         {
             if (EnsureUnsavedWorkIsNotLost())
             {
-                FilePath = null;
+                //Return to initial state
+                FilePath = "Untitled";
                 dialogProcessor.PrepareForCleenSheet();
                 RedrawCanvas();
+
+                //Indicate that change is not made
+                IsChangeMade = false;
             }
         }
 
@@ -434,7 +438,10 @@ namespace VectorDrawForms
             dialog.CheckFileExists = true;
             dialog.CheckPathExists = true;
             if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FilePath = dialog.FileName;
                 dialogProcessor.ReadFile(dialog.FileName);
+            }
 
             RedrawCanvas();
         }
