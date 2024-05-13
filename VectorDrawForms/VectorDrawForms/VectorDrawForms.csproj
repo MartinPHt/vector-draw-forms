@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{09D93B78-C807-4A3F-BDE4-CFF70298624F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>VectorDrawForms</RootNamespace>
+    <AssemblyName>VectorDrawForms</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Helpers\ApplicationColors.cs" />
+    <Compile Include="Models\ElipseShape.cs" />
+    <Compile Include="Models\GroupShape.cs" />
+    <Compile Include="Models\RectangleShape.cs" />
+    <Compile Include="Models\Shape.cs" />
+    <Compile Include="Processors\DialogProcessor.cs" />
+    <Compile Include="Processors\DisplayProcessor.cs" />
+    <Compile Include="Views\DoubleBufferedPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\DoubleBufferedPanel.Designer.cs">
+      <DependentUpon>DoubleBufferedPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\PaintToolConfirmationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PaintToolConfirmationForm.Designer.cs">
+      <DependentUpon>PaintToolConfirmationForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Views\DoubleBufferedPanel.resx">
+      <DependentUpon>DoubleBufferedPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PaintToolConfirmationForm.resx">
+      <DependentUpon>PaintToolConfirmationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Assets\Images\RectangleDark.png" />
+    <None Include="Assets\Images\BrushDark.png" />
+    <None Include="Assets\Images\BrushLight.png" />
+    <None Include="Assets\Images\ElipseDark.png" />
+    <None Include="Assets\Images\ElipseLight.png" />
+    <None Include="Assets\Images\GroupDark.png" />
+    <None Include="Assets\Images\GroupLight.png" />
+    <Content Include="Assets\Images\Point.png" />
+    <Content Include="Assets\Images\Pointer.png" />
+    <None Include="Assets\Images\PointerDark.png" />
+    <None Include="Assets\Images\PointerLight.png" />
+    <Content Include="Assets\Images\Rectangle.png" />
+    <None Include="Assets\Images\RectangleLight.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
