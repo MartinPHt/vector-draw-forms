@@ -58,6 +58,16 @@ namespace VectorDrawForms.Models
 			set { rectangle.Height = value; }
 		}
 
+		private float rotationAngle;
+        /// <summary>
+        /// Rotation angle of the element.
+        /// </summary>
+        public virtual float RotationAngle
+        {
+			get { return rotationAngle; }
+			set { rotationAngle = value; }
+		}
+
 		/// <summary>
 		/// Top left corner of element.
 		/// </summary>
@@ -88,13 +98,13 @@ namespace VectorDrawForms.Models
 		}
 
 		/// <summary>
-		/// Border thickness of the element.
+		/// Stroke thickness of the element.
 		/// </summary>
-		private float borderThickness = 4;
-		public virtual float BorderThickness
+		private float strokeThickness = 2;
+		public virtual float StrokeThickness
         {
-			get { return borderThickness; }
-			set { borderThickness = value; }
+			get { return strokeThickness; }
+			set { strokeThickness = value; }
 		}
 		#endregion
 
@@ -109,13 +119,19 @@ namespace VectorDrawForms.Models
 			return Rectangle.Contains(point.X, point.Y);
 		}
 
-		/// <summary>
-		/// Renders the element.
-		/// </summary>
-		/// <param name="grfx">Where to render the element.</param>
-		public virtual void DrawSelf(Graphics grfx)
+        /// <summary>
+        /// Renders the element.
+        /// </summary>
+        /// <param name="grfx">Where to render the element.</param>
+        public virtual void DrawSelf(Graphics grfx)
 		{
 			// shape.Rectangle.Inflate(shape.BorderWidth, shape.BorderWidth);
+		}
+
+		public enum RotateDirection
+		{
+			Left,
+			Right,
 		}
 	}
 }

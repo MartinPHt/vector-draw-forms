@@ -48,6 +48,16 @@ namespace VectorDrawForms.Models
                     shape.StrokeColor = value;     
             }
         }
+
+        public override float StrokeThickness
+        {
+            get { return SubShapes[0].StrokeThickness; }
+            set
+            {
+                foreach (var shape in subShapes)
+                    shape.StrokeThickness = value;     
+            }
+        }
         #endregion
 
         #region Methods

@@ -50,7 +50,7 @@
             this.selectionToolButton = new System.Windows.Forms.ToolStripButton();
             this.drawRectangleButton = new System.Windows.Forms.ToolStripButton();
             this.elipseToolButton = new System.Windows.Forms.ToolStripButton();
-            this.paintToolButton = new System.Windows.Forms.ToolStripButton();
+            this.editToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
             this.removeShapeToolButton = new System.Windows.Forms.ToolStripButton();
             this.coordinatesLabel = new System.Windows.Forms.Label();
@@ -210,7 +210,7 @@
             this.selectionToolButton,
             this.drawRectangleButton,
             this.elipseToolButton,
-            this.paintToolButton,
+            this.editToolButton,
             this.groupToolButton,
             this.removeShapeToolButton});
             this.toolMenu.Location = new System.Drawing.Point(0, 24);
@@ -256,17 +256,17 @@
             this.elipseToolButton.Text = "Elipse Tool";
             this.elipseToolButton.Click += new System.EventHandler(this.elipseToolButton_Click);
             // 
-            // paintToolButton
+            // editToolButton
             // 
-            this.paintToolButton.AutoSize = false;
-            this.paintToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.paintToolButton.Image = ((System.Drawing.Image)(resources.GetObject("paintToolButton.Image")));
-            this.paintToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.paintToolButton.Name = "paintToolButton";
-            this.paintToolButton.Size = new System.Drawing.Size(30, 30);
-            this.paintToolButton.Text = "Paint Tool";
-            this.paintToolButton.ToolTipText = "Paint Tool";
-            this.paintToolButton.Click += new System.EventHandler(this.paintToolButton_Click);
+            this.editToolButton.AutoSize = false;
+            this.editToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.editToolButton.Image = ((System.Drawing.Image)(resources.GetObject("editToolButton.Image")));
+            this.editToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.editToolButton.Name = "editToolButton";
+            this.editToolButton.Size = new System.Drawing.Size(30, 30);
+            this.editToolButton.Text = "Paint Tool";
+            this.editToolButton.ToolTipText = "Paint Tool";
+            this.editToolButton.Click += new System.EventHandler(this.paintToolButton_Click);
             // 
             // groupToolButton
             // 
@@ -391,7 +391,7 @@
         private System.Windows.Forms.ToolStripMenuItem enableDisableDarkModeSettingsButton;
         private System.Windows.Forms.Label coordinatesLabel;
         private System.Windows.Forms.ToolStripButton elipseToolButton;
-        private System.Windows.Forms.ToolStripButton paintToolButton;
+        private System.Windows.Forms.ToolStripButton editToolButton;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.ToolStripButton groupToolButton;
         private System.Windows.Forms.ToolStripMenuItem newFileMenuButton;

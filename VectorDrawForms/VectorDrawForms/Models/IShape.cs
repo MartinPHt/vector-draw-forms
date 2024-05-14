@@ -22,7 +22,12 @@ namespace VectorDrawForms.Models
         /// <summary>
 		/// Border thickness of the element.
 		/// </summary>
-        float BorderThickness { get; set; }
+        float StrokeThickness { get; set; }
+
+        /// <summary>
+        /// Rotation Angle of the element.
+        /// </summary>
+        float RotationAngle { get; set; }
 
         /// <summary>
 		/// Top left corner of element.

@@ -317,7 +317,7 @@ namespace VectorDrawForms
                     selectionToolButton.Image = Properties.Resources.PointerDark;
                     drawRectangleButton.Image = Properties.Resources.RectangleDark;
                     elipseToolButton.Image = Properties.Resources.ElipseDark;
-                    paintToolButton.Image = Properties.Resources.BrushDark;
+                    editToolButton.Image = Properties.Resources.BrushDark;
                     groupToolButton.Image = Properties.Resources.GroupDark;
                     removeShapeToolButton.Image = Properties.Resources.BinDark;
                 }
@@ -339,7 +339,7 @@ namespace VectorDrawForms
                     selectionToolButton.Image = Properties.Resources.PointerLight;
                     drawRectangleButton.Image = Properties.Resources.RectangleLight;
                     elipseToolButton.Image = Properties.Resources.ElipseLight;
-                    paintToolButton.Image = Properties.Resources.BrushLight;
+                    editToolButton.Image = Properties.Resources.BrushLight;
                     groupToolButton.Image = Properties.Resources.GroupLight;
                     removeShapeToolButton.Image = Properties.Resources.BinLight;
                 }
@@ -505,39 +505,41 @@ namespace VectorDrawForms
         {
             try
             {
-                if (dialogProcessor.Selections == null || dialogProcessor.Selections.Count == 0)
+                if (
+                    dialogProcessor.Selections == null
+                    || dialogProcessor.Selections.Count != 1
+                    || dialogProcessor.Selections.OfType<GroupShape>().Count() != 0
+                    )
                 {
-                    MessageBox.Show("To open Paint Tool you have to select an item with the Selection Tool first.", "Error",
+                    MessageBox.Show("To open Edit Tool you have to select only one non group shape with the Selection Tool first.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                var confirmationDialog = new PaintToolConfirmationForm();
-                if (confirmationDialog.ShowDialog() == DialogResult.OK)
-                {
-                    if (colorDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        foreach (var item in dialogProcessor.Selections)
-                        {
-                            if (confirmationDialog.SelectedItem == "Border Color")
-                                item.StrokeColor = colorDialog.Color;
-                            else if (confirmationDialog.SelectedItem == "Fill Color")
-                                item.FillColor = colorDialog.Color;
-                        }
+                var shape = dialogProcessor.Selections[0];
+                var dialog
+                    = new ShapeEditorForm(shape.Width, shape.Height, shape.RotationAngle, shape.StrokeThickness, shape.StrokeColor, shape.FillColor);
 
-                        RedrawCanvas();
-                    }
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    shape.Width = dialog.ShapeWidth;
+                    shape.Height = dialog.ShapeHeight;
+                    shape.StrokeThickness = dialog.StrokeThickness;
+                    shape.StrokeColor = dialog.StrokeColor;
+                    shape.FillColor = dialog.FillColor;
+                    shape.RotationAngle = dialog.RotationAngle;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error has occured during Paint Tool's execution. Exception message:" + ex.Message, "Error",
+                MessageBox.Show("Error has occured during Edit Tool's execution. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally
             {
                 //Go back to Selection Tool
                 selectionToolButton.PerformClick();
+                RedrawCanvas();
             }
         }
 
@@ -709,7 +711,7 @@ namespace VectorDrawForms
             {
                 if (dialogProcessor.CoppiedSelection.Count > 0)
                     HandlePasteShape();
-                
+
             }
             else if (!e.Control && e.KeyCode == Keys.Delete)
             {
