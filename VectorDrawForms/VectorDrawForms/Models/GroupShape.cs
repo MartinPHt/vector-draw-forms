@@ -45,15 +45,14 @@ namespace VectorDrawForms.Models
                 }
                 else if (shape is EllipseShape)
                 {
-                    double a = shape.Width / 2;
-                    double b = shape.Height / 2;
-                    double centerX = shape.Location.X + a;
-                    double centerY = shape.Location.Y + b;
-
-                    double dx = (point.X - centerX) / a;
-                    double dy = (point.Y - centerY) / b;
-
-                    if ((dx * dx + dy * dy) <= 1)
+                    var ellipse = shape as EllipseShape;
+                    if (ellipse.Contains(point))
+                        return true;
+                }
+                else if (shape is GroupShape)
+                {
+                    var group = shape as GroupShape;
+                    if (group.Contains(point))
                         return true;
                 }
             }
@@ -72,14 +71,17 @@ namespace VectorDrawForms.Models
                 if (shape is RectangleShape)
                 {
                     var rect = (RectangleShape)shape;
-                    grfx.FillRectangle(new SolidBrush(rect.FillColor), rect.Rectangle.X, rect.Rectangle.Y, rect.Rectangle.Width, rect.Rectangle.Height);
-                    grfx.DrawRectangle(new Pen(rect.StrokeColor), rect.Rectangle.X, rect.Rectangle.Y, rect.Rectangle.Width, rect.Rectangle.Height);
+                    rect.DrawSelf(grfx);
                 }
                 else if (shape is EllipseShape)
                 {
                     var ellipse = (EllipseShape)shape;
-                    grfx.FillEllipse(new SolidBrush(ellipse.FillColor), ellipse.Rectangle.X, ellipse.Rectangle.Y, ellipse.Rectangle.Width, ellipse.Rectangle.Height);
-                    grfx.DrawEllipse(new Pen(ellipse.StrokeColor), ellipse.Rectangle.X, ellipse.Rectangle.Y, ellipse.Rectangle.Width, ellipse.Rectangle.Height);
+                    ellipse.DrawSelf(grfx);
+                }
+                else if (shape is GroupShape)
+                {
+                    var group = (GroupShape)shape;
+                    group.DrawSelf(grfx);
                 }
             }
         }

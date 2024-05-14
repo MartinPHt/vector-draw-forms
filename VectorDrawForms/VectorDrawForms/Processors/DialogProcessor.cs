@@ -97,7 +97,7 @@ namespace VectorDrawForms.Processors
         /// <summary>
         /// Checks if a point is in the element. Finds the "top" element ie. the one we see under the mouse.
         /// </summary>
-        /// <param name="point">Указана точка</param>
+        /// <param name="point">Indicated point</param>
         /// <returns>The shape element to which the given point belongs.</returns>
         public Shape ContainsPoint(PointF point)
         {
@@ -117,23 +117,32 @@ namespace VectorDrawForms.Processors
         /// <param name="p">Translation vector.</param>
         public void TranslateTo(PointF p)
         {
+            //Move eacch selected shape
             foreach (Shape shape in selections)
-            {
-                if (shape is GroupShape)
-                {
-                    var group = (GroupShape)shape;
+                MoveShape(shape, p);
 
-                    foreach (var subShape in group.SubShapes)
-                        subShape.Location = new PointF(subShape.Location.X + p.X - lastLocation.X, subShape.Location.Y + p.Y - lastLocation.Y);                    
-                }
-                else
+            lastLocation = p;
+        }
+
+        /// <summary>
+        /// Moves the <see cref="Shape"/> to a provided <see cref="PointF"/>
+        /// </summary>
+        /// <param name="shape"></param>
+        private void MoveShape(Shape shape, PointF p)
+        {
+            if (shape is GroupShape)
+            {
+                var group = (GroupShape)shape;
+                foreach (var subShape in group.SubShapes)
                 {
-                    shape.Location = new PointF(shape.Location.X + p.X - lastLocation.X, shape.Location.Y + p.Y - lastLocation.Y);
+                    if (subShape is GroupShape)
+                        MoveShape(subShape, p);
+
+                    subShape.Location = new PointF(subShape.Location.X + p.X - lastLocation.X, subShape.Location.Y + p.Y - lastLocation.Y);
                 }
 
             }
-
-            lastLocation = p;
+            shape.Location = new PointF(shape.Location.X + p.X - lastLocation.X, shape.Location.Y + p.Y - lastLocation.Y);
         }
 
         public void ReadFile(string path)
@@ -229,9 +238,8 @@ namespace VectorDrawForms.Processors
             //calculate rectangle height
             float height = Math.Abs(y - y1);
 
-
+            // Group's rectangle
             RectangleF rect = new RectangleF(x, y, width, height);
-            //RectangleF rect = new Rectangle();
 
             //Create new Group shape from the selected shapes
             GroupShape group = new GroupShape(rect);
@@ -268,7 +276,7 @@ namespace VectorDrawForms.Processors
             else
             {
                 throw new Exception("Cannot ungroup when more than one shape is selected");
-            }          
+            }
         }
         #endregion
     }
