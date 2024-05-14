@@ -7,10 +7,6 @@ namespace VectorDrawForms.Models
     [Serializable]
     public class GroupShape : Shape
     {
-        #region Fields
-        public List<Shape> subShapes = new List<Shape>();
-        #endregion
-
         #region Constructor
         public GroupShape(RectangleF rect) : base(rect)
         {
@@ -21,8 +17,22 @@ namespace VectorDrawForms.Models
         }
         #endregion
 
+        #region Properties
+        private List<Shape> subShapes = new List<Shape>();
+
         /// <summary>
-        /// Checking whether a point belongs to the elipse.
+        /// Containst the primitives that are included in the <see cref="GroupShape"/>.
+        /// </summary>
+        public List<Shape> SubShapes 
+        { 
+            get {  return subShapes; }
+            set { subShapes = value; }
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Checking whether a point belongs to the group.
         /// </summary>
         public override bool Contains(PointF point)
         {
@@ -30,10 +40,10 @@ namespace VectorDrawForms.Models
             {
                 if (shape is RectangleShape)
                 {
-                    if (base.Contains(point))
+                    if (shape.Contains(point))
                         return true;
                 }
-                else if (shape is ElipseShape)
+                else if (shape is EllipseShape)
                 {
                     double a = shape.Width / 2;
                     double b = shape.Height / 2;
@@ -61,15 +71,18 @@ namespace VectorDrawForms.Models
             {
                 if (shape is RectangleShape)
                 {
-                    grfx.FillRectangle(new SolidBrush(FillColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
-                    grfx.DrawRectangle(new Pen(StrokeColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
+                    var rect = (RectangleShape)shape;
+                    grfx.FillRectangle(new SolidBrush(rect.FillColor), rect.Rectangle.X, rect.Rectangle.Y, rect.Rectangle.Width, rect.Rectangle.Height);
+                    grfx.DrawRectangle(new Pen(rect.StrokeColor), rect.Rectangle.X, rect.Rectangle.Y, rect.Rectangle.Width, rect.Rectangle.Height);
                 }
-                else if (shape is ElipseShape)
+                else if (shape is EllipseShape)
                 {
-                    grfx.FillEllipse(new SolidBrush(FillColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
-                    grfx.DrawEllipse(new Pen(StrokeColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
+                    var ellipse = (EllipseShape)shape;
+                    grfx.FillEllipse(new SolidBrush(ellipse.FillColor), ellipse.Rectangle.X, ellipse.Rectangle.Y, ellipse.Rectangle.Width, ellipse.Rectangle.Height);
+                    grfx.DrawEllipse(new Pen(ellipse.StrokeColor), ellipse.Rectangle.X, ellipse.Rectangle.Y, ellipse.Rectangle.Width, ellipse.Rectangle.Height);
                 }
             }
         }
+        #endregion
     }
 }

@@ -63,6 +63,26 @@ namespace VectorDrawForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BinDark {
+            get {
+                object obj = ResourceManager.GetObject("BinDark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BinLight {
+            get {
+                object obj = ResourceManager.GetObject("BinLight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BrushDark {
             get {
                 object obj = ResourceManager.GetObject("BrushDark", resourceCulture);
@@ -76,6 +96,26 @@ namespace VectorDrawForms.Properties {
         internal static System.Drawing.Bitmap BrushLight {
             get {
                 object obj = ResourceManager.GetObject("BrushLight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CurvedRectangleDark {
+            get {
+                object obj = ResourceManager.GetObject("CurvedRectangleDark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CurvedRectangleLight {
+            get {
+                object obj = ResourceManager.GetObject("CurvedRectangleLight", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

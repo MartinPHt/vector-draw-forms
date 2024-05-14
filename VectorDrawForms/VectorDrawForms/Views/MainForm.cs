@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using VectorDrawForms.Models;
@@ -24,6 +25,7 @@ namespace VectorDrawForms
             InitializeComponent();
             PrepareInitialState();
             ChangeUIMode("UIMode");
+            CenterToScreen();
         }
         #endregion
 
@@ -32,20 +34,46 @@ namespace VectorDrawForms
         /// <summary>
         /// Gets the path of the current loaded file
         /// </summary>
-        private string FilePath 
-        { 
+        private string FilePath
+        {
             get { return filePath; }
-            set 
-            { 
-                filePath = value; 
+            set
+            {
+                filePath = value;
                 this.Text = string.Concat(Assembly.GetCallingAssembly().GetName().Name, $" - {Path.GetFileName(filePath)}");
-            } 
+            }
         }
 
+        private bool isChangeMade = false;
         /// <summary>
         /// Returns true if the canvas was redrawn at least once after the file was saved/created.
         /// </summary>
-        private bool IsChangeMade { get; set; } = false;
+        public bool IsChangeMade
+        {
+            get { return isChangeMade; }
+            private set
+            {
+                isChangeMade = value;
+
+                // Indicate that changes were made
+                try
+                {
+                    bool fileHasStar = this.Text[this.Text.Length - 1] == '*';
+
+                    if (value)
+                    {
+                        if (!fileHasStar)
+                            this.Text += "*";
+                    }
+                    else
+                    {
+                        if (fileHasStar)
+                            this.Text = Text.Substring(0, Text.Length - 1);
+                    }
+                }
+                catch { }
+            }
+        }
         public static MainForm Instance { get; private set; }
         #endregion
 
@@ -57,6 +85,21 @@ namespace VectorDrawForms
 
             Instance = new MainForm();
             return Instance;
+        }
+
+        /// <summary>
+        /// Handles the dragging of selected primitives on the canvas
+        /// </summary>
+        /// <param name="e"></param>
+        private void HandleDragging(MouseEventArgs e)
+        {
+            if (dialogProcessor.IsDragging)
+            {
+                dialogProcessor.TranslateTo(e.Location);
+                RedrawCanvas();
+            }
+
+            coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
         }
 
         /// <summary>
@@ -81,7 +124,8 @@ namespace VectorDrawForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -111,7 +155,8 @@ namespace VectorDrawForms
                 if (!IsChangeMade)
                     return true;
 
-                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(FilePath)}", "VectorDraw", MessageBoxButtons.YesNoCancel);
+                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(FilePath)}", "VectorDraw",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (confirmResult == DialogResult.Yes)
                 {
                     if (!File.Exists(FilePath))
@@ -134,7 +179,8 @@ namespace VectorDrawForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Unexpexted error has occured. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Unexpexted error has occured. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 // Return false to indicate an error in UnsavedWork handling.
                 return false;
             }
@@ -158,6 +204,9 @@ namespace VectorDrawForms
         {
             canvas.Invalidate();
             IsChangeMade = true;
+
+            //Update selected shapes count label everytime the canvas is redrawn
+            selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
         }
 
         /// <summary>
@@ -195,6 +244,7 @@ namespace VectorDrawForms
                     elipseToolButton.Image = Properties.Resources.ElipseDark;
                     paintToolButton.Image = Properties.Resources.BrushDark;
                     groupToolButton.Image = Properties.Resources.GroupDark;
+                    removeShapeToolButton.Image = Properties.Resources.BinDark;
                 }
                 else
                 {
@@ -216,21 +266,18 @@ namespace VectorDrawForms
                     elipseToolButton.Image = Properties.Resources.ElipseLight;
                     paintToolButton.Image = Properties.Resources.BrushLight;
                     groupToolButton.Image = Properties.Resources.GroupLight;
+                    removeShapeToolButton.Image = Properties.Resources.BinLight;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while changing window light/dark mode. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error has occured while changing window light/dark mode. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion 
 
-        #region Event Handling Methods
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        #region Event Handling Methods (Functionality, Buttons)
         /// <summary>
         /// Close the application
         /// </summary>
@@ -245,7 +292,7 @@ namespace VectorDrawForms
         {
             dialogProcessor.AddRandomRectangle();
             RedrawCanvas();
-            
+
         }
 
         private void viewPort_Load(object sender, EventArgs e)
@@ -253,6 +300,11 @@ namespace VectorDrawForms
 
         }
 
+        /// <summary>
+        /// Invoked when canvas.Invalidate() is called.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewPortPaint(object sender, PaintEventArgs e)
         {
             dialogProcessor.ReDraw(sender, e);
@@ -295,6 +347,7 @@ namespace VectorDrawForms
                     dialogProcessor.Selections.Clear();
                 }
 
+                //Indicate dragging and update last location in dialog processor
                 dialogProcessor.IsDragging = true;
                 dialogProcessor.LastLocation = e.Location;
                 RedrawCanvas();
@@ -316,15 +369,14 @@ namespace VectorDrawForms
             }
         }
 
+        /// <summary>
+        /// Invoked when the mouse moves on top of the canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewPortMouseMove(object sender, MouseEventArgs e)
         {
-            if (dialogProcessor.IsDragging)
-            {
-                dialogProcessor.TranslateTo(e.Location);
-                RedrawCanvas();
-            }
-
-            coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
+            HandleDragging(e);
         }
 
         private void ViewPortMouseUp(object sender, MouseEventArgs e)
@@ -375,7 +427,8 @@ namespace VectorDrawForms
             {
                 if (dialogProcessor.Selections == null || dialogProcessor.Selections.Count == 0)
                 {
-                    MessageBox.Show("To open Paint Tool you have to select an item with the Selection Tool first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("To open Paint Tool you have to select an item with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -398,21 +451,45 @@ namespace VectorDrawForms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error has occured during Paint Tool's exevution. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Error has occured during Paint Tool's execution. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void groupTool_Click(object sender, EventArgs e)
         {
-            //Izchisli obhwashtashtiq prawoygylnik,
-            //suzdai nova grupa
-            //dobavi grupata v spisuka s primitivi
-            //SubShape = Selection
+            try
+            {
+                //Ensure that there are selected shapes
+                if (dialogProcessor.Selections.Count < 1)
+                {
+                    MessageBox.Show("To use Group Tool you have to select at least one item with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (dialogProcessor.Selections.Count > 1)
+                {
+                    dialogProcessor.GroupSelectedShapes();
+                    RedrawCanvas();
+                }
+                else if (dialogProcessor.Selections[0] is GroupShape)
+                {
+                    dialogProcessor.UngroupSelectedShape();
+                    RedrawCanvas();
+                }
+                else
+                {
+                    MessageBox.Show("Cannot use Group Tool on one shape. Select at least two shapes with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unexpexted error has occured during Group Tool's execution. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
         }
 
         private void newFileMenuButton_Click(object sender, EventArgs e)
@@ -463,13 +540,128 @@ namespace VectorDrawForms
             catch (Exception ex)
             {
                 MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }           
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!EnsureUnsavedWorkIsNotLost())           
+            if (!EnsureUnsavedWorkIsNotLost())
                 e.Cancel = true;
+        }
+
+        private void removeShapeToolButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dialogProcessor.Selections.Count == 0)
+                {
+                    MessageBox.Show("You have to select a shape in order to use the Remove Shape Tool", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var confirmResult = MessageBox.Show($"Do you want to delete the selection?", "VectorDraw", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    dialogProcessor.DeleteSelection();
+                    RedrawCanvas();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error has occured during Remove Shape Tool's execution. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void clearCanvasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (EnsureUnsavedWorkIsNotLost())
+                {
+                    dialogProcessor.ClearShapes();
+                    RedrawCanvas();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error has occured during Remove Shape Tool's execution. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ungroupSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dialogProcessor.Selections.OfType<GroupShape>().ToList().Count < 0)
+                {
+                    MessageBox.Show("Cannot ungroup because there is no group selected", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                dialogProcessor.UngroupSelectedShape();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unexpected error has occured during ungrouping of shapes. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void groupSelectionMenuButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dialogProcessor.Selections.Count <= 1)
+                {
+                    MessageBox.Show("Cannot use Group Tool. Select at least two shapes with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                dialogProcessor.GroupSelectedShapes();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unexpected error has occured during grouping of shapes. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        #endregion
+
+        #region UI Helper Event Handlers (Enable/Disable controls)
+        private void groupMenuButton_DropDownOpened(object sender, EventArgs e)
+        {
+            try
+            {
+                //Handle Group disable/enable
+                if (dialogProcessor.Selections.Count > 1)
+                {
+                    groupSelectionMenuButton.Enabled = true;
+                }
+                else
+                {
+                    groupSelectionMenuButton.Enabled = false;
+                }
+
+                //Handle Ungroup disable/enable
+                if (dialogProcessor.Selections.Count > 0
+                    && dialogProcessor.Selections.All(n => n is GroupShape))
+                {
+                    ungroupSelectionMenuButton.Enabled = true;
+                }
+                else
+                {
+                    ungroupSelectionMenuButton.Enabled = false;
+                }
+            }
+            catch { }
         }
         #endregion
     }

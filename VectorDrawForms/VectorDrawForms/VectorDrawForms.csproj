@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Helpers\ApplicationColors.cs" />
-    <Compile Include="Models\ElipseShape.cs" />
+    <Compile Include="Models\EllipseShape.cs" />
     <Compile Include="Models\GroupShape.cs" />
     <Compile Include="Models\RectangleShape.cs" />
     <Compile Include="Models\Shape.cs" />
@@ -106,7 +106,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Assets\Images\CurvedRectangleDark.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Images\RectangleDark.png" />
     <None Include="Assets\Images\BrushDark.png" />
@@ -115,12 +117,14 @@
     <None Include="Assets\Images\ElipseLight.png" />
     <None Include="Assets\Images\GroupDark.png" />
     <None Include="Assets\Images\GroupLight.png" />
-    <Content Include="Assets\Images\Point.png" />
-    <Content Include="Assets\Images\Pointer.png" />
+    <None Include="Assets\Images\BinDark.png" />
+    <None Include="Assets\Images\BinLight.png" />
     <None Include="Assets\Images\PointerDark.png" />
     <None Include="Assets\Images\PointerLight.png" />
-    <Content Include="Assets\Images\Rectangle.png" />
     <None Include="Assets\Images\RectangleLight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Images\CurvedRectangleLight.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

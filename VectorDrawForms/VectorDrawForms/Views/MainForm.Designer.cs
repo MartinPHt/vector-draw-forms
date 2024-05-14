@@ -37,6 +37,10 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ungroupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearCanvasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableDisableDarkModeSettingsButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,9 +52,12 @@
             this.elipseToolButton = new System.Windows.Forms.ToolStripButton();
             this.paintToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
+            this.removeShapeToolButton = new System.Windows.Forms.ToolStripButton();
             this.coordinatesLabel = new System.Windows.Forms.Label();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.canvas = new VectorDrawForms.Views.DoubleBufferedPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.selectedShapesCountLabel = new System.Windows.Forms.Label();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -118,9 +125,43 @@
             // 
             // editToolStripMenuItem
             // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.groupMenuButton,
+            this.clearCanvasToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // groupMenuButton
+            // 
+            this.groupMenuButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.groupSelectionMenuButton,
+            this.ungroupSelectionMenuButton});
+            this.groupMenuButton.Name = "groupMenuButton";
+            this.groupMenuButton.Size = new System.Drawing.Size(180, 22);
+            this.groupMenuButton.Text = "Group";
+            this.groupMenuButton.DropDownOpened += new System.EventHandler(this.groupMenuButton_DropDownOpened);
+            // 
+            // groupSelectionMenuButton
+            // 
+            this.groupSelectionMenuButton.Name = "groupSelectionMenuButton";
+            this.groupSelectionMenuButton.Size = new System.Drawing.Size(180, 22);
+            this.groupSelectionMenuButton.Text = "Group selection";
+            this.groupSelectionMenuButton.Click += new System.EventHandler(this.groupSelectionMenuButton_Click);
+            // 
+            // ungroupSelectionMenuButton
+            // 
+            this.ungroupSelectionMenuButton.Name = "ungroupSelectionMenuButton";
+            this.ungroupSelectionMenuButton.Size = new System.Drawing.Size(180, 22);
+            this.ungroupSelectionMenuButton.Text = "Ungroup selection";
+            this.ungroupSelectionMenuButton.Click += new System.EventHandler(this.ungroupSelectionToolStripMenuItem_Click);
+            // 
+            // clearCanvasToolStripMenuItem
+            // 
+            this.clearCanvasToolStripMenuItem.Name = "clearCanvasToolStripMenuItem";
+            this.clearCanvasToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearCanvasToolStripMenuItem.Text = "Clear Canvas";
+            this.clearCanvasToolStripMenuItem.Click += new System.EventHandler(this.clearCanvasToolStripMenuItem_Click);
             // 
             // imageToolStripMenuItem
             // 
@@ -166,7 +207,8 @@
             this.drawRectangleButton,
             this.elipseToolButton,
             this.paintToolButton,
-            this.groupToolButton});
+            this.groupToolButton,
+            this.removeShapeToolButton});
             this.toolMenu.Location = new System.Drawing.Point(0, 24);
             this.toolMenu.Name = "toolMenu";
             this.toolMenu.Size = new System.Drawing.Size(45, 546);
@@ -183,7 +225,7 @@
             this.selectionTool.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.selectionTool.Name = "selectionTool";
             this.selectionTool.Size = new System.Drawing.Size(30, 30);
-            this.selectionTool.Text = "toolStripButton2";
+            this.selectionTool.Text = "Selection Tool";
             this.selectionTool.ToolTipText = "Selection Tool";
             // 
             // drawRectangleButton
@@ -194,8 +236,8 @@
             this.drawRectangleButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.drawRectangleButton.Name = "drawRectangleButton";
             this.drawRectangleButton.Size = new System.Drawing.Size(30, 30);
-            this.drawRectangleButton.Text = "toolStripButton1";
-            this.drawRectangleButton.ToolTipText = "Draw a rectangle";
+            this.drawRectangleButton.Text = "Rectangle Tool";
+            this.drawRectangleButton.ToolTipText = "Rectangle Tool";
             this.drawRectangleButton.Click += new System.EventHandler(this.drawRectangleButton_Click);
             // 
             // elipseToolButton
@@ -207,7 +249,7 @@
             this.elipseToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.elipseToolButton.Name = "elipseToolButton";
             this.elipseToolButton.Size = new System.Drawing.Size(30, 30);
-            this.elipseToolButton.Text = "ElipseTool";
+            this.elipseToolButton.Text = "Elipse Tool";
             this.elipseToolButton.Click += new System.EventHandler(this.elipseToolButton_Click);
             // 
             // paintToolButton
@@ -218,7 +260,7 @@
             this.paintToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.paintToolButton.Name = "paintToolButton";
             this.paintToolButton.Size = new System.Drawing.Size(30, 30);
-            this.paintToolButton.Text = "toolStripButton1";
+            this.paintToolButton.Text = "Paint Tool";
             this.paintToolButton.ToolTipText = "Paint Tool";
             this.paintToolButton.Click += new System.EventHandler(this.paintToolButton_Click);
             // 
@@ -230,15 +272,26 @@
             this.groupToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.groupToolButton.Name = "groupToolButton";
             this.groupToolButton.Size = new System.Drawing.Size(30, 30);
-            this.groupToolButton.Text = "toolStripButton1";
+            this.groupToolButton.Text = "Group Tool";
             this.groupToolButton.ToolTipText = "Groop Tool";
             this.groupToolButton.Click += new System.EventHandler(this.groupTool_Click);
+            // 
+            // removeShapeToolButton
+            // 
+            this.removeShapeToolButton.AutoSize = false;
+            this.removeShapeToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.removeShapeToolButton.Image = ((System.Drawing.Image)(resources.GetObject("removeShapeToolButton.Image")));
+            this.removeShapeToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.removeShapeToolButton.Name = "removeShapeToolButton";
+            this.removeShapeToolButton.Size = new System.Drawing.Size(30, 30);
+            this.removeShapeToolButton.Text = "Shape Remove Tool";
+            this.removeShapeToolButton.Click += new System.EventHandler(this.removeShapeToolButton_Click);
             // 
             // coordinatesLabel
             // 
             this.coordinatesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.coordinatesLabel.AutoSize = true;
-            this.coordinatesLabel.Location = new System.Drawing.Point(51, 549);
+            this.coordinatesLabel.Location = new System.Drawing.Point(51, 551);
             this.coordinatesLabel.Name = "coordinatesLabel";
             this.coordinatesLabel.Size = new System.Drawing.Size(25, 13);
             this.coordinatesLabel.TabIndex = 4;
@@ -257,11 +310,33 @@
             this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseMove);
             this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseUp);
             // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(871, 551);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(94, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Selected Shapes: ";
+            // 
+            // selectedShapesCountLabel
+            // 
+            this.selectedShapesCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectedShapesCountLabel.AutoSize = true;
+            this.selectedShapesCountLabel.Location = new System.Drawing.Point(970, 551);
+            this.selectedShapesCountLabel.Name = "selectedShapesCountLabel";
+            this.selectedShapesCountLabel.Size = new System.Drawing.Size(13, 13);
+            this.selectedShapesCountLabel.TabIndex = 6;
+            this.selectedShapesCountLabel.Text = "0";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1004, 570);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.selectedShapesCountLabel);
             this.Controls.Add(this.coordinatesLabel);
             this.Controls.Add(this.canvas);
             this.Controls.Add(this.toolMenu);
@@ -270,7 +345,6 @@
             this.Name = "MainForm";
             this.Text = "Vector Draw";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.toolMenu.ResumeLayout(false);
@@ -304,6 +378,13 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton removeShapeToolButton;
+        private System.Windows.Forms.ToolStripMenuItem clearCanvasToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem groupMenuButton;
+        private System.Windows.Forms.ToolStripMenuItem groupSelectionMenuButton;
+        private System.Windows.Forms.ToolStripMenuItem ungroupSelectionMenuButton;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label selectedShapesCountLabel;
     }
 }
 

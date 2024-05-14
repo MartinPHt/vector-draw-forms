@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using VectorDrawForms.Models;
@@ -60,10 +61,16 @@ namespace VectorDrawForms.Processors
             int minWidth = 50)
         {
             Random rnd = new Random();
+
+            //size
             int height = rnd.Next(minHeight, maxHeight);
             int width = rnd.Next(minWidth, maxWidth);
+
+            //starting point
             int x = rnd.Next(0, MainForm.Instance.Size.Width - width);
             int y = rnd.Next(0, MainForm.Instance.Size.Height - height);
+
+            //return new Rectangle
             return new Rectangle(x, y, width, height);
         }
 
@@ -82,7 +89,7 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void AddRandomElipse()
         {
-            ElipseShape elipse = new ElipseShape(GenerateRandomRectangleForShape());
+            EllipseShape elipse = new EllipseShape(GenerateRandomRectangleForShape());
             elipse.FillColor = Color.White;
             ShapeList.Add(elipse);
         }
@@ -110,8 +117,21 @@ namespace VectorDrawForms.Processors
         /// <param name="p">Translation vector.</param>
         public void TranslateTo(PointF p)
         {
-            foreach (Shape item in selections)
-                item.Location = new PointF(item.Location.X + p.X - lastLocation.X, item.Location.Y + p.Y - lastLocation.Y);
+            foreach (Shape shape in selections)
+            {
+                if (shape is GroupShape)
+                {
+                    var group = (GroupShape)shape;
+
+                    foreach (var subShape in group.SubShapes)
+                        subShape.Location = new PointF(subShape.Location.X + p.X - lastLocation.X, subShape.Location.Y + p.Y - lastLocation.Y);                    
+                }
+                else
+                {
+                    shape.Location = new PointF(shape.Location.X + p.X - lastLocation.X, shape.Location.Y + p.Y - lastLocation.Y);
+                }
+
+            }
 
             lastLocation = p;
         }
@@ -156,6 +176,99 @@ namespace VectorDrawForms.Processors
         {
             selections.Clear();
             ShapeList.Clear();
+        }
+
+        /// <summary>
+        /// Deletes the selected primitives
+        /// </summary>
+        public void DeleteSelection()
+        {
+            ShapeList = ShapeList.Except(selections).ToList();
+            selections.Clear();
+        }
+
+        /// <summary>
+        /// Clears the shapes from the <see cref="DialogProcessor"/>.
+        /// </summary>
+        public void ClearShapes()
+        {
+            ShapeList.Clear();
+            selections.Clear();
+        }
+
+        /// <summary>
+        /// Groups the selected shapes from the canvas.
+        /// </summary>
+        public void GroupSelectedShapes()
+        {
+            //starting point
+            float x = float.MaxValue;
+            float y = float.MaxValue;
+
+            //end point
+            float x1 = float.MinValue;
+            float y1 = float.MinValue;
+            foreach (Shape item in selections)
+            {
+                if (x > item.Rectangle.X)
+                    x = item.Rectangle.X;
+
+                if (y > item.Rectangle.Y)
+                    y = item.Rectangle.Y;
+
+                if (x1 < item.Rectangle.Right)
+                    x1 = item.Rectangle.Right;
+
+                if (y1 < item.Rectangle.Bottom)
+                    y1 = item.Rectangle.Bottom;
+            }
+
+            //calculate rectangle width
+            float width = Math.Abs(x - x1);
+
+            //calculate rectangle height
+            float height = Math.Abs(y - y1);
+
+
+            RectangleF rect = new RectangleF(x, y, width, height);
+            //RectangleF rect = new Rectangle();
+
+            //Create new Group shape from the selected shapes
+            GroupShape group = new GroupShape(rect);
+
+            //add the shapes from the current selection 
+            group.SubShapes.AddRange(selections);
+
+            //Remove the selected shapes from shape list
+            ShapeList = ShapeList.Except(selections).ToList();
+
+            //add the group to the list of primitives
+            ShapeList.Add(group);
+
+            //Clear selected primitives
+            selections.Clear();
+
+            //add the group
+            selections.Add(group);
+        }
+
+        /// <summary>
+        /// Ungroups selected group and deselects all controls.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        public void UngroupSelectedShape()
+        {
+            if (selections.Count == 1 && selections[0] is GroupShape)
+            {
+                var group = (GroupShape)selections[0];
+                ShapeList.AddRange(group.SubShapes);
+                ShapeList.Remove(group);
+                selections.Clear();
+            }
+            else
+            {
+                throw new Exception("Cannot ungroup when more than one shape is selected");
+            }          
         }
         #endregion
     }
