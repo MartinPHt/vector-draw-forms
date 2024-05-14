@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Configuration;
+using System.Drawing.Imaging;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using VectorDrawForms.Models;
 using VectorDrawForms.Processors;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace VectorDrawForms
 {
@@ -112,7 +115,8 @@ namespace VectorDrawForms
                 var dialog = new SaveFileDialog();
                 dialog.InitialDirectory = Environment.CurrentDirectory;
                 dialog.Title = "Save as";
-                dialog.DefaultExt = "file";
+                dialog.Filter = "Png Image (.png)|*.png|File|*.vdfile";
+                dialog.DefaultExt = "vdfile";
                 dialog.CheckPathExists = true;
                 dialog.FileName = Path.GetFileName(FilePath);
 
@@ -267,8 +271,23 @@ namespace VectorDrawForms
         /// <param name="path"></param>
         private void SaveToFile(string path)
         {
-            dialogProcessor.SaveToFile(path);
-            IsChangeMade = false;
+            var extension = Path.GetExtension(path);
+            if (extension == ".png")
+            {
+                SaveShapesToPNG(path);
+            }
+            else
+            {
+                FileStream stream = new FileStream(path, FileMode.Create);
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, dialogProcessor.ShapeList);
+
+                //Dispose fileStream
+                stream.Flush();
+                stream.Close();
+
+                IsChangeMade = false;
+            }
         }
 
         /// <summary>
@@ -348,6 +367,71 @@ namespace VectorDrawForms
             {
                 MessageBox.Show($"Error has occured while changing window light/dark mode. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void SaveShapesToPNG(string filePath)
+        {
+            // Create a Bitmap with the size of the User Control
+            Bitmap bitmap = new Bitmap(canvas.Width, canvas.Height);
+
+            // Create a Graphics object to draw on the Bitmap
+            using (Graphics graphics = Graphics.FromImage(bitmap))
+            {
+                foreach (var shape in dialogProcessor.ShapeList)
+                {
+                    shape.DrawSelf(graphics);
+                }
+            }
+
+            // Save the Bitmap as a PNG file
+            bitmap.Save(filePath, ImageFormat.Png);
+
+            // Dispose of the resources of the Bitmap
+            bitmap.Dispose();
+        }
+
+        private void GroupSelection()
+        {
+            try
+            {
+                if (dialogProcessor.Selections.Count <= 1)
+                {
+                    MessageBox.Show("Cannot use Group Tool. Select at least two shapes with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                dialogProcessor.GroupSelectedShapes();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unexpected error has occured during grouping of shapes. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void UngroupSelection()
+        {
+            try
+            {
+                if (dialogProcessor.Selections.OfType<GroupShape>().ToList().Count < 0)
+                {
+                    MessageBox.Show("Cannot ungroup because there is no group selected", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                dialogProcessor.UngroupSelectedShape();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unexpected error has occured during ungrouping of shapes. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         #endregion 
@@ -602,7 +686,8 @@ namespace VectorDrawForms
             var dialog = new OpenFileDialog();
             dialog.InitialDirectory = Environment.CurrentDirectory;
             dialog.Title = "Open";
-            dialog.DefaultExt = "file";
+            dialog.DefaultExt = "vdfile";
+            dialog.Filter = "File|*.vdfile";
             dialog.CheckFileExists = true;
             dialog.CheckPathExists = true;
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -654,46 +739,12 @@ namespace VectorDrawForms
 
         private void ungroupSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (dialogProcessor.Selections.OfType<GroupShape>().ToList().Count < 0)
-                {
-                    MessageBox.Show("Cannot ungroup because there is no group selected", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                    return;
-                }
-
-                dialogProcessor.UngroupSelectedShape();
-                RedrawCanvas();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Unexpected error has occured during ungrouping of shapes. Exception message:" + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            UngroupSelection();
         }
 
         private void groupSelectionMenuButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (dialogProcessor.Selections.Count <= 1)
-                {
-                    MessageBox.Show("Cannot use Group Tool. Select at least two shapes with the Selection Tool first.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                    return;
-                }
-
-                dialogProcessor.GroupSelectedShapes();
-                RedrawCanvas();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Unexpected error has occured during grouping of shapes. Exception message:" + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            GroupSelection();
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -712,6 +763,14 @@ namespace VectorDrawForms
                 if (dialogProcessor.CoppiedSelection.Count > 0)
                     HandlePasteShape();
 
+            }
+            else if (e.Control && e.KeyCode == Keys.G)
+            {
+                GroupSelection();
+            }
+            else if (e.Control && e.KeyCode == Keys.U)
+            {
+                UngroupSelection();
             }
             else if (!e.Control && e.KeyCode == Keys.Delete)
             {

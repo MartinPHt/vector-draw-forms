@@ -171,20 +171,6 @@ namespace VectorDrawForms.Processors
             }
 
         }
-        /// <summary>
-        /// Writes the model to a given file.
-        /// </summary>
-        /// <param name="name"></param>
-        public void SaveToFile(string path)
-        {
-            FileStream stream = new FileStream(path, FileMode.Create);
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, ShapeList);
-
-            //Dispose fileStream
-            stream.Flush();
-            stream.Close();
-        }
 
         /// <summary>
         /// Clears all shapes from <see cref="DialogProcessor"/>.
