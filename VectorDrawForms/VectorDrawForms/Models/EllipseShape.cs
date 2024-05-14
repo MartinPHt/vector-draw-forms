@@ -42,7 +42,7 @@ namespace VectorDrawForms.Models
 			base.DrawSelf(grfx);
 
 			grfx.FillEllipse(new SolidBrush(FillColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
-			grfx.DrawEllipse(new Pen(StrokeColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
+			grfx.DrawEllipse(new Pen(StrokeColor, BorderThickness), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
 
 		}
 	}

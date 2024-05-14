@@ -34,9 +34,8 @@ namespace VectorDrawForms.Models
 		{
 			base.DrawSelf(grfx);
 
-			grfx.FillRectangle(new SolidBrush(FillColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
-			grfx.DrawRectangle(new Pen(StrokeColor), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
-
+			grfx.FillRectangle(new SolidBrush(FillColor), Rectangle);
+			grfx.DrawRectangle(new Pen(StrokeColor, BorderThickness), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
 		}
 	}
 }

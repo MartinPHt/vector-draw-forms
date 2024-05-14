@@ -18,15 +18,35 @@ namespace VectorDrawForms.Models
         #endregion
 
         #region Properties
-        private List<Shape> subShapes = new List<Shape>();
+        private List<IShape> subShapes = new List<IShape>();
 
         /// <summary>
         /// Containst the primitives that are included in the <see cref="GroupShape"/>.
         /// </summary>
-        public List<Shape> SubShapes 
+        public List<IShape> SubShapes 
         { 
             get {  return subShapes; }
             set { subShapes = value; }
+        }
+
+        public override Color FillColor
+        {
+            get { return SubShapes[0].FillColor; }
+            set
+            {
+                foreach (var shape in subShapes)
+                    shape.FillColor = value;     
+            }
+        }
+
+        public override Color StrokeColor
+        {
+            get { return SubShapes[0].StrokeColor; }
+            set
+            {
+                foreach (var shape in subShapes)
+                    shape.StrokeColor = value;     
+            }
         }
         #endregion
 

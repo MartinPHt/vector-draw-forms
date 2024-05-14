@@ -105,7 +105,7 @@ namespace VectorDrawForms
         /// <summary>
         /// Opens <see cref="SaveFileDialog"/> window and creates file based on user's directory and file name input.
         /// </summary>
-        private void ExecuteSaveAs()
+        private void HandleSaveAs()
         {
             try
             {
@@ -126,6 +126,81 @@ namespace VectorDrawForms
             {
                 MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Handle save file. If file does not exist, Opens <see cref="SaveFileDialog"/> window and creates file based on user's directory.
+        /// </summary>
+        private void HandleSaveFile()
+        {
+            try
+            {
+                if (!File.Exists(FilePath))
+                    HandleSaveAs();
+                else
+                    SaveToFile(FilePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Handles pasting of coppied shapes
+        /// </summary>
+        private void HandlePasteShape()
+        {
+            try
+            {
+                dialogProcessor.PasteSelection();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't paste shape. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void HandleCopyShape()
+        {
+            try
+            {
+                dialogProcessor.CopySelection();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't Copy shape. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void HandleDeleteShape()
+        {
+            try
+            {
+                if (dialogProcessor.Selections.Count == 0)
+                {
+                    MessageBox.Show("You have to select a shape in order to use the Remove Shape Tool", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var confirmResult = MessageBox.Show($"Do you want to delete the selection?", "VectorDraw", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    dialogProcessor.DeleteSelection();
+                    RedrawCanvas();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error has occured during Remove Shape Tool's execution. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                //Go back to Selection Tool
+                selectionToolButton.PerformClick();
             }
         }
 
@@ -160,7 +235,7 @@ namespace VectorDrawForms
                 if (confirmResult == DialogResult.Yes)
                 {
                     if (!File.Exists(FilePath))
-                        ExecuteSaveAs();
+                        HandleSaveAs();
                     else
                         SaveToFile(FilePath);
 
@@ -239,7 +314,7 @@ namespace VectorDrawForms
                     toolMenu.BackColor = ApplicationColors.MainUILight;
 
                     //Change images to the opposite color
-                    selectionTool.Image = Properties.Resources.PointerDark;
+                    selectionToolButton.Image = Properties.Resources.PointerDark;
                     drawRectangleButton.Image = Properties.Resources.RectangleDark;
                     elipseToolButton.Image = Properties.Resources.ElipseDark;
                     paintToolButton.Image = Properties.Resources.BrushDark;
@@ -261,7 +336,7 @@ namespace VectorDrawForms
                     toolMenu.BackColor = ApplicationColors.SecondaryUIDark;
 
                     //Change images to the opposite color
-                    selectionTool.Image = Properties.Resources.PointerLight;
+                    selectionToolButton.Image = Properties.Resources.PointerLight;
                     drawRectangleButton.Image = Properties.Resources.RectangleLight;
                     elipseToolButton.Image = Properties.Resources.ElipseLight;
                     paintToolButton.Image = Properties.Resources.BrushLight;
@@ -293,6 +368,8 @@ namespace VectorDrawForms
             dialogProcessor.AddRandomRectangle();
             RedrawCanvas();
 
+            //Go back to Selection Tool
+            selectionToolButton.PerformClick();
         }
 
         private void viewPort_Load(object sender, EventArgs e)
@@ -318,9 +395,9 @@ namespace VectorDrawForms
                 return;
             }
 
-            if (selectionTool.Checked)
+            if (selectionToolButton.Checked)
             {
-                Shape selectedShape = dialogProcessor.ContainsPoint(e.Location);
+                IShape selectedShape = dialogProcessor.ContainsPoint(e.Location);
 
                 //Check if the new selection is null
                 if (selectedShape != null)
@@ -409,7 +486,7 @@ namespace VectorDrawForms
 
             selectedToolStripButton = e.ClickedItem as ToolStripButton;
 
-            if (selectedToolStripButton == selectionTool)
+            if (selectedToolStripButton == selectionToolButton)
                 canvas.Cursor = Cursors.Default;
             else
                 canvas.Cursor = Cursors.Cross;
@@ -419,6 +496,9 @@ namespace VectorDrawForms
         {
             dialogProcessor.AddRandomElipse();
             RedrawCanvas();
+
+            //Go back to Selection Tool
+            selectionToolButton.PerformClick();
         }
 
         private void paintToolButton_Click(object sender, EventArgs e)
@@ -453,6 +533,11 @@ namespace VectorDrawForms
             {
                 MessageBox.Show("Error has occured during Paint Tool's execution. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                //Go back to Selection Tool
+                selectionToolButton.PerformClick();
             }
         }
 
@@ -489,7 +574,11 @@ namespace VectorDrawForms
                 MessageBox.Show("Unexpexted error has occured during Group Tool's execution. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
             }
-
+            finally
+            {
+                //Go back to Selection Tool
+                selectionToolButton.PerformClick();
+            }
         }
 
         private void newFileMenuButton_Click(object sender, EventArgs e)
@@ -525,22 +614,12 @@ namespace VectorDrawForms
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExecuteSaveAs();
+            HandleSaveAs();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (!File.Exists(FilePath))
-                    ExecuteSaveAs();
-                else
-                    SaveToFile(FilePath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            HandleSaveFile();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -551,26 +630,7 @@ namespace VectorDrawForms
 
         private void removeShapeToolButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (dialogProcessor.Selections.Count == 0)
-                {
-                    MessageBox.Show("You have to select a shape in order to use the Remove Shape Tool", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var confirmResult = MessageBox.Show($"Do you want to delete the selection?", "VectorDraw", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (confirmResult == DialogResult.Yes)
-                {
-                    dialogProcessor.DeleteSelection();
-                    RedrawCanvas();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error has occured during Remove Shape Tool's execution. Exception message:" + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            HandleDeleteShape();
         }
 
         private void clearCanvasToolStripMenuItem_Click(object sender, EventArgs e)
@@ -633,6 +693,29 @@ namespace VectorDrawForms
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check if Ctrl and S keys are pressed
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                HandleSaveFile();
+            }
+            else if (e.Control && e.KeyCode == Keys.C)
+            {
+                HandleCopyShape();
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                if (dialogProcessor.CoppiedSelection.Count > 0)
+                    HandlePasteShape();
+                
+            }
+            else if (!e.Control && e.KeyCode == Keys.Delete)
+            {
+                HandleDeleteShape();
+            }
+        }
         #endregion
 
         #region UI Helper Event Handlers (Enable/Disable controls)
@@ -662,6 +745,16 @@ namespace VectorDrawForms
                 }
             }
             catch { }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleCopyShape();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandlePasteShape();
         }
         #endregion
     }

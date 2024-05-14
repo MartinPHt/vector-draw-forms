@@ -48,12 +48,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Helpers\ApplicationColors.cs" />
+    <Compile Include="Assets\Helpers\Utilities.cs" />
     <Compile Include="Models\EllipseShape.cs" />
     <Compile Include="Models\GroupShape.cs" />
+    <Compile Include="Models\IShape.cs" />
     <Compile Include="Models\RectangleShape.cs" />
     <Compile Include="Models\Shape.cs" />
     <Compile Include="Processors\DialogProcessor.cs" />
     <Compile Include="Processors\DisplayProcessor.cs" />
+    <Compile Include="Processors\IDialogProcessor.cs" />
+    <Compile Include="Processors\IDisplayProcessor.cs" />
     <Compile Include="Views\DoubleBufferedPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

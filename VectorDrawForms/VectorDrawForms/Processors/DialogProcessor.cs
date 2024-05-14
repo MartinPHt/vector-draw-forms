@@ -9,7 +9,7 @@ using VectorDrawForms.Models;
 
 namespace VectorDrawForms.Processors
 {
-    public class DialogProcessor : DisplayProcessor
+    public class DialogProcessor : DisplayProcessor, IDialogProcessor
     {
         #region Constructor
 
@@ -21,15 +21,23 @@ namespace VectorDrawForms.Processors
 
         #region Properties
 
-        private List<Shape> selections = new List<Shape>();
+        private List<IShape> selections = new List<IShape>();
         /// <summary>
         /// Selected element
         /// </summary>
-        public List<Shape> Selections
+        public List<IShape> Selections
         {
             get { return selections; }
             set { selections = value; }
         }
+
+        private List<IShape> coppiedSelection = new List<IShape>();
+        public List<IShape> CoppiedSelection
+        {
+            get { return coppiedSelection; }
+            set { coppiedSelection = value; }
+        }
+
 
         private bool isDragging;
         /// <summary>
@@ -80,7 +88,7 @@ namespace VectorDrawForms.Processors
         public void AddRandomRectangle()
         {
             RectangleShape rect = new RectangleShape(GenerateRandomRectangleForShape());
-            rect.FillColor = Color.White;
+            rect.FillColor = Color.Transparent;
             ShapeList.Add(rect);
         }
 
@@ -90,7 +98,7 @@ namespace VectorDrawForms.Processors
         public void AddRandomElipse()
         {
             EllipseShape elipse = new EllipseShape(GenerateRandomRectangleForShape());
-            elipse.FillColor = Color.White;
+            elipse.FillColor = Color.Transparent;
             ShapeList.Add(elipse);
         }
 
@@ -99,7 +107,7 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="point">Indicated point</param>
         /// <returns>The shape element to which the given point belongs.</returns>
-        public Shape ContainsPoint(PointF point)
+        public IShape ContainsPoint(PointF point)
         {
             for (int i = ShapeList.Count - 1; i >= 0; i--)
             {
@@ -118,17 +126,17 @@ namespace VectorDrawForms.Processors
         public void TranslateTo(PointF p)
         {
             //Move eacch selected shape
-            foreach (Shape shape in selections)
+            foreach (IShape shape in selections)
                 MoveShape(shape, p);
 
             lastLocation = p;
         }
 
         /// <summary>
-        /// Moves the <see cref="Shape"/> to a provided <see cref="PointF"/>
+        /// Moves the <see cref="IShape"/> to a provided <see cref="PointF"/>
         /// </summary>
         /// <param name="shape"></param>
-        private void MoveShape(Shape shape, PointF p)
+        private void MoveShape(IShape shape, PointF p)
         {
             if (shape is GroupShape)
             {
@@ -151,7 +159,7 @@ namespace VectorDrawForms.Processors
             {
                 FileStream stream = new FileStream(path, FileMode.Open);
                 BinaryFormatter formatter = new BinaryFormatter();
-                ShapeList = (List<Shape>)formatter.Deserialize(stream);
+                ShapeList = (List<IShape>)formatter.Deserialize(stream);
 
                 //Dispose fileStream
                 stream.Flush();
@@ -210,36 +218,8 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void GroupSelectedShapes()
         {
-            //starting point
-            float x = float.MaxValue;
-            float y = float.MaxValue;
-
-            //end point
-            float x1 = float.MinValue;
-            float y1 = float.MinValue;
-            foreach (Shape item in selections)
-            {
-                if (x > item.Rectangle.X)
-                    x = item.Rectangle.X;
-
-                if (y > item.Rectangle.Y)
-                    y = item.Rectangle.Y;
-
-                if (x1 < item.Rectangle.Right)
-                    x1 = item.Rectangle.Right;
-
-                if (y1 < item.Rectangle.Bottom)
-                    y1 = item.Rectangle.Bottom;
-            }
-
-            //calculate rectangle width
-            float width = Math.Abs(x - x1);
-
-            //calculate rectangle height
-            float height = Math.Abs(y - y1);
-
-            // Group's rectangle
-            RectangleF rect = new RectangleF(x, y, width, height);
+            // Calculate Group Rectangle
+            RectangleF rect = CalculateGroupRectangle(selections);
 
             //Create new Group shape from the selected shapes
             GroupShape group = new GroupShape(rect);
@@ -260,6 +240,38 @@ namespace VectorDrawForms.Processors
             selections.Add(group);
         }
 
+        private RectangleF CalculateGroupRectangle(List<IShape> shapes)
+        {
+            //starting point
+            float x = float.MaxValue;
+            float y = float.MaxValue;
+
+            //end point
+            float x1 = float.MinValue;
+            float y1 = float.MinValue;
+            foreach (IShape shape in shapes)
+            {
+                if (x > shape.Rectangle.X)
+                    x = shape.Rectangle.X;
+
+                if (y > shape.Rectangle.Y)
+                    y = shape.Rectangle.Y;
+
+                if (x1 < shape.Rectangle.Right)
+                    x1 = shape.Rectangle.Right;
+
+                if (y1 < shape.Rectangle.Bottom)
+                    y1 = shape.Rectangle.Bottom;
+            }
+
+            //calculate rectangle width
+            float width = Math.Abs(x - x1);
+
+            //calculate rectangle height
+            float height = Math.Abs(y - y1);
+            return new RectangleF(x, y, width, height);
+        }
+
         /// <summary>
         /// Ungroups selected group and deselects all controls.
         /// </summary>
@@ -277,6 +289,48 @@ namespace VectorDrawForms.Processors
             {
                 throw new Exception("Cannot ungroup when more than one shape is selected");
             }
+        }
+
+        public void PasteSelection()
+        {
+            if (coppiedSelection.Count <= 0)
+                return;
+
+
+            if (coppiedSelection.Count == 1)
+            {
+                IShape shape = coppiedSelection[0].DeepClone();
+                shape.Rectangle = new RectangleF(0, 0, shape.Rectangle.Width, shape.Rectangle.Height);
+                ShapeList.Add(shape);
+            }
+            else
+            {
+                // Calculate Group Rectangle
+                RectangleF rect = CalculateGroupRectangle(coppiedSelection);
+
+                //Create new Group shape from the selected shapes
+                GroupShape group = new GroupShape(rect);
+
+                //add the shapes from the current selection 
+                foreach (var shape in coppiedSelection)
+                    group.SubShapes.Add(shape.DeepClone());
+
+                //Add to shape list
+                ShapeList.Add(group);
+            }
+
+            //Clear selections and coppied selections
+            selections.Clear();
+            coppiedSelection.Clear();
+        }
+
+        public void CopySelection()
+        {
+            //Clear copy buffer
+            coppiedSelection.Clear();
+
+            //Add selections to copy buffer
+            coppiedSelection.AddRange(selections);
         }
         #endregion
     }

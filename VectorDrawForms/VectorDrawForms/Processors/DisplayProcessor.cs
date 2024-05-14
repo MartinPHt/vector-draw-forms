@@ -6,8 +6,8 @@ using VectorDrawForms.Models;
 
 namespace VectorDrawForms.Processors
 {
-	public class DisplayProcessor
-	{
+	public class DisplayProcessor : IDisplayProcessor
+    {
 		#region Constructor
 
 		public DisplayProcessor()
@@ -21,8 +21,8 @@ namespace VectorDrawForms.Processors
 		/// <summary>
 		/// List containing all elements forming the image.
 		/// </summary>
-		private List<Shape> shapeList = new List<Shape>();
-		public List<Shape> ShapeList
+		private List<IShape> shapeList = new List<IShape>();
+		public List<IShape> ShapeList
 		{
 			get { return shapeList; }
 			set { shapeList = value; }
@@ -47,7 +47,7 @@ namespace VectorDrawForms.Processors
 		/// <param name="grfx">Where to perform the visualization.</param>
 		public virtual void Draw(Graphics grfx)
 		{
-			foreach (Shape item in ShapeList)
+			foreach (IShape item in ShapeList)
 			{
 				DrawShape(grfx, item);
 			}
@@ -58,7 +58,7 @@ namespace VectorDrawForms.Processors
 		/// </summary>
 		/// <param name="grfx">Where to perform the visualization.</param>
 		/// <param name="item">Visualization element.</param>
-		public virtual void DrawShape(Graphics grfx, Shape item)
+		public virtual void DrawShape(Graphics grfx, IShape item)
 		{
 			item.DrawSelf(grfx);
 		}

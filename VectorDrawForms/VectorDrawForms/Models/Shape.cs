@@ -4,7 +4,7 @@ using System.Drawing;
 namespace VectorDrawForms.Models
 {
 	[Serializable]
-	public class Shape
+	public class Shape : IShape
     {
 		#region Constructors
 
@@ -17,12 +17,12 @@ namespace VectorDrawForms.Models
 			rectangle = rect;
 		}
 
-		public Shape(Shape shape)
+		public Shape(IShape shape)
 		{
 			this.Height = shape.Height;
 			this.Width = shape.Width;
 			this.Location = shape.Location;
-			this.rectangle = shape.rectangle;
+			this.rectangle = shape.Rectangle;
 
 			this.FillColor = shape.FillColor;
 		}
@@ -85,6 +85,16 @@ namespace VectorDrawForms.Models
 		{
 			get { return strokeColor; }
 			set { strokeColor = value; }
+		}
+
+		/// <summary>
+		/// Border thickness of the element.
+		/// </summary>
+		private float borderThickness = 4;
+		public virtual float BorderThickness
+        {
+			get { return borderThickness; }
+			set { borderThickness = value; }
 		}
 		#endregion
 
