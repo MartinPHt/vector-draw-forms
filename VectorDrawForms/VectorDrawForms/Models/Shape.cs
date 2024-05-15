@@ -90,7 +90,7 @@ namespace VectorDrawForms.Models
 		/// <summary>
 		/// Stroke of the element.
 		/// </summary>
-		private Color strokeColor = Color.Black;
+		private Color strokeColor = Color.Gray;
 		public virtual Color StrokeColor
 		{
 			get { return strokeColor; }

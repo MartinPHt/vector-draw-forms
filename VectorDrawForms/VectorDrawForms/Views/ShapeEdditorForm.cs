@@ -102,6 +102,10 @@ namespace VectorDrawForms
                     this.ForeColor = ApplicationColors.MainUILight;
                     this.BackColor = ApplicationColors.MainUIDark;
 
+                    sizeGroupBox.ForeColor = ApplicationColors.MainUILight;
+                    rotateGroupBox.ForeColor = ApplicationColors.MainUILight;
+                    colorGroupBox.ForeColor = ApplicationColors.MainUILight;
+
                     buttonProceed.BackColor = ApplicationColors.SecondaryUIDark;
                     buttonCancel.BackColor = ApplicationColors.SecondaryUIDark;
                 }

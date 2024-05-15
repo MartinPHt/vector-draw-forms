@@ -22,7 +22,10 @@ namespace VectorDrawForms
         private DialogProcessor dialogProcessor = new DialogProcessor();
         private ToolStripButton selectedToolStripButton;
 
+        //Drawing fiels
+        private bool isDrawingPerformed = false;
         private PointF startPoint;
+        private IShape currentDrawnShape = null;
         #endregion
 
         #region Constructor
@@ -99,13 +102,8 @@ namespace VectorDrawForms
         /// <param name="e"></param>
         private void HandleDragging(MouseEventArgs e)
         {
-            if (dialogProcessor.IsDragging)
-            {
-                dialogProcessor.TranslateTo(e.Location);
-                RedrawCanvas();
-            }
-
-            coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
+            dialogProcessor.TranslateTo(e.Location);
+            RedrawCanvas();
         }
 
         /// <summary>
@@ -508,9 +506,23 @@ namespace VectorDrawForms
                     RedrawCanvas();
                 }
             }
-            else if (rectangleToolButton.Checked || elipseToolButton.Checked)
+            else if (rectangleToolButton.Checked)
             {
                 startPoint = e.Location;
+                currentDrawnShape = new RectangleShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                currentDrawnShape.StrokeColor = Color.LightGray;
+                dialogProcessor.ShapeList.Add(currentDrawnShape);
+                isDrawingPerformed = true;
+                RedrawCanvas();
+            }
+            else if (elipseToolButton.Checked)
+            {
+                startPoint = e.Location;
+                currentDrawnShape = new EllipseShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                currentDrawnShape.StrokeColor = Color.LightGray;
+                dialogProcessor.ShapeList.Add(currentDrawnShape);
+                isDrawingPerformed = true;
+                RedrawCanvas();
             }
         }
 
@@ -521,7 +533,20 @@ namespace VectorDrawForms
         /// <param name="e"></param>
         private void ViewPortMouseMove(object sender, MouseEventArgs e)
         {
-            HandleDragging(e);
+            //Update coordinates
+            coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
+
+            // Handle dragging
+            if (dialogProcessor.IsDragging)
+            {
+                HandleDragging(e);
+            }
+            else if (isDrawingPerformed)
+            {
+                //Update the drawn shape
+                currentDrawnShape.Rectangle = Utilities.CalculateRectangle(startPoint, e.Location);
+                RedrawCanvas();
+            }
         }
 
         private void ViewPortMouseUp(object sender, MouseEventArgs e)
@@ -534,15 +559,36 @@ namespace VectorDrawForms
             }
             else if (rectangleToolButton.Checked)
             {
+                DisposeShapePreview();
                 dialogProcessor.DrawRectangleShape(startPoint, endPoint);
+                startPoint = Point.Empty;
                 RedrawCanvas();
             }
             else if (elipseToolButton.Checked)
             {
+                DisposeShapePreview();
                 dialogProcessor.DrawEllipseShape(startPoint, endPoint);
+                startPoint = Point.Empty;
                 RedrawCanvas();
             }
-            startPoint = PointF.Empty;
+        }
+
+        /// <summary>
+        /// Handles the disposal of the preview shape draw and returns the form to its normal state
+        /// </summary>
+        private void DisposeShapePreview()
+        {
+            try
+            {
+                isDrawingPerformed = false;
+                dialogProcessor.ShapeList.Remove(currentDrawnShape);
+                currentDrawnShape = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unexpexted error has occured while disposing shape preview. Exception message: {ex.Message}.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void enableDisableDarkModeSettingsButton_Click(object sender, EventArgs e)

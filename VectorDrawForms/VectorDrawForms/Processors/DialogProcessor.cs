@@ -326,13 +326,14 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public void DrawRectangleShape(PointF startPoint, PointF endPoint)
+        public IShape DrawRectangleShape(PointF startPoint, PointF endPoint)
         {
-            RectangleShape rect = new RectangleShape(CalculateRectangle(startPoint, endPoint));
+            RectangleShape rect = new RectangleShape(Utilities.CalculateRectangle(startPoint, endPoint));
             rect.FillColor = Color.Transparent;
             ShapeList.Add(rect);
             selections.Clear();
             selections.Add(rect);
+            return rect;
         }
 
         /// <summary>
@@ -341,31 +342,14 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public void DrawEllipseShape(PointF startPoint, PointF endPoint)
+        public IShape DrawEllipseShape(PointF startPoint, PointF endPoint)
         {
-            EllipseShape elipse = new EllipseShape(CalculateRectangle(startPoint, endPoint));
+            EllipseShape elipse = new EllipseShape(Utilities.CalculateRectangle(startPoint, endPoint));
             elipse.FillColor = Color.Transparent;
             ShapeList.Add(elipse);
             selections.Clear();
             selections.Add(elipse);
-        }
-
-        private RectangleF CalculateRectangle(PointF startPoint, PointF endPoint)
-        {
-            //starting point
-            float x = startPoint.X;
-            float y = startPoint.Y;
-
-            //end point
-            float x1 = endPoint.X;
-            float y1 = endPoint.Y;
-
-            //calculate rectangle width
-            float width = Math.Abs(x - x1);
-
-            //calculate rectangle height
-            float height = Math.Abs(y - y1);
-            return new RectangleF(x, y, width, height);
+            return elipse;
         }
         #endregion
     }

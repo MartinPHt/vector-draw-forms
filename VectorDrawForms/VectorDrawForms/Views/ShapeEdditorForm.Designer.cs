@@ -33,26 +33,26 @@
             this.errorLabel = new System.Windows.Forms.Label();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.sizeGroupBox = new System.Windows.Forms.GroupBox();
             this.borderThicknessTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.heightTextBox = new System.Windows.Forms.TextBox();
             this.widthTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.colorGroupBox = new System.Windows.Forms.GroupBox();
             this.fillColorLabel = new System.Windows.Forms.Label();
             this.strokeColorLabel = new System.Windows.Forms.Label();
             this.fillColorButton = new System.Windows.Forms.Button();
             this.strokeColorButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.rotateGroupBox = new System.Windows.Forms.GroupBox();
             this.angleTextBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.sizeGroupBox.SuspendLayout();
+            this.colorGroupBox.SuspendLayout();
+            this.rotateGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -104,20 +104,20 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Width:";
             // 
-            // groupBox1
+            // sizeGroupBox
             // 
-            this.groupBox1.Controls.Add(this.borderThicknessTextBox);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.heightTextBox);
-            this.groupBox1.Controls.Add(this.widthTextBox);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Location = new System.Drawing.Point(25, 57);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(230, 132);
-            this.groupBox1.TabIndex = 6;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Size";
+            this.sizeGroupBox.Controls.Add(this.borderThicknessTextBox);
+            this.sizeGroupBox.Controls.Add(this.label6);
+            this.sizeGroupBox.Controls.Add(this.heightTextBox);
+            this.sizeGroupBox.Controls.Add(this.widthTextBox);
+            this.sizeGroupBox.Controls.Add(this.label3);
+            this.sizeGroupBox.Controls.Add(this.label2);
+            this.sizeGroupBox.Location = new System.Drawing.Point(25, 57);
+            this.sizeGroupBox.Name = "sizeGroupBox";
+            this.sizeGroupBox.Size = new System.Drawing.Size(230, 132);
+            this.sizeGroupBox.TabIndex = 6;
+            this.sizeGroupBox.TabStop = false;
+            this.sizeGroupBox.Text = "Size";
             // 
             // borderThicknessTextBox
             // 
@@ -160,20 +160,20 @@
             this.label3.TabIndex = 6;
             this.label3.Text = "Height:";
             // 
-            // groupBox2
+            // colorGroupBox
             // 
-            this.groupBox2.Controls.Add(this.fillColorLabel);
-            this.groupBox2.Controls.Add(this.strokeColorLabel);
-            this.groupBox2.Controls.Add(this.fillColorButton);
-            this.groupBox2.Controls.Add(this.strokeColorButton);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(25, 204);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(230, 97);
-            this.groupBox2.TabIndex = 7;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Color";
+            this.colorGroupBox.Controls.Add(this.fillColorLabel);
+            this.colorGroupBox.Controls.Add(this.strokeColorLabel);
+            this.colorGroupBox.Controls.Add(this.fillColorButton);
+            this.colorGroupBox.Controls.Add(this.strokeColorButton);
+            this.colorGroupBox.Controls.Add(this.label5);
+            this.colorGroupBox.Controls.Add(this.label4);
+            this.colorGroupBox.Location = new System.Drawing.Point(25, 204);
+            this.colorGroupBox.Name = "colorGroupBox";
+            this.colorGroupBox.Size = new System.Drawing.Size(230, 97);
+            this.colorGroupBox.TabIndex = 7;
+            this.colorGroupBox.TabStop = false;
+            this.colorGroupBox.Text = "Color";
             // 
             // fillColorLabel
             // 
@@ -229,16 +229,16 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Stroke Color:";
             // 
-            // groupBox3
+            // rotateGroupBox
             // 
-            this.groupBox3.Controls.Add(this.angleTextBox);
-            this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Location = new System.Drawing.Point(278, 57);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(181, 129);
-            this.groupBox3.TabIndex = 15;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Rotate";
+            this.rotateGroupBox.Controls.Add(this.angleTextBox);
+            this.rotateGroupBox.Controls.Add(this.label8);
+            this.rotateGroupBox.Location = new System.Drawing.Point(278, 57);
+            this.rotateGroupBox.Name = "rotateGroupBox";
+            this.rotateGroupBox.Size = new System.Drawing.Size(181, 129);
+            this.rotateGroupBox.TabIndex = 15;
+            this.rotateGroupBox.TabStop = false;
+            this.rotateGroupBox.Text = "Rotate";
             // 
             // angleTextBox
             // 
@@ -263,9 +263,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(482, 367);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.rotateGroupBox);
+            this.Controls.Add(this.colorGroupBox);
+            this.Controls.Add(this.sizeGroupBox);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.buttonProceed);
@@ -273,12 +273,12 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ShapeEditorForm";
             this.Text = "VectorDraw - Shape Editor";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.sizeGroupBox.ResumeLayout(false);
+            this.sizeGroupBox.PerformLayout();
+            this.colorGroupBox.ResumeLayout(false);
+            this.colorGroupBox.PerformLayout();
+            this.rotateGroupBox.ResumeLayout(false);
+            this.rotateGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -291,11 +291,11 @@
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox sizeGroupBox;
         private System.Windows.Forms.TextBox heightTextBox;
         private System.Windows.Forms.TextBox widthTextBox;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox colorGroupBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button fillColorButton;
@@ -304,7 +304,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label fillColorLabel;
         private System.Windows.Forms.Label strokeColorLabel;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox rotateGroupBox;
         private System.Windows.Forms.TextBox angleTextBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ColorDialog colorDialog;

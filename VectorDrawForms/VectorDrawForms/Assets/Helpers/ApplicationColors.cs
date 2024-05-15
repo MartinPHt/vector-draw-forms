@@ -12,11 +12,11 @@ namespace VectorDrawForms
         /// <summary>
         /// The main User Interface light color
         /// </summary>
-        public static Color MainUIDark { get { return Color.FromArgb(47, 54, 64); } }
+        public static Color MainUIDark { get { return Color.FromArgb(50, 50, 50); } }
 
         /// <summary>
         /// The main User Interface light color
         /// </summary>
-        public static Color SecondaryUIDark { get { return Color.FromArgb(83, 90, 99); } }
+        public static Color SecondaryUIDark { get { return Color.FromArgb(85, 85, 85); } }
     }
 }
