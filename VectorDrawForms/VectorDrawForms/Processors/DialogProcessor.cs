@@ -138,6 +138,7 @@ namespace VectorDrawForms.Processors
         /// <param name="shape"></param>
         private void MoveShape(IShape shape, PointF p)
         {
+            //Unhandled exception
             if (shape is GroupShape)
             {
                 var group = (GroupShape)shape;
@@ -317,6 +318,54 @@ namespace VectorDrawForms.Processors
 
             //Add selections to copy buffer
             coppiedSelection.AddRange(selections);
+        }
+
+        /// <summary>
+        /// Draws <see cref="RectangleShape"/> based on the given startPoint and endPoint, 
+        /// clears the selections and selects the nely created rectangle.
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        public void DrawRectangleShape(PointF startPoint, PointF endPoint)
+        {
+            RectangleShape rect = new RectangleShape(CalculateRectangle(startPoint, endPoint));
+            rect.FillColor = Color.Transparent;
+            ShapeList.Add(rect);
+            selections.Clear();
+            selections.Add(rect);
+        }
+
+        /// <summary>
+        /// Draws <see cref="EllipseShape"/> based on the given startPoint and endPoint, 
+        /// clears the selections and selects the nely created rectangle.
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        public void DrawEllipseShape(PointF startPoint, PointF endPoint)
+        {
+            EllipseShape elipse = new EllipseShape(CalculateRectangle(startPoint, endPoint));
+            elipse.FillColor = Color.Transparent;
+            ShapeList.Add(elipse);
+            selections.Clear();
+            selections.Add(elipse);
+        }
+
+        private RectangleF CalculateRectangle(PointF startPoint, PointF endPoint)
+        {
+            //starting point
+            float x = startPoint.X;
+            float y = startPoint.Y;
+
+            //end point
+            float x1 = endPoint.X;
+            float y1 = endPoint.Y;
+
+            //calculate rectangle width
+            float width = Math.Abs(x - x1);
+
+            //calculate rectangle height
+            float height = Math.Abs(y - y1);
+            return new RectangleF(x, y, width, height);
         }
         #endregion
     }

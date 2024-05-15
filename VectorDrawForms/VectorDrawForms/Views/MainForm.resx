@@ -284,7 +284,7 @@
         0NmzZ7fFue2Wf0AIIYQQQgghRH/uuuv/AKdHWrnQ/aYvAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="drawRectangleButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="rectangleToolButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAY5SURBVHhe7dw9a56HGYZhywYZQouXbsGWTeshMTQ2GJO4

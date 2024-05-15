@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using VectorDrawForms.Models;
 using VectorDrawForms.Processors;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
 
 namespace VectorDrawForms
 {
@@ -20,6 +21,8 @@ namespace VectorDrawForms
         /// </summary>
         private DialogProcessor dialogProcessor = new DialogProcessor();
         private ToolStripButton selectedToolStripButton;
+
+        private PointF startPoint;
         #endregion
 
         #region Constructor
@@ -303,6 +306,12 @@ namespace VectorDrawForms
             selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
         }
 
+        private void ClearSelections()
+        {
+            dialogProcessor.Selections.Clear();
+            selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
+        }
+
         /// <summary>
         /// Prepares the state of the <see cref="MainForm"/> on initialization
         /// </summary>
@@ -334,7 +343,7 @@ namespace VectorDrawForms
 
                     //Change images to the opposite color
                     selectionToolButton.Image = Properties.Resources.PointerDark;
-                    drawRectangleButton.Image = Properties.Resources.RectangleDark;
+                    rectangleToolButton.Image = Properties.Resources.RectangleDark;
                     elipseToolButton.Image = Properties.Resources.ElipseDark;
                     editToolButton.Image = Properties.Resources.BrushDark;
                     groupToolButton.Image = Properties.Resources.GroupDark;
@@ -356,7 +365,7 @@ namespace VectorDrawForms
 
                     //Change images to the opposite color
                     selectionToolButton.Image = Properties.Resources.PointerLight;
-                    drawRectangleButton.Image = Properties.Resources.RectangleLight;
+                    rectangleToolButton.Image = Properties.Resources.RectangleLight;
                     elipseToolButton.Image = Properties.Resources.ElipseLight;
                     editToolButton.Image = Properties.Resources.BrushLight;
                     groupToolButton.Image = Properties.Resources.GroupLight;
@@ -447,15 +456,6 @@ namespace VectorDrawForms
             Close();
         }
 
-        private void drawRectangleButton_Click(object sender, EventArgs e)
-        {
-            dialogProcessor.AddRandomRectangle();
-            RedrawCanvas();
-
-            //Go back to Selection Tool
-            selectionToolButton.PerformClick();
-        }
-
         private void viewPort_Load(object sender, EventArgs e)
         {
 
@@ -473,17 +473,17 @@ namespace VectorDrawForms
 
         private void ViewPortMouseDown(object sender, MouseEventArgs e)
         {
+            // Do nothing if the pressed button is not the left mouse button
             if (e.Button != MouseButtons.Left)
-            {
-                dialogProcessor.Selections.Clear();
                 return;
-            }
+
+            //Clear selections if selected shape is null
+            IShape selectedShape = dialogProcessor.ContainsPoint(e.Location);
+            if (selectedShape == null)
+                ClearSelections();
 
             if (selectionToolButton.Checked)
             {
-                IShape selectedShape = dialogProcessor.ContainsPoint(e.Location);
-
-                //Check if the new selection is null
                 if (selectedShape != null)
                 {
                     //Check if the left mouse key is pressed and if ctrl was pressed when the mouse click occured
@@ -496,37 +496,21 @@ namespace VectorDrawForms
                     else
                     {
                         //Clear the selection since ctrl wasn't pressed.
-                        dialogProcessor.Selections.Clear();
+                        ClearSelections();
 
                         //Add the selected shape if there is any
                         dialogProcessor.Selections.Add(selectedShape);
                     }
-                }
-                else
-                {
-                    //Clear selection since selectedShape is null
-                    dialogProcessor.Selections.Clear();
-                }
 
-                //Indicate dragging and update last location in dialog processor
-                dialogProcessor.IsDragging = true;
-                dialogProcessor.LastLocation = e.Location;
-                RedrawCanvas();
+                    //Indicate dragging and update last location in dialog processor
+                    dialogProcessor.IsDragging = true;
+                    dialogProcessor.LastLocation = e.Location;
+                    RedrawCanvas();
+                }
             }
-            else if (elipseToolButton.Checked)
+            else if (rectangleToolButton.Checked || elipseToolButton.Checked)
             {
-                //if (actiiveDrawing)
-                //{
-                //    switch (drawIndex)
-                //    {
-                //        case 0: // point
-                //            points.Add(new Models.Point(currentPossition));
-                //            break;
-                //        default:
-                //            break;
-                //    }
-                //    viewPort.Invalidate();
-                //}
+                startPoint = e.Location;
             }
         }
 
@@ -542,7 +526,23 @@ namespace VectorDrawForms
 
         private void ViewPortMouseUp(object sender, MouseEventArgs e)
         {
-            dialogProcessor.IsDragging = false;
+            var endPoint = e.Location;
+
+            if (selectionToolButton.Checked)
+            {
+                dialogProcessor.IsDragging = false;
+            }
+            else if (rectangleToolButton.Checked)
+            {
+                dialogProcessor.DrawRectangleShape(startPoint, endPoint);
+                RedrawCanvas();
+            }
+            else if (elipseToolButton.Checked)
+            {
+                dialogProcessor.DrawEllipseShape(startPoint, endPoint);
+                RedrawCanvas();
+            }
+            startPoint = PointF.Empty;
         }
 
         private void enableDisableDarkModeSettingsButton_Click(object sender, EventArgs e)
@@ -574,15 +574,6 @@ namespace VectorDrawForms
                 canvas.Cursor = Cursors.Default;
             else
                 canvas.Cursor = Cursors.Cross;
-        }
-
-        private void elipseToolButton_Click(object sender, EventArgs e)
-        {
-            dialogProcessor.AddRandomElipse();
-            RedrawCanvas();
-
-            //Go back to Selection Tool
-            selectionToolButton.PerformClick();
         }
 
         private void paintToolButton_Click(object sender, EventArgs e)

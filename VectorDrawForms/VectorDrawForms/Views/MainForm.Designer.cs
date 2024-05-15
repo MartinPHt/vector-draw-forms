@@ -41,6 +41,8 @@
             this.groupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ungroupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCanvasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableDisableDarkModeSettingsButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,7 +50,7 @@
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
             this.selectionToolButton = new System.Windows.Forms.ToolStripButton();
-            this.drawRectangleButton = new System.Windows.Forms.ToolStripButton();
+            this.rectangleToolButton = new System.Windows.Forms.ToolStripButton();
             this.elipseToolButton = new System.Windows.Forms.ToolStripButton();
             this.editToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
@@ -58,8 +60,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.selectedShapesCountLabel = new System.Windows.Forms.Label();
             this.canvas = new VectorDrawForms.Views.DoubleBufferedPanel();
-            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -93,35 +93,35 @@
             // newFileMenuButton
             // 
             this.newFileMenuButton.Name = "newFileMenuButton";
-            this.newFileMenuButton.Size = new System.Drawing.Size(180, 22);
+            this.newFileMenuButton.Size = new System.Drawing.Size(112, 22);
             this.newFileMenuButton.Text = "New";
             this.newFileMenuButton.Click += new System.EventHandler(this.newFileMenuButton_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.saveAsToolStripMenuItem.Text = "Save as";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -167,6 +167,20 @@
             this.clearCanvasToolStripMenuItem.Text = "Clear Canvas";
             this.clearCanvasToolStripMenuItem.Click += new System.EventHandler(this.clearCanvasToolStripMenuItem_Click);
             // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.copyToolStripMenuItem.Text = "Copy                               Ctrl + C";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.pasteToolStripMenuItem.Text = "Paste                               Ctrl + V";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
             // imageToolStripMenuItem
             // 
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
@@ -208,7 +222,7 @@
             this.toolMenu.Dock = System.Windows.Forms.DockStyle.Left;
             this.toolMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectionToolButton,
-            this.drawRectangleButton,
+            this.rectangleToolButton,
             this.elipseToolButton,
             this.editToolButton,
             this.groupToolButton,
@@ -232,17 +246,17 @@
             this.selectionToolButton.Text = "Selection Tool";
             this.selectionToolButton.ToolTipText = "Selection Tool";
             // 
-            // drawRectangleButton
+            // rectangleToolButton
             // 
-            this.drawRectangleButton.AutoSize = false;
-            this.drawRectangleButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.drawRectangleButton.Image = ((System.Drawing.Image)(resources.GetObject("drawRectangleButton.Image")));
-            this.drawRectangleButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.drawRectangleButton.Name = "drawRectangleButton";
-            this.drawRectangleButton.Size = new System.Drawing.Size(30, 30);
-            this.drawRectangleButton.Text = "Rectangle Tool";
-            this.drawRectangleButton.ToolTipText = "Rectangle Tool";
-            this.drawRectangleButton.Click += new System.EventHandler(this.drawRectangleButton_Click);
+            this.rectangleToolButton.AutoSize = false;
+            this.rectangleToolButton.CheckOnClick = true;
+            this.rectangleToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.rectangleToolButton.Image = ((System.Drawing.Image)(resources.GetObject("rectangleToolButton.Image")));
+            this.rectangleToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.rectangleToolButton.Name = "rectangleToolButton";
+            this.rectangleToolButton.Size = new System.Drawing.Size(30, 30);
+            this.rectangleToolButton.Text = "Rectangle Tool";
+            this.rectangleToolButton.ToolTipText = "Rectangle Tool";
             // 
             // elipseToolButton
             // 
@@ -254,7 +268,6 @@
             this.elipseToolButton.Name = "elipseToolButton";
             this.elipseToolButton.Size = new System.Drawing.Size(30, 30);
             this.elipseToolButton.Text = "Elipse Tool";
-            this.elipseToolButton.Click += new System.EventHandler(this.elipseToolButton_Click);
             // 
             // editToolButton
             // 
@@ -334,20 +347,6 @@
             this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseMove);
             this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseUp);
             // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.copyToolStripMenuItem.Text = "Copy                               Ctrl + C";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
-            // 
-            // pasteToolStripMenuItem
-            // 
-            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.pasteToolStripMenuItem.Text = "Paste                               Ctrl + V";
-            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -382,7 +381,7 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStrip toolMenu;
-        private System.Windows.Forms.ToolStripButton drawRectangleButton;
+        private System.Windows.Forms.ToolStripButton rectangleToolButton;
         private System.Windows.Forms.ToolStripButton selectionToolButton;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
