@@ -290,7 +290,7 @@
             this.triangleToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.triangleToolButton.Name = "triangleToolButton";
             this.triangleToolButton.Size = new System.Drawing.Size(30, 30);
-            this.triangleToolButton.Text = "toolStripButton1";
+            this.triangleToolButton.Text = "Triangle Tool";
             // 
             // elipseToolButton
             // 
