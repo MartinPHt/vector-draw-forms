@@ -23,9 +23,9 @@ namespace VectorDrawForms.Models
         /// <summary>
         /// Containst the primitives that are included in the <see cref="GroupShape"/>.
         /// </summary>
-        public List<IShape> SubShapes 
-        { 
-            get {  return subShapes; }
+        public List<IShape> SubShapes
+        {
+            get { return subShapes; }
             set { subShapes = value; }
         }
 
@@ -35,7 +35,7 @@ namespace VectorDrawForms.Models
             set
             {
                 foreach (var shape in subShapes)
-                    shape.FillColor = value;     
+                    shape.FillColor = value;
             }
         }
 
@@ -45,7 +45,7 @@ namespace VectorDrawForms.Models
             set
             {
                 foreach (var shape in subShapes)
-                    shape.StrokeColor = value;     
+                    shape.StrokeColor = value;
             }
         }
 
@@ -55,7 +55,7 @@ namespace VectorDrawForms.Models
             set
             {
                 foreach (var shape in subShapes)
-                    shape.StrokeThickness = value;     
+                    shape.StrokeThickness = value;
             }
         }
         #endregion
@@ -77,6 +77,12 @@ namespace VectorDrawForms.Models
                 {
                     var ellipse = shape as EllipseShape;
                     if (ellipse.Contains(point))
+                        return true;
+                }
+                else if (shape is DotShape)
+                {
+                    var dot = shape as DotShape;
+                    if (dot.Contains(point))
                         return true;
                 }
                 else if (shape is GroupShape)
@@ -107,6 +113,11 @@ namespace VectorDrawForms.Models
                 {
                     var ellipse = (EllipseShape)shape;
                     ellipse.DrawSelf(grfx);
+                }
+                else if (shape is DotShape)
+                {
+                    var dot = (DotShape)shape;
+                    dot.DrawSelf(grfx);
                 }
                 else if (shape is GroupShape)
                 {

@@ -6,7 +6,8 @@ namespace VectorDrawForms.Processors
 {
     public interface IDialogProcessor : IDisplayProcessor
     {
-        List<IShape> Selections { get; set; }
+        List<IShape> Selections { get; }
+        List<IShape> CoppiedSelection { get; }
         bool IsDragging { get; set; }
         PointF LastLocation { get; set; }
         IShape ContainsPoint(PointF point);

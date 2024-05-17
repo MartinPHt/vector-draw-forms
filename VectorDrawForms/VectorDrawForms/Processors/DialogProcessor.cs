@@ -28,14 +28,14 @@ namespace VectorDrawForms.Processors
         public List<IShape> Selections
         {
             get { return selections; }
-            set { selections = value; }
+            private set { selections = value; }
         }
 
         private List<IShape> coppiedSelection = new List<IShape>();
         public List<IShape> CoppiedSelection
         {
             get { return coppiedSelection; }
-            set { coppiedSelection = value; }
+            private set { coppiedSelection = value; }
         }
 
 
@@ -80,26 +80,6 @@ namespace VectorDrawForms.Processors
 
             //return new Rectangle
             return new Rectangle(x, y, width, height);
-        }
-
-        /// <summary>
-        /// Adds a rectangle primitive to an arbitrary location on the client area.
-        /// </summary>
-        public void AddRandomRectangle()
-        {
-            RectangleShape rect = new RectangleShape(GenerateRandomRectangleForShape());
-            rect.FillColor = Color.Transparent;
-            ShapeList.Add(rect);
-        }
-
-        /// <summary>
-        /// Adds an elipse primitive to an arbitrary location on the client area.
-        /// </summary>
-        public void AddRandomElipse()
-        {
-            EllipseShape elipse = new EllipseShape(GenerateRandomRectangleForShape());
-            elipse.FillColor = Color.Transparent;
-            ShapeList.Add(elipse);
         }
 
         /// <summary>
@@ -287,7 +267,7 @@ namespace VectorDrawForms.Processors
             if (coppiedSelection.Count == 1)
             {
                 IShape shape = coppiedSelection[0].DeepClone();
-                shape.Rectangle = new RectangleF(0, 0, shape.Rectangle.Width, shape.Rectangle.Height);
+                shape.Location = new PointF(0, 0);
                 ShapeList.Add(shape);
             }
             else
@@ -302,13 +282,14 @@ namespace VectorDrawForms.Processors
                 foreach (var shape in coppiedSelection)
                     group.SubShapes.Add(shape.DeepClone());
 
+                MoveShape(group, new PointF(group.Rectangle.X - 10, group.Rectangle.Y - 10));
+
                 //Add to shape list
-                ShapeList.Add(group);
+                ShapeList.AddRange(group.SubShapes);
             }
 
             //Clear selections and coppied selections
             selections.Clear();
-            coppiedSelection.Clear();
         }
 
         public void CopySelection()
@@ -322,7 +303,7 @@ namespace VectorDrawForms.Processors
 
         /// <summary>
         /// Draws <see cref="RectangleShape"/> based on the given startPoint and endPoint, 
-        /// clears the selections and selects the nely created rectangle.
+        /// clears the selections and selects the nelwy created rectangle.
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
@@ -338,7 +319,7 @@ namespace VectorDrawForms.Processors
 
         /// <summary>
         /// Draws <see cref="EllipseShape"/> based on the given startPoint and endPoint, 
-        /// clears the selections and selects the nely created rectangle.
+        /// clears the selections and selects the newly created rectangle.
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
@@ -350,6 +331,22 @@ namespace VectorDrawForms.Processors
             selections.Clear();
             selections.Add(elipse);
             return elipse;
+        }
+
+        /// <summary>
+        /// Draws <see cref="DotShape"/> on the given point, 
+        /// clears the selections and selects the newly created rectangle.
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        public IShape DrawDotShape(PointF point)
+        {
+            DotShape dot = new DotShape(point.X, point.Y);
+            dot.FillColor = ApplicationColors.ShapeStroke;
+            ShapeList.Add(dot);
+            selections.Clear();
+            selections.Add(dot);
+            return dot;
         }
         #endregion
     }

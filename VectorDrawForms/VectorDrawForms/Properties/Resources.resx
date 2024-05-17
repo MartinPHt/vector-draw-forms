@@ -136,6 +136,12 @@
   <data name="CurvedRectangleLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\Images\CurvedRectangleLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DotDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\DotDark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DotLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\DotLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ElipseDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\Images\ElipseDark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

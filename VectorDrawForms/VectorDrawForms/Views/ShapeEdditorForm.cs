@@ -9,13 +9,13 @@ namespace VectorDrawForms
     {
         #region Constructors
         public ShapeEditorForm(
-            float shapeWidth, 
-            float shapeHeight, 
+            float shapeWidth,
+            float shapeHeight,
             float rotationAngle,
-            float strokeThickness, 
+            float strokeThickness,
             Color strokeColor,
             Color fillColor
-            ) 
+            )
             : this()
         {
             ShapeWidth = shapeWidth;
@@ -26,11 +26,29 @@ namespace VectorDrawForms
             FillColor = fillColor;
         }
 
+        public ShapeEditorForm(
+            float strokeThickness,
+            Color strokeColor,
+            Color fillColor
+            )
+            : this()
+        {
+            widthTextBox.Text = "N/A";
+            widthTextBox.Enabled = false;
+            heightTextBox.Text = "N/A";
+            heightTextBox.Enabled = false;
+            angleTextBox.Text = "N/A";
+            angleTextBox.Enabled = false;
+        }
+
         public ShapeEditorForm()
         {
             InitializeComponent();
             ChangeUIMode("UIMode");
             CenterToScreen();
+
+            //Set defaukt stroke color
+            StrokeColor = Color.Gray;
         }
         #endregion
 
@@ -49,8 +67,8 @@ namespace VectorDrawForms
 
         public float StrokeThickness
         {
-            get { return Convert.ToSingle(borderThicknessTextBox.Text); }
-            set { borderThicknessTextBox.Text = value.ToString(); }
+            get { return Convert.ToSingle(strokeThicknessTextBox.Text); }
+            set { strokeThicknessTextBox.Text = value.ToString(); }
         }
 
         public float RotationAngle
@@ -63,8 +81,8 @@ namespace VectorDrawForms
         public Color StrokeColor
         {
             get { return strokeColor; }
-            set 
-            { 
+            set
+            {
                 strokeColor = value;
                 strokeColorLabel.Text = value.ToString();
                 strokeColorButton.BackColor = value;
@@ -118,6 +136,26 @@ namespace VectorDrawForms
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
+            string errorMessage = null;
+
+            if (widthTextBox.Enabled && !float.TryParse(widthTextBox.Text, out _))
+                errorMessage = "You have to provide a proper floating point value for width to proceed.";
+
+            else if (heightTextBox.Enabled && !float.TryParse(heightTextBox.Text, out _))
+                errorMessage = "You have to provide a proper floating point value for height to proceed.";
+
+            else if (strokeThicknessTextBox.Enabled && !float.TryParse(strokeThicknessTextBox.Text, out _))
+                errorMessage = "You have to provide a proper floating point value for stroke thickness";
+
+            else if(angleTextBox.Enabled && !float.TryParse(angleTextBox.Text, out _))
+                errorMessage = "You have to provide a proper floating point value for angle.";
+
+            if (errorMessage != null)
+            {
+                MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             Close();
             DialogResult = DialogResult.OK;
         }

@@ -346,6 +346,7 @@ namespace VectorDrawForms
                     editToolButton.Image = Properties.Resources.BrushDark;
                     groupToolButton.Image = Properties.Resources.GroupDark;
                     removeShapeToolButton.Image = Properties.Resources.BinDark;
+                    dotToolButton.Image = Properties.Resources.DotDark;
                 }
                 else
                 {
@@ -368,6 +369,7 @@ namespace VectorDrawForms
                     editToolButton.Image = Properties.Resources.BrushLight;
                     groupToolButton.Image = Properties.Resources.GroupLight;
                     removeShapeToolButton.Image = Properties.Resources.BinLight;
+                    dotToolButton.Image = Properties.Resources.DotLight;
                 }
             }
             catch (Exception ex)
@@ -441,6 +443,100 @@ namespace VectorDrawForms
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        /// <summary>
+        /// Handles the disposal of the preview shape draw and returns the form to its normal state
+        /// </summary>
+        private void DisposeShapePreview()
+        {
+            try
+            {
+                isDrawingPerformed = false;
+                dialogProcessor.ShapeList.Remove(currentDrawnShape);
+                currentDrawnShape = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unexpexted error has occured while disposing shape preview. Exception message: {ex.Message}.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Opens <see cref="ShapeEditorForm"/> and handles the edit of the shape and redrawing of canvas
+        /// </summary>
+        private void HandleEditShape()
+        {
+            try
+            {
+                if (dialogProcessor.Selections == null || dialogProcessor.Selections.Count <= 0)
+                {
+                    MessageBox.Show("To open Edit Tool you have to select at least shape with the Selection Tool first.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (dialogProcessor.Selections.OfType<GroupShape>().Count() <= 0 && dialogProcessor.Selections.OfType<DotShape>().Count() <= 0)
+                {
+                    if (dialogProcessor.Selections.Count == 1)
+                    {
+                        var firstShape = dialogProcessor.Selections[0];
+                        var dialog
+                            = new ShapeEditorForm(firstShape.Width, firstShape.Height, firstShape.RotationAngle, firstShape.StrokeThickness, firstShape.StrokeColor, firstShape.FillColor);
+
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (var shape in dialogProcessor.Selections)
+                            {
+                                shape.Width = dialog.ShapeWidth;
+                                shape.Height = dialog.ShapeHeight;
+                                shape.StrokeThickness = dialog.StrokeThickness;
+                                shape.StrokeColor = dialog.StrokeColor;
+                                shape.FillColor = dialog.FillColor;
+                                shape.RotationAngle = dialog.RotationAngle;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var dialog = new ShapeEditorForm();
+
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (var shape in dialogProcessor.Selections)
+                            {
+                                shape.Width = dialog.ShapeWidth;
+                                shape.Height = dialog.ShapeHeight;
+                                shape.StrokeThickness = dialog.StrokeThickness;
+                                shape.StrokeColor = dialog.StrokeColor;
+                                shape.FillColor = dialog.FillColor;
+                                shape.RotationAngle = dialog.RotationAngle;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var firstShape = dialogProcessor.Selections[0];
+                    var dialog
+                        = new ShapeEditorForm(firstShape.StrokeThickness, firstShape.StrokeColor, firstShape.FillColor);
+
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                        UpdateMultipleShapes(dialogProcessor.Selections, dialog.StrokeColor, dialog.FillColor, dialog.StrokeThickness);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error has occured during Edit Tool's execution. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                //Go back to Selection Tool
+                selectionToolButton.PerformClick();
+                RedrawCanvas();
+            }
+        }
         #endregion 
 
         #region Event Handling Methods (Functionality, Buttons)
@@ -452,11 +548,6 @@ namespace VectorDrawForms
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void viewPort_Load(object sender, EventArgs e)
-        {
-
         }
 
         /// <summary>
@@ -571,23 +662,12 @@ namespace VectorDrawForms
                 startPoint = Point.Empty;
                 RedrawCanvas();
             }
-        }
-
-        /// <summary>
-        /// Handles the disposal of the preview shape draw and returns the form to its normal state
-        /// </summary>
-        private void DisposeShapePreview()
-        {
-            try
+            else if (dotToolButton.Checked)
             {
-                isDrawingPerformed = false;
-                dialogProcessor.ShapeList.Remove(currentDrawnShape);
-                currentDrawnShape = null;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Unexpexted error has occured while disposing shape preview. Exception message: {ex.Message}.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DisposeShapePreview();
+                dialogProcessor.DrawDotShape(endPoint);
+                startPoint = Point.Empty;
+                RedrawCanvas();
             }
         }
 
@@ -622,45 +702,23 @@ namespace VectorDrawForms
                 canvas.Cursor = Cursors.Cross;
         }
 
-        private void paintToolButton_Click(object sender, EventArgs e)
+        private void editToolButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (
-                    dialogProcessor.Selections == null
-                    || dialogProcessor.Selections.Count != 1
-                    || dialogProcessor.Selections.OfType<GroupShape>().Count() != 0
-                    )
-                {
-                    MessageBox.Show("To open Edit Tool you have to select only one non group shape with the Selection Tool first.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+            HandleEditShape();
+        }
 
-                var shape = dialogProcessor.Selections[0];
-                var dialog
-                    = new ShapeEditorForm(shape.Width, shape.Height, shape.RotationAngle, shape.StrokeThickness, shape.StrokeColor, shape.FillColor);
-
-                if (dialog.ShowDialog() == DialogResult.OK)
+        private void UpdateMultipleShapes(List<IShape> shapes, Color strokeColor, Color fillColor, float strokeThickness)
+        {
+            foreach (var shape in shapes)
+            {
+                shape.StrokeColor = strokeColor;
+                shape.FillColor = fillColor;
+                shape.StrokeThickness = strokeThickness;
+                if (shape is GroupShape)
                 {
-                    shape.Width = dialog.ShapeWidth;
-                    shape.Height = dialog.ShapeHeight;
-                    shape.StrokeThickness = dialog.StrokeThickness;
-                    shape.StrokeColor = dialog.StrokeColor;
-                    shape.FillColor = dialog.FillColor;
-                    shape.RotationAngle = dialog.RotationAngle;
+                    var group = shape as GroupShape;
+                    UpdateMultipleShapes(group.SubShapes, strokeColor, fillColor, strokeThickness);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error has occured during Edit Tool's execution. Exception message:" + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            finally
-            {
-                //Go back to Selection Tool
-                selectionToolButton.PerformClick();
-                RedrawCanvas();
             }
         }
 
@@ -809,6 +867,10 @@ namespace VectorDrawForms
             {
                 UngroupSelection();
             }
+            else if (!e.Control && e.KeyCode == Keys.E)
+            {
+                HandleEditShape();
+            }
             else if (!e.Control && e.KeyCode == Keys.Delete)
             {
                 HandleDeleteShape();
@@ -854,7 +916,39 @@ namespace VectorDrawForms
         {
             HandlePasteShape();
         }
+
+        private void editSelectionCtrlEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleEditShape();
+        }
         #endregion
+
+        private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
+        {
+            //Handle Edit and Delete
+            if (dialogProcessor.Selections.Count > 0)
+            {
+                copyToolStripMenuItem.Enabled = true;
+                editSelectionToolStripMenuItem.Enabled = true;
+                deleteSelectionToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                copyToolStripMenuItem.Enabled = false;
+                editSelectionToolStripMenuItem.Enabled = false;
+                deleteSelectionToolStripMenuItem.Enabled = false;
+            }
+
+            if (dialogProcessor.CoppiedSelection.Count > 0)
+                pasteToolStripMenuItem.Enabled = true;
+            else
+                pasteToolStripMenuItem.Enabled= false;
+        }
+
+        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleDeleteShape();
+        }
     }
 
     internal enum UIMode

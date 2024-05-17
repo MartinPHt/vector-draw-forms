@@ -123,6 +123,26 @@ namespace VectorDrawForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap DotDark {
+            get {
+                object obj = ResourceManager.GetObject("DotDark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DotLight {
+            get {
+                object obj = ResourceManager.GetObject("DotLight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ElipseDark {
             get {
                 object obj = ResourceManager.GetObject("ElipseDark", resourceCulture);

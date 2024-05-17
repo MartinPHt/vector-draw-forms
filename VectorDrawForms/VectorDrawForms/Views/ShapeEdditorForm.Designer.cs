@@ -34,7 +34,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.sizeGroupBox = new System.Windows.Forms.GroupBox();
-            this.borderThicknessTextBox = new System.Windows.Forms.TextBox();
+            this.strokeThicknessTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.heightTextBox = new System.Windows.Forms.TextBox();
             this.widthTextBox = new System.Windows.Forms.TextBox();
@@ -106,7 +106,7 @@
             // 
             // sizeGroupBox
             // 
-            this.sizeGroupBox.Controls.Add(this.borderThicknessTextBox);
+            this.sizeGroupBox.Controls.Add(this.strokeThicknessTextBox);
             this.sizeGroupBox.Controls.Add(this.label6);
             this.sizeGroupBox.Controls.Add(this.heightTextBox);
             this.sizeGroupBox.Controls.Add(this.widthTextBox);
@@ -119,12 +119,12 @@
             this.sizeGroupBox.TabStop = false;
             this.sizeGroupBox.Text = "Size";
             // 
-            // borderThicknessTextBox
+            // strokeThicknessTextBox
             // 
-            this.borderThicknessTextBox.Location = new System.Drawing.Point(146, 97);
-            this.borderThicknessTextBox.Name = "borderThicknessTextBox";
-            this.borderThicknessTextBox.Size = new System.Drawing.Size(66, 20);
-            this.borderThicknessTextBox.TabIndex = 10;
+            this.strokeThicknessTextBox.Location = new System.Drawing.Point(146, 97);
+            this.strokeThicknessTextBox.Name = "strokeThicknessTextBox";
+            this.strokeThicknessTextBox.Size = new System.Drawing.Size(66, 20);
+            this.strokeThicknessTextBox.TabIndex = 10;
             // 
             // label6
             // 
@@ -134,7 +134,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(100, 14);
             this.label6.TabIndex = 9;
-            this.label6.Text = "Border Thickness";
+            this.label6.Text = "Stroke Thickness";
             // 
             // heightTextBox
             // 
@@ -300,7 +300,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button fillColorButton;
         private System.Windows.Forms.Button strokeColorButton;
-        private System.Windows.Forms.TextBox borderThicknessTextBox;
+        private System.Windows.Forms.TextBox strokeThicknessTextBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label fillColorLabel;
         private System.Windows.Forms.Label strokeColorLabel;
