@@ -14,6 +14,7 @@ namespace VectorDrawForms.Models
 
         public GroupShape(GroupShape group) : base(group)
         {
+            subShapes = group.subShapes.DeepClone();
         }
         #endregion
 
@@ -68,29 +69,8 @@ namespace VectorDrawForms.Models
         {
             foreach (var shape in subShapes)
             {
-                if (shape is RectangleShape)
-                {
-                    if (shape.Contains(point))
-                        return true;
-                }
-                else if (shape is EllipseShape)
-                {
-                    var ellipse = shape as EllipseShape;
-                    if (ellipse.Contains(point))
-                        return true;
-                }
-                else if (shape is DotShape)
-                {
-                    var dot = shape as DotShape;
-                    if (dot.Contains(point))
-                        return true;
-                }
-                else if (shape is GroupShape)
-                {
-                    var group = shape as GroupShape;
-                    if (group.Contains(point))
-                        return true;
-                }
+                if (shape.Contains(point))
+                    return true;
             }
             return false;
         }
@@ -104,26 +84,7 @@ namespace VectorDrawForms.Models
 
             foreach (var shape in subShapes)
             {
-                if (shape is RectangleShape)
-                {
-                    var rect = (RectangleShape)shape;
-                    rect.DrawSelf(grfx);
-                }
-                else if (shape is EllipseShape)
-                {
-                    var ellipse = (EllipseShape)shape;
-                    ellipse.DrawSelf(grfx);
-                }
-                else if (shape is DotShape)
-                {
-                    var dot = (DotShape)shape;
-                    dot.DrawSelf(grfx);
-                }
-                else if (shape is GroupShape)
-                {
-                    var group = (GroupShape)shape;
-                    group.DrawSelf(grfx);
-                }
+                shape.DrawSelf(grfx);
             }
         }
         #endregion

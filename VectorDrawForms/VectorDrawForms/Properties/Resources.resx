@@ -166,4 +166,10 @@
   <data name="RectangleLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\Images\RectangleLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TriangleDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\TriangleDark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TriangleLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\TriangleLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

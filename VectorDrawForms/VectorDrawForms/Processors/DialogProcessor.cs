@@ -318,6 +318,22 @@ namespace VectorDrawForms.Processors
         }
 
         /// <summary>
+        /// Draws <see cref="TriangleShape"/> based on the given startPoint and endPoint, 
+        /// clears the selections and selects the nelwy created rectangle.
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        public IShape DrawTriangleShape(PointF startPoint, PointF endPoint)
+        {
+            TriangleShape triangle = new TriangleShape(Utilities.CalculateRectangle(startPoint, endPoint));
+            triangle.FillColor = Color.Transparent;
+            ShapeList.Add(triangle);
+            selections.Clear();
+            selections.Add(triangle);
+            return triangle;
+        }
+
+        /// <summary>
         /// Draws <see cref="EllipseShape"/> based on the given startPoint and endPoint, 
         /// clears the selections and selects the newly created rectangle.
         /// </summary>

@@ -347,6 +347,7 @@ namespace VectorDrawForms
                     groupToolButton.Image = Properties.Resources.GroupDark;
                     removeShapeToolButton.Image = Properties.Resources.BinDark;
                     dotToolButton.Image = Properties.Resources.DotDark;
+                    triangleToolButton.Image = Properties.Resources.TriangleDark;
                 }
                 else
                 {
@@ -370,6 +371,7 @@ namespace VectorDrawForms
                     groupToolButton.Image = Properties.Resources.GroupLight;
                     removeShapeToolButton.Image = Properties.Resources.BinLight;
                     dotToolButton.Image = Properties.Resources.DotLight;
+                    triangleToolButton.Image = Properties.Resources.TriangleLight;
                 }
             }
             catch (Exception ex)
@@ -452,7 +454,8 @@ namespace VectorDrawForms
             try
             {
                 isDrawingPerformed = false;
-                dialogProcessor.ShapeList.Remove(currentDrawnShape);
+                if (dialogProcessor.ShapeList.Contains(currentDrawnShape))
+                    dialogProcessor.ShapeList.Remove(currentDrawnShape);
                 currentDrawnShape = null;
             }
             catch (Exception ex)
@@ -615,6 +618,15 @@ namespace VectorDrawForms
                 isDrawingPerformed = true;
                 RedrawCanvas();
             }
+            else if (triangleToolButton.Checked)
+            {
+                startPoint = e.Location;
+                currentDrawnShape = new TriangleShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                currentDrawnShape.StrokeColor = Color.LightGray;
+                dialogProcessor.ShapeList.Add(currentDrawnShape);
+                isDrawingPerformed = true;
+                RedrawCanvas();
+            }
         }
 
         /// <summary>
@@ -659,6 +671,13 @@ namespace VectorDrawForms
             {
                 DisposeShapePreview();
                 dialogProcessor.DrawEllipseShape(startPoint, endPoint);
+                startPoint = Point.Empty;
+                RedrawCanvas();
+            }
+            else if (triangleToolButton.Checked)
+            {
+                DisposeShapePreview();
+                dialogProcessor.DrawTriangleShape(startPoint, endPoint);
                 startPoint = Point.Empty;
                 RedrawCanvas();
             }
@@ -942,7 +961,7 @@ namespace VectorDrawForms
             if (dialogProcessor.CoppiedSelection.Count > 0)
                 pasteToolStripMenuItem.Enabled = true;
             else
-                pasteToolStripMenuItem.Enabled= false;
+                pasteToolStripMenuItem.Enabled = false;
         }
 
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e)

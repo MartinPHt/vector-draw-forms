@@ -51,20 +51,21 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolMenu = new System.Windows.Forms.ToolStrip();
+            this.coordinatesLabel = new System.Windows.Forms.Label();
+            this.colorDialog = new System.Windows.Forms.ColorDialog();
+            this.label1 = new System.Windows.Forms.Label();
+            this.selectedShapesCountLabel = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.selectedShapeLabel = new System.Windows.Forms.Label();
             this.selectionToolButton = new System.Windows.Forms.ToolStripButton();
             this.rectangleToolButton = new System.Windows.Forms.ToolStripButton();
+            this.triangleToolButton = new System.Windows.Forms.ToolStripButton();
             this.elipseToolButton = new System.Windows.Forms.ToolStripButton();
             this.dotToolButton = new System.Windows.Forms.ToolStripButton();
             this.editToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
             this.removeShapeToolButton = new System.Windows.Forms.ToolStripButton();
-            this.coordinatesLabel = new System.Windows.Forms.Label();
-            this.colorDialog = new System.Windows.Forms.ColorDialog();
-            this.label1 = new System.Windows.Forms.Label();
-            this.selectedShapesCountLabel = new System.Windows.Forms.Label();
             this.canvas = new VectorDrawForms.Views.DoubleBufferedPanel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.selectedShapeLabel = new System.Windows.Forms.Label();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -245,6 +246,7 @@
             this.toolMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectionToolButton,
             this.rectangleToolButton,
+            this.triangleToolButton,
             this.elipseToolButton,
             this.dotToolButton,
             this.editToolButton,
@@ -256,6 +258,53 @@
             this.toolMenu.TabIndex = 1;
             this.toolMenu.Text = "toolStrip1";
             this.toolMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolMenu_ItemClicked);
+            // 
+            // coordinatesLabel
+            // 
+            this.coordinatesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.coordinatesLabel.AutoSize = true;
+            this.coordinatesLabel.Location = new System.Drawing.Point(51, 551);
+            this.coordinatesLabel.Name = "coordinatesLabel";
+            this.coordinatesLabel.Size = new System.Drawing.Size(25, 13);
+            this.coordinatesLabel.TabIndex = 4;
+            this.coordinatesLabel.Text = "0, 0";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(871, 551);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(94, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Selected Shapes: ";
+            // 
+            // selectedShapesCountLabel
+            // 
+            this.selectedShapesCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectedShapesCountLabel.AutoSize = true;
+            this.selectedShapesCountLabel.Location = new System.Drawing.Point(970, 551);
+            this.selectedShapesCountLabel.Name = "selectedShapesCountLabel";
+            this.selectedShapesCountLabel.Size = new System.Drawing.Size(13, 13);
+            this.selectedShapesCountLabel.TabIndex = 6;
+            this.selectedShapesCountLabel.Text = "0";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(642, 551);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(84, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Selected shape:";
+            // 
+            // selectedShapeLabel
+            // 
+            this.selectedShapeLabel.Location = new System.Drawing.Point(732, 551);
+            this.selectedShapeLabel.Name = "selectedShapeLabel";
+            this.selectedShapeLabel.Size = new System.Drawing.Size(121, 23);
+            this.selectedShapeLabel.TabIndex = 8;
+            this.selectedShapeLabel.Text = "...";
             // 
             // selectionToolButton
             // 
@@ -280,6 +329,17 @@
             this.rectangleToolButton.Size = new System.Drawing.Size(30, 30);
             this.rectangleToolButton.Text = "Rectangle Tool";
             this.rectangleToolButton.ToolTipText = "Rectangle Tool";
+            // 
+            // triangleToolButton
+            // 
+            this.triangleToolButton.AutoSize = false;
+            this.triangleToolButton.CheckOnClick = true;
+            this.triangleToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.triangleToolButton.Image = ((System.Drawing.Image)(resources.GetObject("triangleToolButton.Image")));
+            this.triangleToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.triangleToolButton.Name = "triangleToolButton";
+            this.triangleToolButton.Size = new System.Drawing.Size(30, 30);
+            this.triangleToolButton.Text = "toolStripButton1";
             // 
             // elipseToolButton
             // 
@@ -339,36 +399,6 @@
             this.removeShapeToolButton.Text = "Shape Remove Tool";
             this.removeShapeToolButton.Click += new System.EventHandler(this.removeShapeToolButton_Click);
             // 
-            // coordinatesLabel
-            // 
-            this.coordinatesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.coordinatesLabel.AutoSize = true;
-            this.coordinatesLabel.Location = new System.Drawing.Point(51, 551);
-            this.coordinatesLabel.Name = "coordinatesLabel";
-            this.coordinatesLabel.Size = new System.Drawing.Size(25, 13);
-            this.coordinatesLabel.TabIndex = 4;
-            this.coordinatesLabel.Text = "0, 0";
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(871, 551);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Selected Shapes: ";
-            // 
-            // selectedShapesCountLabel
-            // 
-            this.selectedShapesCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.selectedShapesCountLabel.AutoSize = true;
-            this.selectedShapesCountLabel.Location = new System.Drawing.Point(970, 551);
-            this.selectedShapesCountLabel.Name = "selectedShapesCountLabel";
-            this.selectedShapesCountLabel.Size = new System.Drawing.Size(13, 13);
-            this.selectedShapesCountLabel.TabIndex = 6;
-            this.selectedShapesCountLabel.Text = "0";
-            // 
             // canvas
             // 
             this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -380,23 +410,6 @@
             this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseDown);
             this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseMove);
             this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseUp);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(642, 551);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(84, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Selected shape:";
-            // 
-            // selectedShapeLabel
-            // 
-            this.selectedShapeLabel.Location = new System.Drawing.Point(732, 551);
-            this.selectedShapeLabel.Name = "selectedShapeLabel";
-            this.selectedShapeLabel.Size = new System.Drawing.Size(121, 23);
-            this.selectedShapeLabel.TabIndex = 8;
-            this.selectedShapeLabel.Text = "...";
             // 
             // MainForm
             // 
@@ -464,6 +477,7 @@
         private System.Windows.Forms.ToolStripMenuItem deleteSelectionToolStripMenuItem;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label selectedShapeLabel;
+        private System.Windows.Forms.ToolStripButton triangleToolButton;
     }
 }
 
