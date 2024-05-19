@@ -349,6 +349,7 @@ namespace VectorDrawForms
                     dotToolButton.Image = Properties.Resources.DotDark;
                     triangleToolButton.Image = Properties.Resources.TriangleDark;
                     lineToolButton.Image = Properties.Resources.LineDark;
+                    eraserToolButton.Image = Properties.Resources.EraserDark;
                 }
                 else
                 {
@@ -374,6 +375,7 @@ namespace VectorDrawForms
                     dotToolButton.Image = Properties.Resources.DotLight;
                     triangleToolButton.Image = Properties.Resources.TriangleLight;
                     lineToolButton.Image = Properties.Resources.LineLight;
+                    eraserToolButton.Image = Properties.Resources.EraserLight;
                 }
             }
             catch (Exception ex)
@@ -639,6 +641,11 @@ namespace VectorDrawForms
                 isDrawingPerformed = true;
                 RedrawCanvas();
             }
+            else if (eraserToolButton.Checked)
+            {
+                dialogProcessor.EraseShapes(e.Location);
+                RedrawCanvas();
+            }
         }
 
         /// <summary>
@@ -651,16 +658,26 @@ namespace VectorDrawForms
             //Update coordinates
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
+            if (eraserToolButton.Checked)
+            {
+                dialogProcessor.EraseShapes(e.Location);
+                RedrawCanvas();
+                return;
+            }
+
             // Handle dragging
             if (dialogProcessor.IsDragging)
             {
                 HandleDragging(e);
+                return;
             }
-            else if (isDrawingPerformed)
+
+            if (isDrawingPerformed)
             {
                 //Update the drawn shape
                 currentDrawnShape.Rectangle = Utilities.CalculateRectangle(previewShapeStartPoint, e.Location);
                 RedrawCanvas();
+                return;
             }
         }
 

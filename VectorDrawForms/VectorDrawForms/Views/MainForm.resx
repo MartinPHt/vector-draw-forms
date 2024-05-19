@@ -216,6 +216,21 @@
         AgYGAJq5gVeqof8UAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="eraserToolButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAARCAYAAADUryzEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH8SURBVDhPY6AHYPT395cNDAx08vPz0/r//z8jVJwwACmW
+        lpa2YGRk3A3kPgbSj+Tl5ZPq6+uZICrwA0Y5OTljoKZ9LCwsC5WVlS25ubnzmJiYnurr6yeuWrWKGaoO
+        K2DU0tIyAGrezsbGttDY2FgOJAiyWUREJBUo/kxHRycRl0sYzczM9IGKtnJycs53cXEBa4aB0NBQZmFh
+        4XSQIUDvREGF4YDR1NQUZPMeoM0Xrays1KHiKABoCBtQzXp2dvYzUCEwgNvMysq6C+jXJ0AXtAGdyQGV
+        hwFGDw8PLaC640B1e6BiDAyWlpY6QIHNQE0LrK2t5dTU1DyBhjwEirXm5uayQ5UxAqNSHRioG5mZma8J
+        CAj4gUWBtrBwcHBMBmo44OrqqggWBAJgyHsAbQIZ0l5YWMhpbm6uCXT2ZqDmqwoKCv4gfWCFUD9tBBpw
+        FJhoBMCCUKCkpOQJlHsEjMKZQJu3A9XcABocANcMAxISEiFAhe+4uLhmxMTEcEOFQYCRh4cnE0h/B2q+
+        zs/PH4ShGQRA0SMqKpoANOQt0JBpUEMY3dzcNIA2bwL5GRhtmDYDA0/D0NDQBIRVVVXNgf7tBwp/A0bj
+        IhMTkyCggdtBmmVlZRF+RgbAwJsDpM6j4dtAfB+IrwENOIPT2SAAlGACRRM+DFIDVU5twMAAAFbgg2Ho
+        JCzbAAAAAElFTkSuQmCC
+</value>
+  </data>
   <data name="groupToolButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

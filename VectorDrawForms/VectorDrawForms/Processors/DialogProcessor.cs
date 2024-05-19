@@ -360,6 +360,26 @@ namespace VectorDrawForms.Processors
             selections.Add(dot);
             return dot;
         }
+
+        /// <summary>
+        /// Erases all shapes that are located on the given point.
+        /// </summary>
+        /// <param name="location"></param>
+        public void EraseShapes(Point point)
+        {
+            try
+            {
+                while (true)
+                {
+                    var shape = ContainsPoint(point);
+                    if (shape == null)
+                        break;
+
+                    ShapeList.Remove(shape);
+                }
+            }
+            catch { }
+        }
         #endregion
     }
 }
