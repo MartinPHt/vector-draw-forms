@@ -183,6 +183,26 @@ namespace VectorDrawForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LineDark {
+            get {
+                object obj = ResourceManager.GetObject("LineDark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LineLight {
+            get {
+                object obj = ResourceManager.GetObject("LineLight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap PointerDark {
             get {
                 object obj = ResourceManager.GetObject("PointerDark", resourceCulture);

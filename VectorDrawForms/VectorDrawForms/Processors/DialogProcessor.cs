@@ -62,25 +62,6 @@ namespace VectorDrawForms.Processors
         #endregion
 
         #region Methods
-        private Rectangle GenerateRandomRectangleForShape(
-            int maxHeight = 200,
-            int maxWidth = 200,
-            int minHeight = 50,
-            int minWidth = 50)
-        {
-            Random rnd = new Random();
-
-            //size
-            int height = rnd.Next(minHeight, maxHeight);
-            int width = rnd.Next(minWidth, maxWidth);
-
-            //starting point
-            int x = rnd.Next(0, MainForm.Instance.Size.Width - width);
-            int y = rnd.Next(0, MainForm.Instance.Size.Height - height);
-
-            //return new Rectangle
-            return new Rectangle(x, y, width, height);
-        }
 
         /// <summary>
         /// Checks if a point is in the element. Finds the "top" element ie. the one we see under the mouse.
@@ -315,6 +296,21 @@ namespace VectorDrawForms.Processors
             selections.Clear();
             selections.Add(rect);
             return rect;
+        }
+
+        /// <summary>
+        /// Draws <see cref="LineShape"/> based on the given startPoint and endPoint, 
+        /// clears the selections and selects the nelwy created rectangle.
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="endPoint"></param>
+        public IShape DrawLineShape(PointF startPoint, PointF endPoint)
+        {
+            LineShape line = new LineShape(startPoint, endPoint);
+            ShapeList.Add(line);
+            selections.Clear();
+            selections.Add(line);
+            return line;
         }
 
         /// <summary>

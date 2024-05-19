@@ -40,10 +40,42 @@ namespace VectorDrawForms.Models
 			set { rectangle = value; }
 		}
 
-		/// <summary>
-		/// Width of the element.
-		/// </summary>
-		public virtual float Width
+        /// <summary>
+        /// Gets the point of the upper-left corner of the element's rectangle
+        /// </summary>
+        public PointF StartPointRect
+        {
+            get { return new PointF(Rectangle.X, Rectangle.Y); }
+        }
+
+        /// <summary>
+        /// Gets the point of the upper-right corner of the element's rectangle
+        /// </summary>
+        public PointF TopRightPointRect
+        {
+            get { return new PointF(Rectangle.X + Rectangle.Width, Rectangle.Y); }
+        }
+
+        /// <summary>
+        /// Gets the point of the bottom-left corner of the element's rectangle
+        /// </summary>
+        public PointF BottomLeftPointRect
+        {
+            get { return new PointF(Rectangle.X, Rectangle.Y + Rectangle.Height); }
+        }
+
+        /// <summary>
+        /// Gets the point of the bottom-right corner of the element's rectangle
+        /// </summary>
+        public PointF EndPointRect
+        {
+            get { return new PointF(Rectangle.X + Rectangle.Width, Rectangle.Y + Rectangle.Height); }
+        }
+
+        /// <summary>
+        /// Width of the element.
+        /// </summary>
+        public virtual float Width
 		{
 			get { return Rectangle.Width; }
 			set { rectangle.Width = value; }

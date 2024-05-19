@@ -24,7 +24,7 @@ namespace VectorDrawForms
 
         //Drawing fiels
         private bool isDrawingPerformed = false;
-        private PointF startPoint;
+        private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
         #endregion
 
@@ -348,6 +348,7 @@ namespace VectorDrawForms
                     removeShapeToolButton.Image = Properties.Resources.BinDark;
                     dotToolButton.Image = Properties.Resources.DotDark;
                     triangleToolButton.Image = Properties.Resources.TriangleDark;
+                    lineToolButton.Image = Properties.Resources.LineDark;
                 }
                 else
                 {
@@ -372,6 +373,7 @@ namespace VectorDrawForms
                     removeShapeToolButton.Image = Properties.Resources.BinLight;
                     dotToolButton.Image = Properties.Resources.DotLight;
                     triangleToolButton.Image = Properties.Resources.TriangleLight;
+                    lineToolButton.Image = Properties.Resources.LineLight;
                 }
             }
             catch (Exception ex)
@@ -456,6 +458,7 @@ namespace VectorDrawForms
                 isDrawingPerformed = false;
                 if (dialogProcessor.ShapeList.Contains(currentDrawnShape))
                     dialogProcessor.ShapeList.Remove(currentDrawnShape);
+                previewShapeStartPoint = Point.Empty;
                 currentDrawnShape = null;
             }
             catch (Exception ex)
@@ -600,10 +603,19 @@ namespace VectorDrawForms
                     RedrawCanvas();
                 }
             }
+            else if (lineToolButton.Checked)
+            {
+                previewShapeStartPoint = e.Location;
+                currentDrawnShape = new LineShape(previewShapeStartPoint, previewShapeStartPoint, true);
+                currentDrawnShape.StrokeColor = Color.LightGray;
+                dialogProcessor.ShapeList.Add(currentDrawnShape);
+                isDrawingPerformed = true;
+                RedrawCanvas();
+            }
             else if (rectangleToolButton.Checked)
             {
-                startPoint = e.Location;
-                currentDrawnShape = new RectangleShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                previewShapeStartPoint = e.Location;
+                currentDrawnShape = new RectangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -611,8 +623,8 @@ namespace VectorDrawForms
             }
             else if (elipseToolButton.Checked)
             {
-                startPoint = e.Location;
-                currentDrawnShape = new EllipseShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                previewShapeStartPoint = e.Location;
+                currentDrawnShape = new EllipseShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -620,8 +632,8 @@ namespace VectorDrawForms
             }
             else if (triangleToolButton.Checked)
             {
-                startPoint = e.Location;
-                currentDrawnShape = new TriangleShape(new RectangleF(startPoint.X, startPoint.Y, 0, 0));
+                previewShapeStartPoint = e.Location;
+                currentDrawnShape = new TriangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -647,7 +659,7 @@ namespace VectorDrawForms
             else if (isDrawingPerformed)
             {
                 //Update the drawn shape
-                currentDrawnShape.Rectangle = Utilities.CalculateRectangle(startPoint, e.Location);
+                currentDrawnShape.Rectangle = Utilities.CalculateRectangle(previewShapeStartPoint, e.Location);
                 RedrawCanvas();
             }
         }
@@ -660,32 +672,34 @@ namespace VectorDrawForms
             {
                 dialogProcessor.IsDragging = false;
             }
+            else if (lineToolButton.Checked)
+            {
+                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint);
+                DisposeShapePreview();
+                RedrawCanvas();
+            }
             else if (rectangleToolButton.Checked)
             {
+                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint);
                 DisposeShapePreview();
-                dialogProcessor.DrawRectangleShape(startPoint, endPoint);
-                startPoint = Point.Empty;
                 RedrawCanvas();
             }
             else if (elipseToolButton.Checked)
             {
+                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint);
                 DisposeShapePreview();
-                dialogProcessor.DrawEllipseShape(startPoint, endPoint);
-                startPoint = Point.Empty;
                 RedrawCanvas();
             }
             else if (triangleToolButton.Checked)
             {
+                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint);
                 DisposeShapePreview();
-                dialogProcessor.DrawTriangleShape(startPoint, endPoint);
-                startPoint = Point.Empty;
                 RedrawCanvas();
             }
             else if (dotToolButton.Checked)
             {
-                DisposeShapePreview();
                 dialogProcessor.DrawDotShape(endPoint);
-                startPoint = Point.Empty;
+                DisposeShapePreview();
                 RedrawCanvas();
             }
         }

@@ -154,6 +154,12 @@
   <data name="GroupLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\Images\GroupLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="LineDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\LineDark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LineLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Images\LineLight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PointerDark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Assets\Images\PointerDark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
