@@ -658,7 +658,7 @@ namespace VectorDrawForms
             //Update coordinates
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
-            if (eraserToolButton.Checked)
+            if (eraserToolButton.Checked && e.Button == MouseButtons.Left)
             {
                 dialogProcessor.EraseShapes(e.Location);
                 RedrawCanvas();
