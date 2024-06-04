@@ -10,6 +10,8 @@ using VectorDrawForms.Models;
 using VectorDrawForms.Processors;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
+using VectorDrawForms.Assets.Helpers;
+using System.Text.RegularExpressions;
 
 namespace VectorDrawForms
 {
@@ -83,7 +85,34 @@ namespace VectorDrawForms
                 catch { }
             }
         }
+
+        private Color fillColor = Color.White;
+        public Color FillColor
+        {
+            get { return fillColor; }
+            private set
+            {
+                fillColor = value;
+                colorPicker.BackColor = fillColor;
+            }
+        }
+
         public static MainForm Instance { get; private set; }
+
+        public int StrokeThickness
+        {
+            get
+            {
+                try
+                {
+                    return int.Parse(newShapeStrokeThicknessTextBox.Text);
+                }
+                catch
+                {
+                    return 2;
+                }
+            }
+        }
         #endregion
 
         #region Methods
@@ -331,6 +360,13 @@ namespace VectorDrawForms
                     this.ForeColor = ApplicationColors.MainUIDark;
                     this.BackColor = ApplicationColors.MainUILight;
 
+                    canvas.BackColor = Color.White;
+                    coordinatesLabel.BackColor = Color.White;
+                    label1.BackColor = Color.White;
+                    selectedShapesCountLabel.BackColor = Color.White;
+                    newShapeStrokeThicknessTextBox.ForeColor = ApplicationColors.SecondaryUIDark;
+                    newShapeStrokeThicknessTextBox.BackColor = Color.White;
+
                     //Assign light color mode to main menu
                     mainMenu.ForeColor = ApplicationColors.MainUIDark;
                     mainMenu.BackColor = ApplicationColors.MainUILight;
@@ -350,12 +386,22 @@ namespace VectorDrawForms
                     triangleToolButton.Image = Properties.Resources.TriangleDark;
                     lineToolButton.Image = Properties.Resources.LineDark;
                     eraserToolButton.Image = Properties.Resources.EraserDark;
+
+                    //Update toolStrip renderer
+                    toolMenu.Renderer = new ApplicationToolStripRenderer(ApplicationColors.ToolStripMenuHoveredLight, ApplicationColors.ToolStripMenuCheckedLight);
                 }
                 else
                 {
                     enableDisableDarkModeSettingsButton.Text = "Disable Dark Mode";
                     this.ForeColor = ApplicationColors.MainUILight;
                     this.BackColor = ApplicationColors.MainUIDark;
+
+                    canvas.BackColor = ApplicationColors.MainUIDark;
+                    coordinatesLabel.BackColor = ApplicationColors.MainUIDark;
+                    label1.BackColor = ApplicationColors.MainUIDark;
+                    selectedShapesCountLabel.BackColor = ApplicationColors.MainUIDark;
+                    newShapeStrokeThicknessTextBox.ForeColor = Color.White;
+                    newShapeStrokeThicknessTextBox.BackColor = ApplicationColors.SecondaryUIDark;
 
                     //Assign dark color mode to main menu
                     mainMenu.ForeColor = ApplicationColors.MainUILight;
@@ -376,6 +422,9 @@ namespace VectorDrawForms
                     triangleToolButton.Image = Properties.Resources.TriangleLight;
                     lineToolButton.Image = Properties.Resources.LineLight;
                     eraserToolButton.Image = Properties.Resources.EraserLight;
+
+                    //Update toolStrip renderer
+                    toolMenu.Renderer = new ApplicationToolStripRenderer(ApplicationColors.ToolStripMenuHoveredDark, ApplicationColors.ToolStripMenuCheckedDark);
                 }
             }
             catch (Exception ex)
@@ -608,7 +657,7 @@ namespace VectorDrawForms
             else if (lineToolButton.Checked)
             {
                 previewShapeStartPoint = e.Location;
-                currentDrawnShape = new LineShape(previewShapeStartPoint, previewShapeStartPoint, true);
+                currentDrawnShape = new LineShape(previewShapeStartPoint, previewShapeStartPoint, Color.Transparent, StrokeThickness, true);
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -617,7 +666,7 @@ namespace VectorDrawForms
             else if (rectangleToolButton.Checked)
             {
                 previewShapeStartPoint = e.Location;
-                currentDrawnShape = new RectangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
+                currentDrawnShape = new RectangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0), Color.Transparent, StrokeThickness);
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -626,7 +675,7 @@ namespace VectorDrawForms
             else if (elipseToolButton.Checked)
             {
                 previewShapeStartPoint = e.Location;
-                currentDrawnShape = new EllipseShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
+                currentDrawnShape = new EllipseShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0), Color.Transparent, StrokeThickness);
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -635,7 +684,7 @@ namespace VectorDrawForms
             else if (triangleToolButton.Checked)
             {
                 previewShapeStartPoint = e.Location;
-                currentDrawnShape = new TriangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0));
+                currentDrawnShape = new TriangleShape(new RectangleF(previewShapeStartPoint.X, previewShapeStartPoint.Y, 0, 0), Color.Transparent, StrokeThickness);
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
@@ -675,7 +724,7 @@ namespace VectorDrawForms
             if (isDrawingPerformed)
             {
                 //Update the drawn shape
-                currentDrawnShape.Rectangle = Utilities.CalculateRectangle(previewShapeStartPoint, e.Location);
+                currentDrawnShape.Rectangle = ShapeUtility.CalculateRectangle(previewShapeStartPoint, e.Location);
                 RedrawCanvas();
                 return;
             }
@@ -691,31 +740,31 @@ namespace VectorDrawForms
             }
             else if (lineToolButton.Checked)
             {
-                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint);
+                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (rectangleToolButton.Checked)
             {
-                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint);
+                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (elipseToolButton.Checked)
             {
-                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint);
+                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (triangleToolButton.Checked)
             {
-                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint);
+                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (dotToolButton.Checked)
             {
-                dialogProcessor.DrawDotShape(endPoint);
+                dialogProcessor.DrawDotShape(endPoint, FillColor);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
@@ -998,6 +1047,52 @@ namespace VectorDrawForms
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             HandleDeleteShape();
+        }
+
+        private void colorPicker_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                FillColor = colorDialog.Color;
+            }
+        }
+
+        private void newShapeStrokeThicknessTextBox_MouseEnter(object sender, EventArgs e)
+        {
+            var textBox = (sender as TextBox);
+            if (textBox != null)
+            {
+                toolTip.Show("Stroke Thickness", textBox);
+            }
+        }
+
+        private void colorPicker_MouseEnter(object sender, EventArgs e)
+        {
+            var button = (sender as Button);
+            if (button != null)
+            {
+                toolTip.Show("Color Picker", button);
+            }
+        }
+
+        private void newShapeStrokeThicknessTextBox_TextChanged(object sender, EventArgs e)
+        {
+            var textBox = (sender as TextBox);
+            if (textBox != null && textBox.Text != string.Empty)
+            {
+                if (!int.TryParse(textBox.Text, out _))
+                {
+                    MessageBox.Show("Please enter a valid numeric value!", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    textBox.Text = Regex.Replace(textBox.Text, "[^0-9]", "");
+                }
+
+                if (textBox.Text.Length >= 3)
+                    textBox.Text = textBox.Text.Substring(0, textBox.Text.Length - 1);
+
+            }
+            textBox.SelectionStart = textBox.TextLength;
         }
     }
 

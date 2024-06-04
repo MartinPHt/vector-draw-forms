@@ -2,10 +2,11 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Drawing.Drawing2D;
 
 namespace VectorDrawForms
 {
-    public static class Utilities
+    public static class ShapeUtility
     {
         /// <summary>
         /// Creates new <see cref="RectangleF"/> with calculated height and width of based on the provided startPoint and endPoint parameters/> 
@@ -43,6 +44,38 @@ namespace VectorDrawForms
 
             return new RectangleF(x, y, width, height);
         }
+
+        public static GraphicsPath RoundedRect(Rectangle bounds, int radius)
+        {
+            int diameter = radius * 2;
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(bounds.Location, size);
+            GraphicsPath path = new GraphicsPath();
+
+            if (radius == 0)
+            {
+                path.AddRectangle(bounds);
+                return path;
+            }
+
+            // top left arc  
+            path.AddArc(arc, 180, 90);
+
+            // top right arc  
+            arc.X = bounds.Right - diameter;
+            path.AddArc(arc, 270, 90);
+
+            // bottom right arc  
+            arc.Y = bounds.Bottom - diameter;
+            path.AddArc(arc, 0, 90);
+
+            // bottom left arc 
+            arc.X = bounds.Left;
+            path.AddArc(arc, 90, 90);
+
+            path.CloseFigure();
+            return path;
+        } 
 
         /// <summary>
         /// Returns a deep clone of the current object.

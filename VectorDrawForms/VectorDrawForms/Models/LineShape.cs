@@ -12,7 +12,7 @@ namespace VectorDrawForms.Models
         #endregion
 
         #region Constructor
-        public LineShape(PointF startPoint, PointF endPoint, bool isPreviewShape = false) : base(Utilities.CalculateRectangle(startPoint, endPoint))
+        public LineShape(PointF startPoint, PointF endPoint, bool isPreviewShape = false) : base(ShapeUtility.CalculateRectangle(startPoint, endPoint))
         {
             this.IsPreviewShape = isPreviewShape;
             initialStartPoint = startPoint;
@@ -21,6 +21,12 @@ namespace VectorDrawForms.Models
                 lineDirection = Direction.Default;
             else
                 lineDirection = Direction.Inverted;
+        }
+
+        public LineShape(PointF startPoint, PointF endPoint, Color color, int strokeThickness, bool isPreviewShape = false) : this(startPoint, endPoint, isPreviewShape)
+        {
+            StrokeColor = color;
+            StrokeThickness = strokeThickness;
         }
 
         public LineShape(LineShape lineShape) : base(lineShape)

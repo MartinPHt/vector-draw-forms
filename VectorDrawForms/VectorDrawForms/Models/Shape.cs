@@ -25,6 +25,7 @@ namespace VectorDrawForms.Models
 			this.rectangle = shape.Rectangle;
 
 			this.FillColor = shape.FillColor;
+			this.StrokeColor = shape.StrokeColor;
 		}
 		#endregion
 

@@ -288,10 +288,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawRectangleShape(PointF startPoint, PointF endPoint)
+        public IShape DrawRectangleShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
         {
-            RectangleShape rect = new RectangleShape(Utilities.CalculateRectangle(startPoint, endPoint));
-            rect.FillColor = Color.Transparent;
+            RectangleShape rect = new RectangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
             ShapeList.Add(rect);
             selections.Clear();
             selections.Add(rect);
@@ -304,9 +303,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawLineShape(PointF startPoint, PointF endPoint)
+        public IShape DrawLineShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
         {
-            LineShape line = new LineShape(startPoint, endPoint);
+            LineShape line = new LineShape(startPoint, endPoint, fillColor, strokeThickness);
             ShapeList.Add(line);
             selections.Clear();
             selections.Add(line);
@@ -319,10 +318,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawTriangleShape(PointF startPoint, PointF endPoint)
+        public IShape DrawTriangleShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
         {
-            TriangleShape triangle = new TriangleShape(Utilities.CalculateRectangle(startPoint, endPoint));
-            triangle.FillColor = Color.Transparent;
+            TriangleShape triangle = new TriangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
             ShapeList.Add(triangle);
             selections.Clear();
             selections.Add(triangle);
@@ -335,10 +333,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawEllipseShape(PointF startPoint, PointF endPoint)
+        public IShape DrawEllipseShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
         {
-            EllipseShape elipse = new EllipseShape(Utilities.CalculateRectangle(startPoint, endPoint));
-            elipse.FillColor = Color.Transparent;
+            EllipseShape elipse = new EllipseShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
             ShapeList.Add(elipse);
             selections.Clear();
             selections.Add(elipse);
@@ -351,10 +348,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawDotShape(PointF point)
+        public IShape DrawDotShape(PointF point, Color color)
         {
-            DotShape dot = new DotShape(point.X, point.Y);
-            dot.FillColor = ApplicationColors.ShapeStroke;
+            DotShape dot = new DotShape(point.X, point.Y, color);
             ShapeList.Add(dot);
             selections.Clear();
             selections.Add(dot);

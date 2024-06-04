@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,13 +59,16 @@
             this.lineToolButton = new System.Windows.Forms.ToolStripButton();
             this.dotToolButton = new System.Windows.Forms.ToolStripButton();
             this.editToolButton = new System.Windows.Forms.ToolStripButton();
+            this.eraserToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
             this.removeShapeToolButton = new System.Windows.Forms.ToolStripButton();
             this.coordinatesLabel = new System.Windows.Forms.Label();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.label1 = new System.Windows.Forms.Label();
             this.selectedShapesCountLabel = new System.Windows.Forms.Label();
-            this.eraserToolButton = new System.Windows.Forms.ToolStripButton();
+            this.colorPicker = new System.Windows.Forms.Button();
+            this.newShapeStrokeThicknessTextBox = new System.Windows.Forms.TextBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.canvas = new VectorDrawForms.Views.DoubleBufferedPanel();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
@@ -342,6 +346,17 @@
             this.editToolButton.ToolTipText = "Edit Tool";
             this.editToolButton.Click += new System.EventHandler(this.editToolButton_Click);
             // 
+            // eraserToolButton
+            // 
+            this.eraserToolButton.AutoSize = false;
+            this.eraserToolButton.CheckOnClick = true;
+            this.eraserToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.eraserToolButton.Image = ((System.Drawing.Image)(resources.GetObject("eraserToolButton.Image")));
+            this.eraserToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.eraserToolButton.Name = "eraserToolButton";
+            this.eraserToolButton.Size = new System.Drawing.Size(30, 30);
+            this.eraserToolButton.Text = "Eraser Tool";
+            // 
             // groupToolButton
             // 
             this.groupToolButton.AutoSize = false;
@@ -395,16 +410,27 @@
             this.selectedShapesCountLabel.TabIndex = 6;
             this.selectedShapesCountLabel.Text = "0";
             // 
-            // eraserToolButton
+            // colorPicker
             // 
-            this.eraserToolButton.AutoSize = false;
-            this.eraserToolButton.CheckOnClick = true;
-            this.eraserToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.eraserToolButton.Image = ((System.Drawing.Image)(resources.GetObject("eraserToolButton.Image")));
-            this.eraserToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.eraserToolButton.Name = "eraserToolButton";
-            this.eraserToolButton.Size = new System.Drawing.Size(30, 30);
-            this.eraserToolButton.Text = "Eraser Tool";
+            this.colorPicker.BackColor = System.Drawing.Color.White;
+            this.colorPicker.Location = new System.Drawing.Point(9, 396);
+            this.colorPicker.Name = "colorPicker";
+            this.colorPicker.Size = new System.Drawing.Size(28, 28);
+            this.colorPicker.TabIndex = 7;
+            this.colorPicker.UseVisualStyleBackColor = false;
+            this.colorPicker.Click += new System.EventHandler(this.colorPicker_Click);
+            this.colorPicker.MouseEnter += new System.EventHandler(this.colorPicker_MouseEnter);
+            // 
+            // newShapeStrokeThicknessTextBox
+            // 
+            this.newShapeStrokeThicknessTextBox.Location = new System.Drawing.Point(10, 430);
+            this.newShapeStrokeThicknessTextBox.Name = "newShapeStrokeThicknessTextBox";
+            this.newShapeStrokeThicknessTextBox.Size = new System.Drawing.Size(26, 20);
+            this.newShapeStrokeThicknessTextBox.TabIndex = 8;
+            this.newShapeStrokeThicknessTextBox.Text = "2";
+            this.newShapeStrokeThicknessTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.newShapeStrokeThicknessTextBox.TextChanged += new System.EventHandler(this.newShapeStrokeThicknessTextBox_TextChanged);
+            this.newShapeStrokeThicknessTextBox.MouseEnter += new System.EventHandler(this.newShapeStrokeThicknessTextBox_MouseEnter);
             // 
             // canvas
             // 
@@ -423,6 +449,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1004, 570);
+            this.Controls.Add(this.newShapeStrokeThicknessTextBox);
+            this.Controls.Add(this.colorPicker);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.selectedShapesCountLabel);
             this.Controls.Add(this.coordinatesLabel);
@@ -483,6 +511,9 @@
         private System.Windows.Forms.ToolStripButton triangleToolButton;
         private System.Windows.Forms.ToolStripButton lineToolButton;
         private System.Windows.Forms.ToolStripButton eraserToolButton;
+        private System.Windows.Forms.Button colorPicker;
+        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.TextBox newShapeStrokeThicknessTextBox;
     }
 }
 

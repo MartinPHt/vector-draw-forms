@@ -170,7 +170,6 @@ namespace VectorDrawForms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                //Assign Color here
                 StrokeColor = colorDialog.Color;
             }
         }
@@ -179,7 +178,6 @@ namespace VectorDrawForms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                //Assign Color here
                 FillColor = colorDialog.Color;
             }
         }

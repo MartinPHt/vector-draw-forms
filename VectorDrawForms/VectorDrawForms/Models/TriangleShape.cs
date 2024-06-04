@@ -12,6 +12,12 @@ namespace VectorDrawForms.Models
         {
         }
 
+        public TriangleShape(RectangleF rect, Color fillColor, int strokeThickness) : this(rect)
+        {
+            FillColor = fillColor;
+            StrokeThickness = strokeThickness;
+        }
+
         public TriangleShape(TriangleShape rectangle) : base(rectangle)
         {
         }

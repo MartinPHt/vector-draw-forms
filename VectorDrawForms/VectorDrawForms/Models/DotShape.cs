@@ -10,6 +10,11 @@ namespace VectorDrawForms.Models
         #region Constructor
         public DotShape(float x, float y) : base(new RectangleF(x, y, 8, 8))
         {
+            
+        }
+        public DotShape(float x, float y, Color color) : this(x, y)
+        {
+            FillColor = color;
         }
 
         public DotShape(EllipseShape elipse) : base(elipse)
