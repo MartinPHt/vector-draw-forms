@@ -160,5 +160,11 @@
   <ItemGroup>
     <None Include="Assets\Images\EraserLight.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Images\BucketDark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Images\BucketLight.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,9 +14,9 @@ namespace VectorDrawForms.Models
 			
         }
 
-		public EllipseShape(RectangleF rect, Color fillColor, int strokeThickness) : this(rect)
+		public EllipseShape(RectangleF rect, Color strokeColor, int strokeThickness) : this(rect)
 		{
-			FillColor = fillColor;
+			StrokeColor = strokeColor;
             StrokeThickness = strokeThickness;
         }
 

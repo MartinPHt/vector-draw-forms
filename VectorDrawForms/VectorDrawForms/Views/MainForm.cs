@@ -86,14 +86,14 @@ namespace VectorDrawForms
             }
         }
 
-        private Color fillColor = Color.White;
-        public Color FillColor
+        private Color selectedColor = Color.White;
+        public Color SelectedColor
         {
-            get { return fillColor; }
+            get { return selectedColor; }
             private set
             {
-                fillColor = value;
-                colorPicker.BackColor = fillColor;
+                selectedColor = value;
+                colorPicker.BackColor = selectedColor;
             }
         }
 
@@ -206,6 +206,19 @@ namespace VectorDrawForms
             catch (Exception ex)
             {
                 MessageBox.Show($"Couldn't Copy shape. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        private void HandleCutShape()
+        {
+            try
+            {
+                dialogProcessor.CutSelection();
+                RedrawCanvas();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Couldn't Cut shape. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -380,6 +393,7 @@ namespace VectorDrawForms
                     rectangleToolButton.Image = Properties.Resources.RectangleDark;
                     elipseToolButton.Image = Properties.Resources.ElipseDark;
                     editToolButton.Image = Properties.Resources.BrushDark;
+                    bucketToolButton.Image = Properties.Resources.BucketDark;
                     groupToolButton.Image = Properties.Resources.GroupDark;
                     removeShapeToolButton.Image = Properties.Resources.BinDark;
                     dotToolButton.Image = Properties.Resources.DotDark;
@@ -416,6 +430,7 @@ namespace VectorDrawForms
                     rectangleToolButton.Image = Properties.Resources.RectangleLight;
                     elipseToolButton.Image = Properties.Resources.ElipseLight;
                     editToolButton.Image = Properties.Resources.BrushLight;
+                    bucketToolButton.Image = Properties.Resources.BucketLight;
                     groupToolButton.Image = Properties.Resources.GroupLight;
                     removeShapeToolButton.Image = Properties.Resources.BinLight;
                     dotToolButton.Image = Properties.Resources.DotLight;
@@ -654,6 +669,14 @@ namespace VectorDrawForms
                     RedrawCanvas();
                 }
             }
+            else if (bucketToolButton.Checked)
+            {
+                if (selectedShape != null)
+                {
+                    selectedShape.FillColor = SelectedColor;
+                    RedrawCanvas();
+                }
+            }
             else if (lineToolButton.Checked)
             {
                 previewShapeStartPoint = e.Location;
@@ -740,31 +763,31 @@ namespace VectorDrawForms
             }
             else if (lineToolButton.Checked)
             {
-                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
+                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (rectangleToolButton.Checked)
             {
-                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
+                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (elipseToolButton.Checked)
             {
-                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
+                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (triangleToolButton.Checked)
             {
-                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, FillColor, StrokeThickness);
+                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
             else if (dotToolButton.Checked)
             {
-                dialogProcessor.DrawDotShape(endPoint, FillColor);
+                dialogProcessor.DrawDotShape(endPoint, SelectedColor);
                 DisposeShapePreview();
                 RedrawCanvas();
             }
@@ -877,20 +900,23 @@ namespace VectorDrawForms
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var dialog = new OpenFileDialog();
-            dialog.InitialDirectory = Environment.CurrentDirectory;
-            dialog.Title = "Open";
-            dialog.DefaultExt = "vdfile";
-            dialog.Filter = "File|*.vdfile";
-            dialog.CheckFileExists = true;
-            dialog.CheckPathExists = true;
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (EnsureUnsavedWorkIsNotLost())
             {
-                FilePath = dialog.FileName;
-                dialogProcessor.ReadFile(dialog.FileName);
-            }
+                var dialog = new OpenFileDialog();
+                dialog.InitialDirectory = Environment.CurrentDirectory;
+                dialog.Title = "Open";
+                dialog.DefaultExt = "vdfile";
+                dialog.Filter = "File|*.vdfile";
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    FilePath = dialog.FileName;
+                    dialogProcessor.ReadFile(dialog.FileName);
+                }
 
-            RedrawCanvas();
+                RedrawCanvas();
+            }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -951,6 +977,10 @@ namespace VectorDrawForms
             else if (e.Control && e.KeyCode == Keys.C)
             {
                 HandleCopyShape();
+            }
+            else if (e.Control && e.KeyCode == Keys.X)
+            {
+                HandleCutShape();
             }
             else if (e.Control && e.KeyCode == Keys.V)
             {
@@ -1053,7 +1083,7 @@ namespace VectorDrawForms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                FillColor = colorDialog.Color;
+                SelectedColor = colorDialog.Color;
             }
         }
 

@@ -99,7 +99,6 @@ namespace VectorDrawForms.Processors
         /// <param name="shape"></param>
         private void MoveShape(IShape shape, PointF p)
         {
-            //Unhandled exception
             if (shape is GroupShape)
             {
                 var group = (GroupShape)shape;
@@ -123,7 +122,6 @@ namespace VectorDrawForms.Processors
                 BinaryFormatter formatter = new BinaryFormatter();
                 ShapeList = (List<IShape>)formatter.Deserialize(stream);
 
-                //Dispose fileStream
                 stream.Flush();
                 stream.Close();
             }
@@ -244,12 +242,14 @@ namespace VectorDrawForms.Processors
             if (coppiedSelection.Count <= 0)
                 return;
 
-
+            List<IShape> newShapes = new List<IShape>();
             if (coppiedSelection.Count == 1)
             {
                 IShape shape = coppiedSelection[0].DeepClone();
                 shape.Location = new PointF(0, 0);
+
                 ShapeList.Add(shape);
+                newShapes.Add(shape);
             }
             else
             {
@@ -267,10 +267,13 @@ namespace VectorDrawForms.Processors
 
                 //Add to shape list
                 ShapeList.AddRange(group.SubShapes);
+                newShapes.AddRange(group.SubShapes);
             }
 
             //Clear selections and coppied selections
             selections.Clear();
+
+            selections.AddRange(newShapes);
         }
 
         public void CopySelection()
@@ -282,15 +285,27 @@ namespace VectorDrawForms.Processors
             coppiedSelection.AddRange(selections);
         }
 
+        public void CutSelection()
+        {
+            //Clear copy buffer
+            coppiedSelection.Clear();
+
+            //Add selections to copy buffer
+            coppiedSelection.AddRange(selections);
+
+            //Remove cut shapes
+            ShapeList = ShapeList.Except(selections).ToList();
+        }
+
         /// <summary>
         /// Draws <see cref="RectangleShape"/> based on the given startPoint and endPoint, 
         /// clears the selections and selects the nelwy created rectangle.
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawRectangleShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
+        public IShape DrawRectangleShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
-            RectangleShape rect = new RectangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
+            RectangleShape rect = new RectangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(rect);
             selections.Clear();
             selections.Add(rect);
@@ -303,9 +318,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawLineShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
+        public IShape DrawLineShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
-            LineShape line = new LineShape(startPoint, endPoint, fillColor, strokeThickness);
+            LineShape line = new LineShape(startPoint, endPoint, strokeColor, strokeThickness);
             ShapeList.Add(line);
             selections.Clear();
             selections.Add(line);
@@ -318,9 +333,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawTriangleShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
+        public IShape DrawTriangleShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
-            TriangleShape triangle = new TriangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
+            TriangleShape triangle = new TriangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(triangle);
             selections.Clear();
             selections.Add(triangle);
@@ -333,9 +348,9 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="startPoint"></param>
         /// <param name="endPoint"></param>
-        public IShape DrawEllipseShape(PointF startPoint, PointF endPoint, Color fillColor, int strokeThickness)
+        public IShape DrawEllipseShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
-            EllipseShape elipse = new EllipseShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), fillColor, strokeThickness);
+            EllipseShape elipse = new EllipseShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(elipse);
             selections.Clear();
             selections.Add(elipse);

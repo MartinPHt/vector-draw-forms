@@ -12,9 +12,9 @@ namespace VectorDrawForms.Models
 		{
 		}
 
-		public RectangleShape(RectangleF rect, Color fillColor, int strokeThickness) : this(rect)
+		public RectangleShape(RectangleF rect, Color strokeColor, int strokeThickness) : this(rect)
 		{
-			FillColor = fillColor;
+			StrokeColor = strokeColor;
             StrokeThickness = strokeThickness;
         }
 

@@ -103,6 +103,26 @@ namespace VectorDrawForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BucketDark {
+            get {
+                object obj = ResourceManager.GetObject("BucketDark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BucketLight {
+            get {
+                object obj = ResourceManager.GetObject("BucketLight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CurvedRectangleDark {
             get {
                 object obj = ResourceManager.GetObject("CurvedRectangleDark", resourceCulture);

@@ -59,6 +59,7 @@
             this.lineToolButton = new System.Windows.Forms.ToolStripButton();
             this.dotToolButton = new System.Windows.Forms.ToolStripButton();
             this.editToolButton = new System.Windows.Forms.ToolStripButton();
+            this.bucketToolButton = new System.Windows.Forms.ToolStripButton();
             this.eraserToolButton = new System.Windows.Forms.ToolStripButton();
             this.groupToolButton = new System.Windows.Forms.ToolStripButton();
             this.removeShapeToolButton = new System.Windows.Forms.ToolStripButton();
@@ -255,6 +256,7 @@
             this.lineToolButton,
             this.dotToolButton,
             this.editToolButton,
+            this.bucketToolButton,
             this.eraserToolButton,
             this.groupToolButton,
             this.removeShapeToolButton});
@@ -346,6 +348,17 @@
             this.editToolButton.ToolTipText = "Edit Tool";
             this.editToolButton.Click += new System.EventHandler(this.editToolButton_Click);
             // 
+            // bucketToolButton
+            // 
+            this.bucketToolButton.AutoSize = false;
+            this.bucketToolButton.CheckOnClick = true;
+            this.bucketToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.bucketToolButton.Image = global::VectorDrawForms.Properties.Resources.BucketDark;
+            this.bucketToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.bucketToolButton.Name = "bucketToolButton";
+            this.bucketToolButton.Size = new System.Drawing.Size(30, 30);
+            this.bucketToolButton.Text = "Bucket Tool";
+            // 
             // eraserToolButton
             // 
             this.eraserToolButton.AutoSize = false;
@@ -413,7 +426,7 @@
             // colorPicker
             // 
             this.colorPicker.BackColor = System.Drawing.Color.White;
-            this.colorPicker.Location = new System.Drawing.Point(9, 396);
+            this.colorPicker.Location = new System.Drawing.Point(9, 429);
             this.colorPicker.Name = "colorPicker";
             this.colorPicker.Size = new System.Drawing.Size(28, 28);
             this.colorPicker.TabIndex = 7;
@@ -423,7 +436,7 @@
             // 
             // newShapeStrokeThicknessTextBox
             // 
-            this.newShapeStrokeThicknessTextBox.Location = new System.Drawing.Point(10, 430);
+            this.newShapeStrokeThicknessTextBox.Location = new System.Drawing.Point(10, 463);
             this.newShapeStrokeThicknessTextBox.Name = "newShapeStrokeThicknessTextBox";
             this.newShapeStrokeThicknessTextBox.Size = new System.Drawing.Size(26, 20);
             this.newShapeStrokeThicknessTextBox.TabIndex = 8;
@@ -514,6 +527,7 @@
         private System.Windows.Forms.Button colorPicker;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.TextBox newShapeStrokeThicknessTextBox;
+        private System.Windows.Forms.ToolStripButton bucketToolButton;
     }
 }
 
