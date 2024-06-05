@@ -1057,12 +1057,14 @@ namespace VectorDrawForms
             //Handle Edit and Delete
             if (dialogProcessor.Selections.Count > 0)
             {
+                cutToolStripMenuItem.Enabled = true;
                 copyToolStripMenuItem.Enabled = true;
                 editSelectionToolStripMenuItem.Enabled = true;
                 deleteSelectionToolStripMenuItem.Enabled = true;
             }
             else
             {
+                cutToolStripMenuItem.Enabled = false;
                 copyToolStripMenuItem.Enabled = false;
                 editSelectionToolStripMenuItem.Enabled = false;
                 deleteSelectionToolStripMenuItem.Enabled = false;
@@ -1123,6 +1125,11 @@ namespace VectorDrawForms
 
             }
             textBox.SelectionStart = textBox.TextLength;
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleCutShape();
         }
     }
 
