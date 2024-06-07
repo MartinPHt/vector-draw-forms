@@ -41,10 +41,13 @@
             this.groupMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.groupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ungroupSelectionMenuButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveShapeLayerUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveLayerDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCanvasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +74,6 @@
             this.newShapeStrokeThicknessTextBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.canvas = new VectorDrawForms.Views.DoubleBufferedPanel();
-            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -105,35 +107,35 @@
             // newFileMenuButton
             // 
             this.newFileMenuButton.Name = "newFileMenuButton";
-            this.newFileMenuButton.Size = new System.Drawing.Size(180, 22);
+            this.newFileMenuButton.Size = new System.Drawing.Size(112, 22);
             this.newFileMenuButton.Text = "New";
             this.newFileMenuButton.Click += new System.EventHandler(this.newFileMenuButton_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.saveAsToolStripMenuItem.Text = "Save as";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -145,6 +147,8 @@
             this.copyToolStripMenuItem,
             this.pasteToolStripMenuItem,
             this.editSelectionToolStripMenuItem,
+            this.moveShapeLayerUpToolStripMenuItem,
+            this.moveLayerDownToolStripMenuItem,
             this.deleteSelectionToolStripMenuItem,
             this.clearCanvasToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
@@ -158,7 +162,7 @@
             this.groupSelectionMenuButton,
             this.ungroupSelectionMenuButton});
             this.groupMenuButton.Name = "groupMenuButton";
-            this.groupMenuButton.Size = new System.Drawing.Size(236, 22);
+            this.groupMenuButton.Size = new System.Drawing.Size(260, 22);
             this.groupMenuButton.Text = "Group";
             this.groupMenuButton.DropDownOpened += new System.EventHandler(this.groupMenuButton_DropDownOpened);
             // 
@@ -176,38 +180,59 @@
             this.ungroupSelectionMenuButton.Text = "Ungroup selection           Ctrl + U";
             this.ungroupSelectionMenuButton.Click += new System.EventHandler(this.ungroupSelectionToolStripMenuItem_Click);
             // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.cutToolStripMenuItem.Text = "Cut                                  Ctrl + X";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.copyToolStripMenuItem.Text = "Copy                               Ctrl + C";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.pasteToolStripMenuItem.Text = "Paste                               Ctrl + V";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // editSelectionToolStripMenuItem
             // 
             this.editSelectionToolStripMenuItem.Name = "editSelectionToolStripMenuItem";
-            this.editSelectionToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.editSelectionToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.editSelectionToolStripMenuItem.Text = "Edit selection                 Ctrl + E";
             this.editSelectionToolStripMenuItem.Click += new System.EventHandler(this.editSelectionCtrlEToolStripMenuItem_Click);
             // 
             // deleteSelectionToolStripMenuItem
             // 
             this.deleteSelectionToolStripMenuItem.Name = "deleteSelectionToolStripMenuItem";
-            this.deleteSelectionToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.deleteSelectionToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.deleteSelectionToolStripMenuItem.Text = "Delete selection             Del";
             this.deleteSelectionToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectionToolStripMenuItem_Click);
+            // 
+            // moveShapeLayerUpToolStripMenuItem
+            // 
+            this.moveShapeLayerUpToolStripMenuItem.Name = "moveShapeLayerUpToolStripMenuItem";
+            this.moveShapeLayerUpToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.moveShapeLayerUpToolStripMenuItem.Text = "Move Layer Up              Ctrl + Up";
+            this.moveShapeLayerUpToolStripMenuItem.Click += new System.EventHandler(this.moveShapeLayerUpCtrlUpToolStripMenuItem_Click);
+            // 
+            // moveLayerDownToolStripMenuItem
+            // 
+            this.moveLayerDownToolStripMenuItem.Name = "moveLayerDownToolStripMenuItem";
+            this.moveLayerDownToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.moveLayerDownToolStripMenuItem.Text = "Move Layer Down         Ctrl + Down";
+            this.moveLayerDownToolStripMenuItem.Click += new System.EventHandler(this.moveLayerDownToolStripMenuItem_Click);
             // 
             // clearCanvasToolStripMenuItem
             // 
             this.clearCanvasToolStripMenuItem.Name = "clearCanvasToolStripMenuItem";
-            this.clearCanvasToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.clearCanvasToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.clearCanvasToolStripMenuItem.Text = "Clear Canvas";
             this.clearCanvasToolStripMenuItem.Click += new System.EventHandler(this.clearCanvasToolStripMenuItem_Click);
             // 
@@ -459,13 +484,6 @@
             this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseMove);
             this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ViewPortMouseUp);
             // 
-            // cutToolStripMenuItem
-            // 
-            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
-            this.cutToolStripMenuItem.Text = "Cut                                  Ctrl + X";
-            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -538,6 +556,8 @@
         private System.Windows.Forms.TextBox newShapeStrokeThicknessTextBox;
         private System.Windows.Forms.ToolStripButton bucketToolButton;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveShapeLayerUpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveLayerDownToolStripMenuItem;
     }
 }
 

@@ -6,12 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using VectorDrawForms.Models;
-using VectorDrawForms.Processors;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
-using VectorDrawForms.Assets.Helpers;
 using System.Text.RegularExpressions;
+using VectorDrawForms.Models;
+using VectorDrawForms.Processors;
+using VectorDrawForms.Assets.Helpers;
 
 namespace VectorDrawForms
 {
@@ -208,7 +208,7 @@ namespace VectorDrawForms
                 MessageBox.Show($"Couldn't Copy shape. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        
+
         private void HandleCutShape()
         {
             try
@@ -986,7 +986,6 @@ namespace VectorDrawForms
             {
                 if (dialogProcessor.CoppiedSelection.Count > 0)
                     HandlePasteShape();
-
             }
             else if (e.Control && e.KeyCode == Keys.G)
             {
@@ -996,13 +995,29 @@ namespace VectorDrawForms
             {
                 UngroupSelection();
             }
-            else if (!e.Control && e.KeyCode == Keys.E)
+            else if (e.Control && e.KeyCode == Keys.E)
             {
                 HandleEditShape();
             }
             else if (!e.Control && e.KeyCode == Keys.Delete)
             {
                 HandleDeleteShape();
+            }
+            else if (e.Control && e.KeyCode == Keys.Up)
+            {
+                if (dialogProcessor.Selections.Count == 1)
+                {
+                    dialogProcessor.BringShapeOneLayerUp(dialogProcessor.Selections[0]);
+                    RedrawCanvas();
+                }
+            }
+            else if (e.Control && e.KeyCode == Keys.Down)
+            {
+                if (dialogProcessor.Selections.Count == 1)
+                {
+                    dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
+                    RedrawCanvas();
+                }
             }
         }
         #endregion
@@ -1070,6 +1085,17 @@ namespace VectorDrawForms
                 deleteSelectionToolStripMenuItem.Enabled = false;
             }
 
+            if (dialogProcessor.Selections.Count == 1)
+            {
+                moveShapeLayerUpToolStripMenuItem.Enabled = true;
+                moveLayerDownToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                moveShapeLayerUpToolStripMenuItem.Enabled = false;
+                moveLayerDownToolStripMenuItem.Enabled = false;
+            }
+
             if (dialogProcessor.CoppiedSelection.Count > 0)
                 pasteToolStripMenuItem.Enabled = true;
             else
@@ -1130,6 +1156,24 @@ namespace VectorDrawForms
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             HandleCutShape();
+        }
+
+        private void moveShapeLayerUpCtrlUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dialogProcessor.Selections.Count == 1)
+            {
+                dialogProcessor.BringShapeOneLayerUp(dialogProcessor.Selections[0]);
+                RedrawCanvas();
+            }
+        }
+
+        private void moveLayerDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dialogProcessor.Selections.Count == 1)
+            {
+                dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
+                RedrawCanvas();
+            }
         }
     }
 

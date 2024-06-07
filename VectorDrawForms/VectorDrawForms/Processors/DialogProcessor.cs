@@ -391,6 +391,48 @@ namespace VectorDrawForms.Processors
             }
             catch { }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public void BringShapeOneLayerUp(IShape shape)
+        {
+            if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+            {
+                int index = ShapeList.IndexOf(shape) + 1;
+                ShapeList.Remove(shape);
+
+                if (index <= ShapeList.Count)
+                    ShapeList.Insert(index, shape);
+                else
+                    ShapeList.Add(shape);
+            }
+            else
+                throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public void BringShapeOneLayerDown(IShape shape)
+        {
+            if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+            {
+                int index = ShapeList.IndexOf(shape) - 1;
+                ShapeList.Remove(shape);
+
+                if (index >= 0)
+                    ShapeList.Insert(index, shape);
+                else
+                    ShapeList.Insert(0, shape);
+            }
+            else
+                throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
+        }
         #endregion
     }
 }
