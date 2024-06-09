@@ -399,18 +399,25 @@ namespace VectorDrawForms.Processors
         /// <exception cref="ArgumentException"></exception>
         public void BringShapeOneLayerUp(IShape shape)
         {
-            if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+            try
             {
-                int index = ShapeList.IndexOf(shape) + 1;
-                ShapeList.Remove(shape);
+                if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+                {
+                    int index = ShapeList.IndexOf(shape) + 1;
+                    ShapeList.Remove(shape);
 
-                if (index <= ShapeList.Count)
-                    ShapeList.Insert(index, shape);
+                    if (index <= ShapeList.Count)
+                        ShapeList.Insert(index, shape);
+                    else
+                        ShapeList.Add(shape);
+                }
                 else
-                    ShapeList.Add(shape);
+                    throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
             }
-            else
-                throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error has occured while bringing the layer up. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -420,18 +427,25 @@ namespace VectorDrawForms.Processors
         /// <exception cref="ArgumentException"></exception>
         public void BringShapeOneLayerDown(IShape shape)
         {
-            if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+            try 
             {
-                int index = ShapeList.IndexOf(shape) - 1;
-                ShapeList.Remove(shape);
+                if (ShapeList.Contains(shape) && ShapeList.Count > 1)
+                {
+                    int index = ShapeList.IndexOf(shape) - 1;
+                    ShapeList.Remove(shape);
 
-                if (index >= 0)
-                    ShapeList.Insert(index, shape);
+                    if (index >= 0)
+                        ShapeList.Insert(index, shape);
+                    else
+                        ShapeList.Insert(0, shape);
+                }
                 else
-                    ShapeList.Insert(0, shape);
+                    throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
             }
-            else
-                throw new ArgumentException("The provided shape does not exist in the Shape list of the Dialog Processor.");
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error has occured while bringing the layer down. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         #endregion
     }

@@ -20,6 +20,7 @@ namespace VectorDrawForms
     {
         #region Fields
         private ToolStripButton selectedToolStripButton;
+        private Button addButton;
 
         //Drawing fiels
         private bool isDrawingPerformed = false;
@@ -200,7 +201,7 @@ namespace VectorDrawForms
                 if (!File.Exists(SelectedTabFilePath))
                     HandleSaveAs();
                 else
-                    SaveToFile(SelectedTabFilePath);            
+                    SaveToFile(SelectedTabFilePath);
             }
             catch (Exception ex)
             {
@@ -393,6 +394,15 @@ namespace VectorDrawForms
         {
             tabControl.Dock = DockStyle.Fill;
             tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            tabControl.Padding = new Point(12, 4);
+
+            //Add button
+            addButton = new Button();
+            addButton.Text = "+";
+            addButton.Size = new Size(24, 24);
+            addButton.Click += new EventHandler(AddButton_Click);
+            this.Controls.Add(addButton);
+
             CreateNewTabPage();
         }
 
@@ -421,6 +431,21 @@ namespace VectorDrawForms
             tabControl.Controls.Add(tabPage);
 
             createdCanvases++;
+            PositionAddButton();
+        }
+
+        private void PositionAddButton()
+        {
+            if (tabControl.TabPages.Count > 0)
+            {
+                Rectangle lastTabRect = tabControl.GetTabRect(tabControl.TabPages.Count - 1);
+                addButton.Location = new Point(lastTabRect.Right + toolMenu.Width + 2, tabControl.Top - 1);
+            }
+            else
+            {
+                addButton.Location = new Point(toolMenu.Right + 1, tabControl.Top - 1);
+            }
+            addButton.BringToFront();
         }
 
         private void LoadFileOnNewTabPage(string fullFileName)
@@ -707,11 +732,25 @@ namespace VectorDrawForms
 
         private DialogProcessor GetCurrentDialogProcessor()
         {
-            return GetCurrentCanvas().DialogProcessor;
+            try
+            {
+                return GetCurrentCanvas().DialogProcessor;
+            }
+            catch
+            {
+                return null;
+            }
         }
         private DoubleBufferedPanel GetCurrentCanvas()
         {
-            return tabControl.SelectedTab.Controls.OfType<DoubleBufferedPanel>().First();
+            try
+            {
+                return tabControl.SelectedTab.Controls.OfType<DoubleBufferedPanel>().First();
+            }
+            catch
+            {
+                return null;
+            }
         }
         #endregion 
 
@@ -734,6 +773,13 @@ namespace VectorDrawForms
         private void ViewPortPaint(object sender, PaintEventArgs e)
         {
             CurrentDialogProcessor.ReDraw(sender, e);
+        }
+
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            CreateNewTabPage();
+            tabControl.SelectedIndex = tabControl.Controls.Count - 1;
+            PositionAddButton();
         }
 
         private void ViewPortMouseDown(object sender, MouseEventArgs e)
@@ -995,15 +1041,8 @@ namespace VectorDrawForms
 
         private void newFileMenuButton_Click(object sender, EventArgs e)
         {
-            if (EnsureUnsavedWorkIsNotLost())
-            {
-                //Return to initial state
-                CurrentDialogProcessor.PrepareForCleenSheet();
-                RedrawCanvas();
-
-                //Indicate that change is not made
-                IsChangeMade = false;
-            }
+            CreateNewTabPage();
+            tabControl.SelectedIndex = tabControl.Controls.Count - 1;
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1022,6 +1061,7 @@ namespace VectorDrawForms
                 LoadFileOnNewTabPage(dialog.FileName);
                 tabControl.SelectedIndex = tabControl.Controls.Count - 1;
             }
+            PositionAddButton();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1109,6 +1149,14 @@ namespace VectorDrawForms
             else if (!e.Control && e.KeyCode == Keys.Delete)
             {
                 HandleDeleteShape();
+            }
+            else if (e.Control && e.KeyCode == Keys.Delete)
+            {
+                if (EnsureUnsavedWorkIsNotLost())
+                {
+                    tabControl.TabPages.Remove(SelectedTab);
+                    PositionAddButton();
+                }
             }
             else if (e.Control && e.KeyCode == Keys.Up)
             {
@@ -1206,12 +1254,12 @@ namespace VectorDrawForms
             }
         }
 
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void closeTabCtrlDelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var tabControl = sender as TabControl;
-            if (tabControl != null)
+            if (EnsureUnsavedWorkIsNotLost())
             {
-
+                tabControl.TabPages.Remove(SelectedTab);
+                PositionAddButton();
             }
         }
         #endregion
@@ -1264,39 +1312,57 @@ namespace VectorDrawForms
 
         private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
         {
-            var dialogProcessor = CurrentDialogProcessor;
+            if (tabControl.TabPages.Count > 0)
+                closeTabToolStripMenuItem.Enabled = true;
+            else
+                closeTabToolStripMenuItem.Enabled = false;
 
-            //Handle Edit and Delete
-            if (dialogProcessor.Selections.Count > 0)
+            var dialogProcessor = CurrentDialogProcessor;
+            if (dialogProcessor != null)
             {
-                cutToolStripMenuItem.Enabled = true;
-                copyToolStripMenuItem.Enabled = true;
-                editSelectionToolStripMenuItem.Enabled = true;
-                deleteSelectionToolStripMenuItem.Enabled = true;
+                //Handle Edit and Delete
+                if (dialogProcessor.Selections.Count > 0)
+                {
+                    cutToolStripMenuItem.Enabled = true;
+                    copyToolStripMenuItem.Enabled = true;
+                    editSelectionToolStripMenuItem.Enabled = true;
+                    deleteSelectionToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    cutToolStripMenuItem.Enabled = false;
+                    copyToolStripMenuItem.Enabled = false;
+                    editSelectionToolStripMenuItem.Enabled = false;
+                    deleteSelectionToolStripMenuItem.Enabled = false;
+                }
+
+                if (dialogProcessor.Selections.Count == 1)
+                {
+                    moveShapeLayerUpToolStripMenuItem.Enabled = true;
+                    moveLayerDownToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    moveShapeLayerUpToolStripMenuItem.Enabled = false;
+                    moveLayerDownToolStripMenuItem.Enabled = false;
+                }
+
+                if (dialogProcessor.CoppiedSelection.Count > 0)
+                    pasteToolStripMenuItem.Enabled = true;
+                else
+                    pasteToolStripMenuItem.Enabled = false;
             }
             else
             {
                 cutToolStripMenuItem.Enabled = false;
                 copyToolStripMenuItem.Enabled = false;
+                clearCanvasToolStripMenuItem.Enabled = false;
                 editSelectionToolStripMenuItem.Enabled = false;
                 deleteSelectionToolStripMenuItem.Enabled = false;
-            }
-
-            if (dialogProcessor.Selections.Count == 1)
-            {
-                moveShapeLayerUpToolStripMenuItem.Enabled = true;
-                moveLayerDownToolStripMenuItem.Enabled = true;
-            }
-            else
-            {
                 moveShapeLayerUpToolStripMenuItem.Enabled = false;
                 moveLayerDownToolStripMenuItem.Enabled = false;
-            }
-
-            if (dialogProcessor.CoppiedSelection.Count > 0)
-                pasteToolStripMenuItem.Enabled = true;
-            else
                 pasteToolStripMenuItem.Enabled = false;
+            }
         }
         #endregion
     }

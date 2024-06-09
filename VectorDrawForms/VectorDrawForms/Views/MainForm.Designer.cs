@@ -74,6 +74,7 @@
             this.newShapeStrokeThicknessTextBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -150,7 +151,8 @@
             this.moveShapeLayerUpToolStripMenuItem,
             this.moveLayerDownToolStripMenuItem,
             this.deleteSelectionToolStripMenuItem,
-            this.clearCanvasToolStripMenuItem});
+            this.clearCanvasToolStripMenuItem,
+            this.closeTabToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -479,7 +481,13 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(962, 524);
             this.tabControl.TabIndex = 9;
-            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+            // 
+            // closeTabToolStripMenuItem
+            // 
+            this.closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
+            this.closeTabToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.closeTabToolStripMenuItem.Text = "Close Tab                        Ctrl + Del";
+            this.closeTabToolStripMenuItem.Click += new System.EventHandler(this.closeTabCtrlDelToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -555,6 +563,7 @@
         private System.Windows.Forms.ToolStripMenuItem moveShapeLayerUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveLayerDownToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.ToolStripMenuItem closeTabToolStripMenuItem;
     }
 }
 
