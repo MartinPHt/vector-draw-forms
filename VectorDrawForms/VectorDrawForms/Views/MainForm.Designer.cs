@@ -474,7 +474,7 @@
             // 
             // tabControl
             // 
-            this.tabControl.Location = new System.Drawing.Point(42, 24);
+            this.tabControl.Location = new System.Drawing.Point(44, 24);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(962, 524);
