@@ -50,14 +50,36 @@ namespace VectorDrawForms
             get { return GetCurrentCanvas(); }
         }
 
-        private string filePath;
-        /// <summary>
-        /// Gets the path of the current loaded file
-        /// </summary>
-        private string FilePath
+        private TabPage SelectedTab
         {
-            get { return filePath; }
-            set { filePath = value; }
+            get { return tabControl.SelectedTab; }
+        }
+
+        /// <summary>
+        /// Full file path of the selected tab
+        /// </summary>
+        private string SelectedTabFilePath
+        {
+            get
+            {
+                try
+                {
+                    return SelectedTab.Tag.ToString();
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
+            set
+            {
+                try
+                {
+                    SelectedTab.Tag = value;
+                    SelectedTab.Text = Path.GetFileName(value);
+                }
+                catch { }
+            }
         }
 
         private bool isChangeMade = false;
@@ -84,7 +106,7 @@ namespace VectorDrawForms
                     else
                     {
                         if (fileHasStar)
-                            tabControl.SelectedTab.Text = Text.Substring(0, Text.Length - 1);
+                            tabControl.SelectedTab.Text = tabControl.SelectedTab.Text.Substring(0, tabControl.SelectedTab.Text.Length - 1);
                     }
                 }
                 catch { }
@@ -153,17 +175,17 @@ namespace VectorDrawForms
                 dialog.Filter = "Png Image (.png)|*.png|File|*.vdfile";
                 dialog.DefaultExt = "vdfile";
                 dialog.CheckPathExists = true;
-                dialog.FileName = Path.GetFileName(FilePath);
+                dialog.FileName = SelectedTab.Tag.ToString();
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    FilePath = dialog.FileName;
-                    SaveToFile(FilePath);
+                    SelectedTabFilePath = dialog.FileName;
+                    SaveToFile(SelectedTabFilePath);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error",
+                MessageBox.Show($"Error has occured while saving to {SelectedTabFilePath} file. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -175,14 +197,14 @@ namespace VectorDrawForms
         {
             try
             {
-                if (!File.Exists(FilePath))
+                if (!File.Exists(SelectedTabFilePath))
                     HandleSaveAs();
                 else
-                    SaveToFile(FilePath);
+                    SaveToFile(SelectedTabFilePath);            
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error has occured while saving to {SelectedTabFilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -282,14 +304,14 @@ namespace VectorDrawForms
                 if (!IsChangeMade)
                     return true;
 
-                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(FilePath)}", "VectorDraw",
+                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(SelectedTabFilePath)}", "VectorDraw",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    if (!File.Exists(FilePath))
+                    if (!File.Exists(SelectedTabFilePath))
                         HandleSaveAs();
                     else
-                        SaveToFile(FilePath);
+                        SaveToFile(SelectedTabFilePath);
 
                     return true;
                 }
@@ -363,9 +385,7 @@ namespace VectorDrawForms
         /// </summary>
         private void PrepareInitialState()
         {
-            //Prepare for initial load.
-            //Untitled will be used as a name for the inital file
-            FilePath = "Untitled1";
+            //Prepare for initial load
             this.Text = Assembly.GetCallingAssembly().GetName().Name;
         }
 
@@ -381,6 +401,7 @@ namespace VectorDrawForms
             TabPage tabPage = new TabPage()
             {
                 Text = $"Untitled{createdCanvases + 1}",
+                Tag = $"Untitled{createdCanvases + 1}",
             };
 
             var canvas = new DoubleBufferedPanel()
@@ -812,20 +833,18 @@ namespace VectorDrawForms
         /// <param name="e"></param>
         private void ViewPortMouseMove(object sender, MouseEventArgs e)
         {
-            var dialogProcessor = CurrentDialogProcessor;
-
             //Update coordinates
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
             if (eraserToolButton.Checked && e.Button == MouseButtons.Left)
             {
-                dialogProcessor.EraseShapes(e.Location);
+                CurrentDialogProcessor.EraseShapes(e.Location);
                 RedrawCanvas();
                 return;
             }
 
             // Handle dragging
-            if (dialogProcessor.IsDragging)
+            if (CurrentDialogProcessor.IsDragging)
             {
                 HandleDragging(e);
                 return;
@@ -906,10 +925,10 @@ namespace VectorDrawForms
 
             selectedToolStripButton = e.ClickedItem as ToolStripButton;
 
-            //if (selectedToolStripButton == selectionToolButton)
-            //    canvas.Cursor = Cursors.Default;
-            //else
-            //    canvas.Cursor = Cursors.Cross;
+            if (selectedToolStripButton == selectionToolButton)
+                CurrentCanvas.Cursor = Cursors.Default;
+            else
+                CurrentCanvas.Cursor = Cursors.Cross;
         }
 
         private void editToolButton_Click(object sender, EventArgs e)
@@ -979,7 +998,6 @@ namespace VectorDrawForms
             if (EnsureUnsavedWorkIsNotLost())
             {
                 //Return to initial state
-                FilePath = "Untitled";
                 CurrentDialogProcessor.PrepareForCleenSheet();
                 RedrawCanvas();
 
@@ -1003,7 +1021,6 @@ namespace VectorDrawForms
             {
                 LoadFileOnNewTabPage(dialog.FileName);
                 tabControl.SelectedIndex = tabControl.Controls.Count - 1;
-                selectionToolButton.Checked = true;
             }
         }
 
@@ -1186,6 +1203,15 @@ namespace VectorDrawForms
             {
                 dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
                 RedrawCanvas();
+            }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            if (tabControl != null)
+            {
+
             }
         }
         #endregion
