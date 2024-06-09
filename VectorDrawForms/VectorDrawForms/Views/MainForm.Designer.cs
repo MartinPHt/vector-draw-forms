@@ -45,9 +45,9 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveShapeLayerUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveLayerDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCanvasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -208,13 +208,6 @@
             this.editSelectionToolStripMenuItem.Text = "Edit selection                 Ctrl + E";
             this.editSelectionToolStripMenuItem.Click += new System.EventHandler(this.editSelectionCtrlEToolStripMenuItem_Click);
             // 
-            // deleteSelectionToolStripMenuItem
-            // 
-            this.deleteSelectionToolStripMenuItem.Name = "deleteSelectionToolStripMenuItem";
-            this.deleteSelectionToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
-            this.deleteSelectionToolStripMenuItem.Text = "Delete selection             Del";
-            this.deleteSelectionToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectionToolStripMenuItem_Click);
-            // 
             // moveShapeLayerUpToolStripMenuItem
             // 
             this.moveShapeLayerUpToolStripMenuItem.Name = "moveShapeLayerUpToolStripMenuItem";
@@ -228,6 +221,13 @@
             this.moveLayerDownToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.moveLayerDownToolStripMenuItem.Text = "Move Layer Down         Ctrl + Down";
             this.moveLayerDownToolStripMenuItem.Click += new System.EventHandler(this.moveLayerDownToolStripMenuItem_Click);
+            // 
+            // deleteSelectionToolStripMenuItem
+            // 
+            this.deleteSelectionToolStripMenuItem.Name = "deleteSelectionToolStripMenuItem";
+            this.deleteSelectionToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.deleteSelectionToolStripMenuItem.Text = "Delete selection             Del";
+            this.deleteSelectionToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectionToolStripMenuItem_Click);
             // 
             // clearCanvasToolStripMenuItem
             // 
@@ -452,7 +452,7 @@
             // 
             // colorPicker
             // 
-            this.colorPicker.BackColor = System.Drawing.Color.White;
+            this.colorPicker.BackColor = System.Drawing.Color.Gray;
             this.colorPicker.Location = new System.Drawing.Point(9, 429);
             this.colorPicker.Name = "colorPicker";
             this.colorPicker.Size = new System.Drawing.Size(28, 28);

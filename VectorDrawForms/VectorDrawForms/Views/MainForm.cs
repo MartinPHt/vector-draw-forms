@@ -86,7 +86,7 @@ namespace VectorDrawForms
             }
         }
 
-        private Color selectedColor = Color.White;
+        private Color selectedColor = Color.Gray;
         public Color SelectedColor
         {
             get { return selectedColor; }
