@@ -12,22 +12,22 @@ using System.Text.RegularExpressions;
 using VectorDrawForms.Models;
 using VectorDrawForms.Processors;
 using VectorDrawForms.Assets.Helpers;
+using VectorDrawForms.Views;
 
 namespace VectorDrawForms
 {
     public partial class MainForm : Form
     {
         #region Fields
-        /// <summary>
-        /// An aggregated dialog processor in the form makes easier the manipulation of the model.
-        /// </summary>
-        private DialogProcessor dialogProcessor = new DialogProcessor();
         private ToolStripButton selectedToolStripButton;
+        private Button addButton;
+        private Point tabPageShellPoint;
 
         //Drawing fiels
         private bool isDrawingPerformed = false;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
+        private int createdCanvases = 0;
         #endregion
 
         #region Constructor
@@ -35,23 +35,52 @@ namespace VectorDrawForms
         {
             InitializeComponent();
             PrepareInitialState();
+            InitializeTabControl();
             ChangeUIMode("UIMode");
             CenterToScreen();
         }
         #endregion
 
         #region Properties
-        private string filePath;
-        /// <summary>
-        /// Gets the path of the current loaded file
-        /// </summary>
-        private string FilePath
+        private DialogProcessor CurrentDialogProcessor
         {
-            get { return filePath; }
+            get { return GetCurrentDialogProcessor(); }
+        }
+
+        private DoubleBufferedPanel CurrentCanvas
+        {
+            get { return GetCurrentCanvas(); }
+        }
+
+        private TabPage SelectedTab
+        {
+            get { return tabControl.SelectedTab; }
+        }
+
+        /// <summary>
+        /// Full file path of the selected tab
+        /// </summary>
+        private string SelectedTabFilePath
+        {
+            get
+            {
+                try
+                {
+                    return SelectedTab.Tag.ToString();
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
             set
             {
-                filePath = value;
-                this.Text = string.Concat(Assembly.GetCallingAssembly().GetName().Name, $" - {Path.GetFileName(filePath)}");
+                try
+                {
+                    SelectedTab.Tag = value;
+                    SelectedTab.Text = Path.GetFileName(value);
+                }
+                catch { }
             }
         }
 
@@ -69,17 +98,17 @@ namespace VectorDrawForms
                 // Indicate that changes were made
                 try
                 {
-                    bool fileHasStar = this.Text[this.Text.Length - 1] == '*';
+                    bool fileHasStar = tabControl.SelectedTab.Text[tabControl.SelectedTab.Text.Length - 1] == '*';
 
                     if (value)
                     {
                         if (!fileHasStar)
-                            this.Text += "*";
+                            tabControl.SelectedTab.Text += "*";
                     }
                     else
                     {
                         if (fileHasStar)
-                            this.Text = Text.Substring(0, Text.Length - 1);
+                            tabControl.SelectedTab.Text = tabControl.SelectedTab.Text.Substring(0, tabControl.SelectedTab.Text.Length - 1);
                     }
                 }
                 catch { }
@@ -131,14 +160,14 @@ namespace VectorDrawForms
         /// <param name="e"></param>
         private void HandleDragging(MouseEventArgs e)
         {
-            dialogProcessor.TranslateTo(e.Location);
+            CurrentDialogProcessor.TranslateTo(e.Location);
             RedrawCanvas();
         }
 
         /// <summary>
         /// Opens <see cref="SaveFileDialog"/> window and creates file based on user's directory and file name input.
         /// </summary>
-        private void HandleSaveAs()
+        private void HandleSaveAs(string fileName = null)
         {
             try
             {
@@ -148,17 +177,21 @@ namespace VectorDrawForms
                 dialog.Filter = "Png Image (.png)|*.png|File|*.vdfile";
                 dialog.DefaultExt = "vdfile";
                 dialog.CheckPathExists = true;
-                dialog.FileName = Path.GetFileName(FilePath);
+
+                if (fileName == null)
+                    dialog.FileName = SelectedTab.Tag.ToString();
+                else
+                    dialog.FileName = fileName;
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    FilePath = dialog.FileName;
-                    SaveToFile(FilePath);
+                    SelectedTabFilePath = dialog.FileName;
+                    SaveToFile(SelectedTabFilePath);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error",
+                MessageBox.Show($"Error has occured while saving to {SelectedTabFilePath} file. Exception message:" + ex.Message, "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -170,14 +203,14 @@ namespace VectorDrawForms
         {
             try
             {
-                if (!File.Exists(FilePath))
+                if (!File.Exists(SelectedTabFilePath))
                     HandleSaveAs();
                 else
-                    SaveToFile(FilePath);
+                    SaveToFile(SelectedTabFilePath);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error has occured while saving to {FilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error has occured while saving to {SelectedTabFilePath} file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -188,7 +221,7 @@ namespace VectorDrawForms
         {
             try
             {
-                dialogProcessor.PasteSelection();
+                CurrentDialogProcessor.PasteSelection();
                 RedrawCanvas();
             }
             catch (Exception ex)
@@ -201,7 +234,7 @@ namespace VectorDrawForms
         {
             try
             {
-                dialogProcessor.CopySelection();
+                CurrentDialogProcessor.CopySelection();
             }
             catch (Exception ex)
             {
@@ -213,7 +246,7 @@ namespace VectorDrawForms
         {
             try
             {
-                dialogProcessor.CutSelection();
+                CurrentDialogProcessor.CutSelection();
                 RedrawCanvas();
             }
             catch (Exception ex)
@@ -226,7 +259,7 @@ namespace VectorDrawForms
         {
             try
             {
-                if (dialogProcessor.Selections.Count == 0)
+                if (CurrentDialogProcessor.Selections.Count == 0)
                 {
                     MessageBox.Show("You have to select a shape in order to use the Remove Shape Tool", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -235,7 +268,7 @@ namespace VectorDrawForms
                 var confirmResult = MessageBox.Show($"Do you want to delete the selection?", "VectorDraw", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    dialogProcessor.DeleteSelection();
+                    CurrentDialogProcessor.DeleteSelection();
                     RedrawCanvas();
                 }
             }
@@ -274,17 +307,74 @@ namespace VectorDrawForms
             try
             {
                 // If change has not been made, return true to indicate that following operations can proceed
-                if (!IsChangeMade)
+                if (!SelectedTab.Text.Contains('*'))
                     return true;
 
-                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(FilePath)}", "VectorDraw",
+                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(SelectedTabFilePath)}", "VectorDraw",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    if (!File.Exists(FilePath))
+                    if (!File.Exists(SelectedTabFilePath))
                         HandleSaveAs();
                     else
-                        SaveToFile(FilePath);
+                        SaveToFile(SelectedTabFilePath);
+
+                    return true;
+                }
+                else if (confirmResult == DialogResult.No)
+                {
+                    // Don't save to a file and proceed. 
+                    return true;
+                }
+                else
+                {
+                    // Return false to indicate that the user doesn't want to proceed.
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unexpexted error has occured. Exception message:" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Return false to indicate an error in UnsavedWork handling.
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Wrapper. Ensures that any unsaved work is not lost by opening a <see cref="MessageBox"/> asking if it should save changes before moving on.
+        /// Returns true to indicate that any following actions can proceed and false to stop all following actions. <br></br> <br></br>
+        /// 
+        /// <example> Example:
+        /// <code>
+        ///     if (EnsureUnsavedWorkIsNotLost())
+        ///     {
+        ///         //following action:
+        ///         RedrawCanvas();
+        ///      }
+        /// </code>
+        /// </example>
+        /// 
+        /// </summary>
+        /// <returns>true if there are changes and user agreed to either save the changes by pressing "Yes" or to lose it by pressing "No". 
+        /// <br></br>false if the dialog was closed or canceled by pressing "Cancel". Done if the user does not want to prceed
+        /// </returns>
+        private bool EnsureUnsavedWorkIsNotLost(TabPage tabPage)
+        {
+            try
+            {
+                // If change has not been made, return true to indicate that following operations can proceed
+                if (!tabPage.Text.Contains('*'))
+                    return true;
+
+                var confirmResult = MessageBox.Show($"Do you want to save changes to {Path.GetFileName(tabPage.Tag.ToString())}", "VectorDraw",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    if (!File.Exists(tabPage.Tag.ToString()))
+                        HandleSaveAs(tabPage.Tag.ToString());
+                    else
+                        SaveToFile(tabPage.Tag.ToString());
 
                     return true;
                 }
@@ -323,7 +413,7 @@ namespace VectorDrawForms
             {
                 FileStream stream = new FileStream(path, FileMode.Create);
                 BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, dialogProcessor.ShapeList);
+                formatter.Serialize(stream, CurrentDialogProcessor.ShapeList);
 
                 //Dispose fileStream
                 stream.Flush();
@@ -334,20 +424,28 @@ namespace VectorDrawForms
         }
 
         /// <summary>
-        /// Invalidates the entire surface of the canvas, causes it to be redrawn and indicates change being made.
+        /// Invalidates the entire surface of the current canvas, causes it to be redrawn and indicates change being made.
         /// Use when there is a change in the model.
         /// </summary>
         private void RedrawCanvas()
         {
-            canvas.Invalidate();
-            IsChangeMade = true;
+            try
+            {
+                if (CurrentCanvas == null)
+                    return;
 
-            //Update selected shapes count label everytime the canvas is redrawn
-            selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
+                CurrentCanvas.Invalidate();
+                IsChangeMade = true;
+
+                //Update selected shapes count label everytime the canvas is redrawn
+                selectedShapesCountLabel.Text = CurrentDialogProcessor.Selections.Count.ToString();
+            }
+            catch { }
         }
 
         private void ClearSelections()
         {
+            var dialogProcessor = CurrentDialogProcessor;
             dialogProcessor.Selections.Clear();
             selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
         }
@@ -357,9 +455,95 @@ namespace VectorDrawForms
         /// </summary>
         private void PrepareInitialState()
         {
-            //Prepare for initial load.
-            //Untitled will be used as a name for the inital file
-            FilePath = "Untitled";
+            //Prepare for initial load
+            this.Text = Assembly.GetCallingAssembly().GetName().Name;
+            tabPageShell.Items.Add("Close", null, TabPageShellOnCloseClick);
+        }
+
+        private void InitializeTabControl()
+        {
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            tabControl.Padding = new Point(12, 4);
+
+            //Add button
+            addButton = new Button();
+            addButton.Text = "+";
+            addButton.Size = new Size(24, 24);
+            addButton.Click += new EventHandler(AddButton_Click);
+            this.Controls.Add(addButton);
+
+            CreateNewTabPage();
+        }
+
+        private void CreateNewTabPage()
+        {
+            TabPage tabPage = new TabPage()
+            {
+                Text = $"Untitled{createdCanvases + 1}",
+                Tag = $"Untitled{createdCanvases + 1}",
+            };
+
+            var canvas = new DoubleBufferedPanel()
+            {
+                Dock = DockStyle.Fill,
+                Location = new Point(45, 24),
+                TabIndex = 4,
+                Name = $"canvas{createdCanvases}",
+            };
+
+            canvas.Paint += new PaintEventHandler(ViewPortPaint);
+            canvas.MouseDown += new MouseEventHandler(ViewPortMouseDown);
+            canvas.MouseMove += new MouseEventHandler(ViewPortMouseMove);
+            canvas.MouseUp += new MouseEventHandler(ViewPortMouseUp);
+
+            tabPage.Controls.Add(canvas);
+            tabControl.Controls.Add(tabPage);
+
+            createdCanvases++;
+            PositionAddButton();
+        }
+
+        private void PositionAddButton()
+        {
+            if (tabControl.TabPages.Count > 0)
+            {
+                Rectangle lastTabRect = tabControl.GetTabRect(tabControl.TabPages.Count - 1);
+                addButton.Location = new Point(lastTabRect.Right + toolMenu.Width + 2, tabControl.Top - 1);
+            }
+            else
+            {
+                addButton.Location = new Point(toolMenu.Right + 1, tabControl.Top - 1);
+            }
+            addButton.BringToFront();
+        }
+
+        private void LoadFileOnNewTabPage(string fullFileName)
+        {
+            TabPage tabPage = new TabPage()
+            {
+                Text = Path.GetFileName(fullFileName),
+                Tag = fullFileName
+            };
+
+            var canvas = new DoubleBufferedPanel()
+            {
+                Dock = DockStyle.Fill,
+                Location = new Point(45, 24),
+                TabIndex = 4,
+                Name = $"canvas{createdCanvases}",
+            };
+
+            canvas.Paint += new PaintEventHandler(ViewPortPaint);
+            canvas.MouseDown += new MouseEventHandler(ViewPortMouseDown);
+            canvas.MouseMove += new MouseEventHandler(ViewPortMouseMove);
+            canvas.MouseUp += new MouseEventHandler(ViewPortMouseUp);
+            canvas.DialogProcessor.ReadFile(fullFileName);
+
+            tabPage.Controls.Add(canvas);
+            tabControl.Controls.Add(tabPage);
+
+            createdCanvases++;
         }
 
         private void ChangeUIMode(string key)
@@ -373,7 +557,7 @@ namespace VectorDrawForms
                     this.ForeColor = ApplicationColors.MainUIDark;
                     this.BackColor = ApplicationColors.MainUILight;
 
-                    canvas.BackColor = Color.White;
+                    //canvas.BackColor = Color.White;
                     coordinatesLabel.BackColor = Color.White;
                     label1.BackColor = Color.White;
                     selectedShapesCountLabel.BackColor = Color.White;
@@ -410,7 +594,7 @@ namespace VectorDrawForms
                     this.ForeColor = ApplicationColors.MainUILight;
                     this.BackColor = ApplicationColors.MainUIDark;
 
-                    canvas.BackColor = ApplicationColors.MainUIDark;
+                    //canvas.BackColor = ApplicationColors.MainUIDark;
                     coordinatesLabel.BackColor = ApplicationColors.MainUIDark;
                     label1.BackColor = ApplicationColors.MainUIDark;
                     selectedShapesCountLabel.BackColor = ApplicationColors.MainUIDark;
@@ -451,13 +635,23 @@ namespace VectorDrawForms
 
         public void SaveShapesToPNG(string filePath)
         {
+            if (CurrentCanvas == null)
+            {
+                MessageBox.Show($"Couldn't save to {filePath} png file. There is no canvas.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            //Get current Dialog processor and canvas
+            var canvas = CurrentCanvas;
+
             // Create a Bitmap with the size of the User Control
             Bitmap bitmap = new Bitmap(canvas.Width, canvas.Height);
 
             // Create a Graphics object to draw on the Bitmap
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
-                foreach (var shape in dialogProcessor.ShapeList)
+                foreach (var shape in CurrentDialogProcessor.ShapeList)
                 {
                     shape.DrawSelf(graphics);
                 }
@@ -474,7 +668,7 @@ namespace VectorDrawForms
         {
             try
             {
-                if (dialogProcessor.Selections.Count <= 1)
+                if (CurrentDialogProcessor.Selections.Count <= 1)
                 {
                     MessageBox.Show("Cannot use Group Tool. Select at least two shapes with the Selection Tool first.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -482,7 +676,7 @@ namespace VectorDrawForms
                     return;
                 }
 
-                dialogProcessor.GroupSelectedShapes();
+                CurrentDialogProcessor.GroupSelectedShapes();
                 RedrawCanvas();
             }
             catch (Exception ex)
@@ -496,7 +690,7 @@ namespace VectorDrawForms
         {
             try
             {
-                if (dialogProcessor.Selections.OfType<GroupShape>().ToList().Count < 0)
+                if (CurrentDialogProcessor.Selections.OfType<GroupShape>().ToList().Count < 0)
                 {
                     MessageBox.Show("Cannot ungroup because there is no group selected", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -504,7 +698,7 @@ namespace VectorDrawForms
                     return;
                 }
 
-                dialogProcessor.UngroupSelectedShape();
+                CurrentDialogProcessor.UngroupSelectedShape();
                 RedrawCanvas();
             }
             catch (Exception ex)
@@ -522,8 +716,10 @@ namespace VectorDrawForms
             try
             {
                 isDrawingPerformed = false;
-                if (dialogProcessor.ShapeList.Contains(currentDrawnShape))
-                    dialogProcessor.ShapeList.Remove(currentDrawnShape);
+
+                if (CurrentDialogProcessor.ShapeList.Contains(currentDrawnShape))
+                    CurrentDialogProcessor.ShapeList.Remove(currentDrawnShape);
+
                 previewShapeStartPoint = Point.Empty;
                 currentDrawnShape = null;
             }
@@ -541,6 +737,7 @@ namespace VectorDrawForms
         {
             try
             {
+                var dialogProcessor = CurrentDialogProcessor;
                 if (dialogProcessor.Selections == null || dialogProcessor.Selections.Count <= 0)
                 {
                     MessageBox.Show("To open Edit Tool you have to select at least shape with the Selection Tool first.", "Error",
@@ -609,6 +806,53 @@ namespace VectorDrawForms
                 RedrawCanvas();
             }
         }
+
+        private DialogProcessor GetCurrentDialogProcessor()
+        {
+            try
+            {
+                return GetCurrentCanvas().DialogProcessor;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private DoubleBufferedPanel GetCurrentCanvas()
+        {
+            try
+            {
+                return tabControl.SelectedTab.Controls.OfType<DoubleBufferedPanel>().First();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private void RemoveTabPage()
+        {
+            if (SelectedTab == null)
+                return;
+
+            if (EnsureUnsavedWorkIsNotLost())
+            {
+                tabControl.TabPages.Remove(SelectedTab);
+                PositionAddButton();
+            }
+        }
+
+        private void RemoveTabPage(TabPage tabPage)
+        {
+            if (tabPage == null)
+                return;
+
+            if (EnsureUnsavedWorkIsNotLost(tabPage))
+            {
+                tabControl.TabPages.Remove(tabPage);
+                PositionAddButton();
+            }
+        }
         #endregion 
 
         #region Event Handling Methods (Functionality, Buttons)
@@ -629,11 +873,59 @@ namespace VectorDrawForms
         /// <param name="e"></param>
         private void ViewPortPaint(object sender, PaintEventArgs e)
         {
-            dialogProcessor.ReDraw(sender, e);
+            CurrentDialogProcessor.ReDraw(sender, e);
+        }
+
+        private void TabControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            if (tabControl != null)
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    for (int i = 0; i < tabControl.TabPages.Count; i++)
+                    {
+                        Rectangle tabRect = tabControl.GetTabRect(i);
+
+                        if (tabRect.Contains(e.Location))
+                        {
+                            tabPageShell.Show(tabControl, e.Location);
+                            tabPageShellPoint = e.Location;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void TabPageShellOnCloseClick(object sender, EventArgs e)
+        {
+            TabPage tabPage = null;
+            var tabPages = tabControl.Controls.OfType<TabPage>().ToList();
+            for (int i = 0; i < tabPages.Count; i++)
+            {
+                Rectangle tabRect = tabControl.GetTabRect(i);
+                if (tabRect.Contains(tabPageShellPoint))
+                {
+                    tabPage = tabPages[i];
+                    break;
+                }
+            }
+
+            RemoveTabPage(tabPage);
+        }
+
+        private void AddButton_Click(object sender, EventArgs e)
+        {
+            CreateNewTabPage();
+            tabControl.SelectedIndex = tabControl.Controls.Count - 1;
+            PositionAddButton();
         }
 
         private void ViewPortMouseDown(object sender, MouseEventArgs e)
         {
+            var dialogProcessor = CurrentDialogProcessor;
+
             // Do nothing if the pressed button is not the left mouse button
             if (e.Button != MouseButtons.Left)
                 return;
@@ -732,13 +1024,13 @@ namespace VectorDrawForms
 
             if (eraserToolButton.Checked && e.Button == MouseButtons.Left)
             {
-                dialogProcessor.EraseShapes(e.Location);
+                CurrentDialogProcessor.EraseShapes(e.Location);
                 RedrawCanvas();
                 return;
             }
 
             // Handle dragging
-            if (dialogProcessor.IsDragging)
+            if (CurrentDialogProcessor.IsDragging)
             {
                 HandleDragging(e);
                 return;
@@ -755,39 +1047,33 @@ namespace VectorDrawForms
 
         private void ViewPortMouseUp(object sender, MouseEventArgs e)
         {
+            if (e.Button != MouseButtons.Left)
+                return;
+
+            var dialogProcessor = CurrentDialogProcessor;
             var endPoint = e.Location;
 
             if (selectionToolButton.Checked)
             {
                 dialogProcessor.IsDragging = false;
             }
-            else if (lineToolButton.Checked)
+            else
             {
-                dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
-                DisposeShapePreview();
-                RedrawCanvas();
-            }
-            else if (rectangleToolButton.Checked)
-            {
-                dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
-                DisposeShapePreview();
-                RedrawCanvas();
-            }
-            else if (elipseToolButton.Checked)
-            {
-                dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
-                DisposeShapePreview();
-                RedrawCanvas();
-            }
-            else if (triangleToolButton.Checked)
-            {
-                dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
-                DisposeShapePreview();
-                RedrawCanvas();
-            }
-            else if (dotToolButton.Checked)
-            {
-                dialogProcessor.DrawDotShape(endPoint, SelectedColor);
+                if (lineToolButton.Checked)
+                    dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+
+                else if (rectangleToolButton.Checked)
+                    dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+
+                else if (elipseToolButton.Checked)
+                    dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+
+                else if (triangleToolButton.Checked)
+                    dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+                 
+                else if (dotToolButton.Checked)
+                    dialogProcessor.DrawDotShape(endPoint, SelectedColor);
+
                 DisposeShapePreview();
                 RedrawCanvas();
             }
@@ -813,15 +1099,19 @@ namespace VectorDrawForms
 
         private void toolMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (selectedToolStripButton != null)
-                selectedToolStripButton.Checked = false;
+            try
+            {
+                if (selectedToolStripButton != null)
+                    selectedToolStripButton.Checked = false;
 
-            selectedToolStripButton = e.ClickedItem as ToolStripButton;
+                selectedToolStripButton = e.ClickedItem as ToolStripButton;
 
-            if (selectedToolStripButton == selectionToolButton)
-                canvas.Cursor = Cursors.Default;
-            else
-                canvas.Cursor = Cursors.Cross;
+                if (selectedToolStripButton == selectionToolButton)
+                    CurrentCanvas.Cursor = Cursors.Default;
+                else
+                    CurrentCanvas.Cursor = Cursors.Cross;
+            }
+            catch { }
         }
 
         private void editToolButton_Click(object sender, EventArgs e)
@@ -848,6 +1138,8 @@ namespace VectorDrawForms
         {
             try
             {
+                var dialogProcessor = CurrentDialogProcessor;
+
                 //Ensure that there are selected shapes
                 if (dialogProcessor.Selections.Count < 1)
                 {
@@ -886,37 +1178,27 @@ namespace VectorDrawForms
 
         private void newFileMenuButton_Click(object sender, EventArgs e)
         {
-            if (EnsureUnsavedWorkIsNotLost())
-            {
-                //Return to initial state
-                FilePath = "Untitled";
-                dialogProcessor.PrepareForCleenSheet();
-                RedrawCanvas();
-
-                //Indicate that change is not made
-                IsChangeMade = false;
-            }
+            CreateNewTabPage();
+            tabControl.SelectedIndex = tabControl.Controls.Count - 1;
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (EnsureUnsavedWorkIsNotLost())
+            var dialog = new OpenFileDialog()
             {
-                var dialog = new OpenFileDialog();
-                dialog.InitialDirectory = Environment.CurrentDirectory;
-                dialog.Title = "Open";
-                dialog.DefaultExt = "vdfile";
-                dialog.Filter = "File|*.vdfile";
-                dialog.CheckFileExists = true;
-                dialog.CheckPathExists = true;
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    FilePath = dialog.FileName;
-                    dialogProcessor.ReadFile(dialog.FileName);
-                }
-
-                RedrawCanvas();
+                InitialDirectory = Environment.CurrentDirectory,
+                Title = "Open",
+                DefaultExt = "vdfile",
+                Filter = "File|*.vdfile",
+                CheckFileExists = true,
+                CheckPathExists = true,
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                LoadFileOnNewTabPage(dialog.FileName);
+                tabControl.SelectedIndex = tabControl.Controls.Count - 1;
             }
+            PositionAddButton();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -946,7 +1228,7 @@ namespace VectorDrawForms
             {
                 if (EnsureUnsavedWorkIsNotLost())
                 {
-                    dialogProcessor.ClearShapes();
+                    CurrentDialogProcessor.ClearShapes();
                     RedrawCanvas();
                 }
             }
@@ -969,6 +1251,8 @@ namespace VectorDrawForms
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            var dialogProcessor = CurrentDialogProcessor;
+
             // Check if Ctrl and S keys are pressed
             if (e.Control && e.KeyCode == Keys.S)
             {
@@ -1003,6 +1287,10 @@ namespace VectorDrawForms
             {
                 HandleDeleteShape();
             }
+            else if (e.Control && e.KeyCode == Keys.Delete)
+            {
+                RemoveTabPage();
+            }
             else if (e.Control && e.KeyCode == Keys.Up)
             {
                 if (dialogProcessor.Selections.Count == 1)
@@ -1019,87 +1307,6 @@ namespace VectorDrawForms
                     RedrawCanvas();
                 }
             }
-        }
-        #endregion
-
-        #region UI Helper Event Handlers (Enable/Disable controls)
-        private void groupMenuButton_DropDownOpened(object sender, EventArgs e)
-        {
-            try
-            {
-                //Handle Group disable/enable
-                if (dialogProcessor.Selections.Count > 1)
-                {
-                    groupSelectionMenuButton.Enabled = true;
-                }
-                else
-                {
-                    groupSelectionMenuButton.Enabled = false;
-                }
-
-                //Handle Ungroup disable/enable
-                if (dialogProcessor.Selections.Count > 0
-                    && dialogProcessor.Selections.All(n => n is GroupShape))
-                {
-                    ungroupSelectionMenuButton.Enabled = true;
-                }
-                else
-                {
-                    ungroupSelectionMenuButton.Enabled = false;
-                }
-            }
-            catch { }
-        }
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            HandleCopyShape();
-        }
-
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            HandlePasteShape();
-        }
-
-        private void editSelectionCtrlEToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            HandleEditShape();
-        }
-        #endregion
-
-        private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
-        {
-            //Handle Edit and Delete
-            if (dialogProcessor.Selections.Count > 0)
-            {
-                cutToolStripMenuItem.Enabled = true;
-                copyToolStripMenuItem.Enabled = true;
-                editSelectionToolStripMenuItem.Enabled = true;
-                deleteSelectionToolStripMenuItem.Enabled = true;
-            }
-            else
-            {
-                cutToolStripMenuItem.Enabled = false;
-                copyToolStripMenuItem.Enabled = false;
-                editSelectionToolStripMenuItem.Enabled = false;
-                deleteSelectionToolStripMenuItem.Enabled = false;
-            }
-
-            if (dialogProcessor.Selections.Count == 1)
-            {
-                moveShapeLayerUpToolStripMenuItem.Enabled = true;
-                moveLayerDownToolStripMenuItem.Enabled = true;
-            }
-            else
-            {
-                moveShapeLayerUpToolStripMenuItem.Enabled = false;
-                moveLayerDownToolStripMenuItem.Enabled = false;
-            }
-
-            if (dialogProcessor.CoppiedSelection.Count > 0)
-                pasteToolStripMenuItem.Enabled = true;
-            else
-                pasteToolStripMenuItem.Enabled = false;
         }
 
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1160,6 +1367,8 @@ namespace VectorDrawForms
 
         private void moveShapeLayerUpCtrlUpToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var dialogProcessor = CurrentDialogProcessor;
+
             if (dialogProcessor.Selections.Count == 1)
             {
                 dialogProcessor.BringShapeOneLayerUp(dialogProcessor.Selections[0]);
@@ -1169,12 +1378,122 @@ namespace VectorDrawForms
 
         private void moveLayerDownToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var dialogProcessor = CurrentDialogProcessor;
+
             if (dialogProcessor.Selections.Count == 1)
             {
                 dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
                 RedrawCanvas();
             }
         }
+
+        private void closeTabCtrlDelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveTabPage();
+        }
+        #endregion
+
+        #region UI Helper Event Handlers (Enable/Disable controls)
+        private void groupMenuButton_DropDownOpened(object sender, EventArgs e)
+        {
+            try
+            {
+                var dialogProcessor = CurrentDialogProcessor;
+
+                //Handle Group disable/enable
+                if (dialogProcessor.Selections.Count > 1)
+                {
+                    groupSelectionMenuButton.Enabled = true;
+                }
+                else
+                {
+                    groupSelectionMenuButton.Enabled = false;
+                }
+
+                //Handle Ungroup disable/enable
+                if (dialogProcessor.Selections.Count > 0
+                    && dialogProcessor.Selections.All(n => n is GroupShape))
+                {
+                    ungroupSelectionMenuButton.Enabled = true;
+                }
+                else
+                {
+                    ungroupSelectionMenuButton.Enabled = false;
+                }
+            }
+            catch { }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleCopyShape();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandlePasteShape();
+        }
+
+        private void editSelectionCtrlEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleEditShape();
+        }
+
+        private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
+        {
+            if (tabControl.TabPages.Count > 0)
+                closeTabToolStripMenuItem.Enabled = true;
+            else
+                closeTabToolStripMenuItem.Enabled = false;
+
+            var dialogProcessor = CurrentDialogProcessor;
+            if (dialogProcessor != null)
+            {
+                //Handle Edit and Delete
+                if (dialogProcessor.Selections.Count > 0)
+                {
+                    cutToolStripMenuItem.Enabled = true;
+                    copyToolStripMenuItem.Enabled = true;
+                    editSelectionToolStripMenuItem.Enabled = true;
+                    deleteSelectionToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    cutToolStripMenuItem.Enabled = false;
+                    copyToolStripMenuItem.Enabled = false;
+                    editSelectionToolStripMenuItem.Enabled = false;
+                    deleteSelectionToolStripMenuItem.Enabled = false;
+                }
+
+                if (dialogProcessor.Selections.Count == 1)
+                {
+                    moveShapeLayerUpToolStripMenuItem.Enabled = true;
+                    moveLayerDownToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    moveShapeLayerUpToolStripMenuItem.Enabled = false;
+                    moveLayerDownToolStripMenuItem.Enabled = false;
+                }
+
+                if (dialogProcessor.CoppiedSelection.Count > 0)
+                    pasteToolStripMenuItem.Enabled = true;
+                else
+                    pasteToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                cutToolStripMenuItem.Enabled = false;
+                copyToolStripMenuItem.Enabled = false;
+                clearCanvasToolStripMenuItem.Enabled = false;
+                editSelectionToolStripMenuItem.Enabled = false;
+                deleteSelectionToolStripMenuItem.Enabled = false;
+                moveShapeLayerUpToolStripMenuItem.Enabled = false;
+                moveLayerDownToolStripMenuItem.Enabled = false;
+                pasteToolStripMenuItem.Enabled = false;
+            }
+        }
+        #endregion
     }
 
     internal enum UIMode

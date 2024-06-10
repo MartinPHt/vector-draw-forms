@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShapeEditorForm));
             this.label1 = new System.Windows.Forms.Label();
             this.buttonProceed = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
@@ -271,6 +272,7 @@
             this.Controls.Add(this.buttonProceed);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ShapeEditorForm";
             this.Text = "VectorDraw - Shape Editor";
             this.sizeGroupBox.ResumeLayout(false);
