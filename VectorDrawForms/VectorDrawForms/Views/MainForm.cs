@@ -876,6 +876,12 @@ namespace VectorDrawForms
             CurrentDialogProcessor.ReDraw(sender, e);
         }
 
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var aboutForm = new AboutForm();
+            aboutForm.ShowDialog();
+        }
+
         private void TabControl_MouseDown(object sender, MouseEventArgs e)
         {
             var tabControl = sender as TabControl;

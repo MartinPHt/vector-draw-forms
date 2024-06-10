@@ -126,11 +126,23 @@ namespace VectorDrawForms
 
                     buttonProceed.BackColor = ApplicationColors.SecondaryUIDark;
                     buttonCancel.BackColor = ApplicationColors.SecondaryUIDark;
+
+                    widthTextBox.ForeColor = Color.White;
+                    widthTextBox.BackColor = ApplicationColors.SecondaryUIDark;
+
+                    heightTextBox.ForeColor = Color.White;
+                    heightTextBox.BackColor = ApplicationColors.SecondaryUIDark;
+
+                    strokeThicknessTextBox.ForeColor = Color.White;
+                    strokeThicknessTextBox.BackColor = ApplicationColors.SecondaryUIDark;
+
+                    angleTextBox.ForeColor = Color.White;
+                    angleTextBox.BackColor = ApplicationColors.SecondaryUIDark;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
