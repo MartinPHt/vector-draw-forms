@@ -49,6 +49,7 @@
             this.moveLayerDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearCanvasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableDisableDarkModeSettingsButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,7 +75,7 @@
             this.newShapeStrokeThicknessTextBox = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl = new System.Windows.Forms.TabControl();
-            this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPageShell = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mainMenu.SuspendLayout();
             this.toolMenu.SuspendLayout();
             this.SuspendLayout();
@@ -237,6 +238,13 @@
             this.clearCanvasToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
             this.clearCanvasToolStripMenuItem.Text = "Clear Canvas";
             this.clearCanvasToolStripMenuItem.Click += new System.EventHandler(this.clearCanvasToolStripMenuItem_Click);
+            // 
+            // closeTabToolStripMenuItem
+            // 
+            this.closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
+            this.closeTabToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.closeTabToolStripMenuItem.Text = "Close Tab                        Ctrl + Del";
+            this.closeTabToolStripMenuItem.Click += new System.EventHandler(this.closeTabCtrlDelToolStripMenuItem_Click);
             // 
             // imageToolStripMenuItem
             // 
@@ -481,13 +489,12 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(962, 524);
             this.tabControl.TabIndex = 9;
+            this.tabControl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseDown);
             // 
-            // closeTabToolStripMenuItem
+            // tabPageShell
             // 
-            this.closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
-            this.closeTabToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
-            this.closeTabToolStripMenuItem.Text = "Close Tab                        Ctrl + Del";
-            this.closeTabToolStripMenuItem.Click += new System.EventHandler(this.closeTabCtrlDelToolStripMenuItem_Click);
+            this.tabPageShell.Name = "contextMenu";
+            this.tabPageShell.Size = new System.Drawing.Size(61, 4);
             // 
             // MainForm
             // 
@@ -502,6 +509,7 @@
             this.Controls.Add(this.coordinatesLabel);
             this.Controls.Add(this.toolMenu);
             this.Controls.Add(this.mainMenu);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.mainMenu;
             this.Name = "MainForm";
@@ -564,6 +572,7 @@
         private System.Windows.Forms.ToolStripMenuItem moveLayerDownToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.ToolStripMenuItem closeTabToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip tabPageShell;
     }
 }
 
