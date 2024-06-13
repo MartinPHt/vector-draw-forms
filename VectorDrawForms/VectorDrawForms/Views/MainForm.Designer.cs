@@ -90,7 +90,7 @@
             this.helpToolStripMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(1004, 24);
+            this.mainMenu.Size = new System.Drawing.Size(1006, 24);
             this.mainMenu.TabIndex = 0;
             this.mainMenu.Text = "menuStrip1";
             // 
@@ -278,7 +278,7 @@
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem1.Text = "About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
@@ -300,7 +300,7 @@
             this.removeShapeToolButton});
             this.toolMenu.Location = new System.Drawing.Point(0, 24);
             this.toolMenu.Name = "toolMenu";
-            this.toolMenu.Size = new System.Drawing.Size(45, 546);
+            this.toolMenu.Size = new System.Drawing.Size(45, 529);
             this.toolMenu.TabIndex = 1;
             this.toolMenu.Text = "toolStrip1";
             this.toolMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolMenu_ItemClicked);
@@ -435,7 +435,7 @@
             // 
             this.coordinatesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.coordinatesLabel.AutoSize = true;
-            this.coordinatesLabel.Location = new System.Drawing.Point(51, 551);
+            this.coordinatesLabel.Location = new System.Drawing.Point(51, 534);
             this.coordinatesLabel.Name = "coordinatesLabel";
             this.coordinatesLabel.Size = new System.Drawing.Size(25, 13);
             this.coordinatesLabel.TabIndex = 4;
@@ -445,7 +445,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(871, 551);
+            this.label1.Location = new System.Drawing.Point(873, 534);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 5;
@@ -455,7 +455,7 @@
             // 
             this.selectedShapesCountLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.selectedShapesCountLabel.AutoSize = true;
-            this.selectedShapesCountLabel.Location = new System.Drawing.Point(970, 551);
+            this.selectedShapesCountLabel.Location = new System.Drawing.Point(972, 534);
             this.selectedShapesCountLabel.Name = "selectedShapesCountLabel";
             this.selectedShapesCountLabel.Size = new System.Drawing.Size(13, 13);
             this.selectedShapesCountLabel.TabIndex = 6;
@@ -501,6 +501,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1004, 570);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.newShapeStrokeThicknessTextBox);

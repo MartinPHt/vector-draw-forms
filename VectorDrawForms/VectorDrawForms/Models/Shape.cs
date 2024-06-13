@@ -161,10 +161,12 @@ namespace VectorDrawForms.Models
 			// shape.Rectangle.Inflate(shape.BorderWidth, shape.BorderWidth);
 		}
 
-		public enum RotateDirection
+		public enum MoveDirection
 		{
+			Up,
+			Down,
 			Left,
-			Right,
+			Right
 		}
-	}
+    }
 }

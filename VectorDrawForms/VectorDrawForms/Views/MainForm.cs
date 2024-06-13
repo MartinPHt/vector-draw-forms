@@ -13,6 +13,8 @@ using VectorDrawForms.Models;
 using VectorDrawForms.Processors;
 using VectorDrawForms.Assets.Helpers;
 using VectorDrawForms.Views;
+using System.Windows.Forms.Integration;
+using static VectorDrawForms.Models.Shape;
 
 namespace VectorDrawForms
 {
@@ -20,14 +22,19 @@ namespace VectorDrawForms
     {
         #region Fields
         private ToolStripButton selectedToolStripButton;
-        private Button addButton;
+        private Panel addTabButtonPanel;
+        private TransparentButton addTabButton;
         private Point tabPageShellPoint;
+
+        private Size lastTabSize = new Size();
 
         //Drawing fiels
         private bool isDrawingPerformed = false;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
         private int createdCanvases = 0;
+
+        private Timer addTabButtonPositionerTimer;
         #endregion
 
         #region Constructor
@@ -41,7 +48,16 @@ namespace VectorDrawForms
         }
         #endregion
 
+        #region Constants
+        private int SelectionMovePixels = 4;
+        #endregion
+
         #region Properties
+        private TabPage LastTabPage
+        {
+            get { return tabControl.Controls.OfType<TabPage>().Last(); }
+        }
+
         private DialogProcessor CurrentDialogProcessor
         {
             get { return GetCurrentDialogProcessor(); }
@@ -174,7 +190,7 @@ namespace VectorDrawForms
                 var dialog = new SaveFileDialog();
                 dialog.InitialDirectory = Environment.CurrentDirectory;
                 dialog.Title = "Save as";
-                dialog.Filter = "Png Image (.png)|*.png|File|*.vdfile";
+                dialog.Filter = "Png Image (.png)|*.png|Jpeg Image (.jpeg)|*.jpeg|File|*.vdfile";
                 dialog.DefaultExt = "vdfile";
                 dialog.CheckPathExists = true;
 
@@ -407,7 +423,11 @@ namespace VectorDrawForms
             var extension = Path.GetExtension(path);
             if (extension == ".png")
             {
-                SaveShapesToPNG(path);
+                HandleSaveToFile(path, ImageFormat.Png);
+            }
+            else if (extension == ".jpeg")
+            {
+                HandleSaveToFile(path, ImageFormat.Jpeg);
             }
             else
             {
@@ -458,6 +478,16 @@ namespace VectorDrawForms
             //Prepare for initial load
             this.Text = Assembly.GetCallingAssembly().GetName().Name;
             tabPageShell.Items.Add("Close", null, TabPageShellOnCloseClick);
+
+            addTabButtonPositionerTimer = new Timer();
+            addTabButtonPositionerTimer.Interval = 100;
+            addTabButtonPositionerTimer.Tick += AddTabButtonPositionerTimer_Tick;
+            addTabButtonPositionerTimer.Start();
+        }
+
+        private void AddTabButtonPositionerTimer_Tick(object sender, EventArgs e)
+        {
+            PositionAddButton();
         }
 
         private void InitializeTabControl()
@@ -466,12 +496,17 @@ namespace VectorDrawForms
             tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
             tabControl.Padding = new Point(12, 4);
 
+            //Uncomment this to enable add button
             //Add button
-            addButton = new Button();
-            addButton.Text = "+";
-            addButton.Size = new Size(24, 24);
-            addButton.Click += new EventHandler(AddButton_Click);
-            this.Controls.Add(addButton);
+            addTabButton = new TransparentButton() { ButtonText = "+" };
+            ElementHost elementHost = new ElementHost() { Dock = DockStyle.Fill };
+            elementHost.Child = addTabButton;
+            addTabButton.ButtonCommand = new RelayCommand(AddButton_Click);
+
+            addTabButtonPanel = new Panel();
+            addTabButtonPanel.Size = new Size(18, 18);
+            addTabButtonPanel.Controls.Add(elementHost);
+            this.Controls.Add(addTabButtonPanel);
 
             CreateNewTabPage();
         }
@@ -486,8 +521,10 @@ namespace VectorDrawForms
 
             var canvas = new DoubleBufferedPanel()
             {
-                Dock = DockStyle.Fill,
-                Location = new Point(45, 24),
+                Height = 400,
+                Width = 600,
+                MinimumSize = new Size(50, 50),
+                Location = new Point(0, 0),
                 TabIndex = 4,
                 Name = $"canvas{createdCanvases}",
             };
@@ -496,6 +533,17 @@ namespace VectorDrawForms
             canvas.MouseDown += new MouseEventHandler(ViewPortMouseDown);
             canvas.MouseMove += new MouseEventHandler(ViewPortMouseMove);
             canvas.MouseUp += new MouseEventHandler(ViewPortMouseUp);
+
+            if (ConfigurationManager.AppSettings["UIMode"] == UIMode.Light.ToString())
+            {
+                tabPage.BackColor = ApplicationColors.MainUILight;
+                tabPage.BorderStyle = BorderStyle.None;
+            }
+            else
+            {
+                tabPage.BackColor = ApplicationColors.SecondaryUIDark;
+                tabPage.BorderStyle = BorderStyle.None;
+            }
 
             tabPage.Controls.Add(canvas);
             tabControl.Controls.Add(tabPage);
@@ -509,13 +557,18 @@ namespace VectorDrawForms
             if (tabControl.TabPages.Count > 0)
             {
                 Rectangle lastTabRect = tabControl.GetTabRect(tabControl.TabPages.Count - 1);
-                addButton.Location = new Point(lastTabRect.Right + toolMenu.Width + 2, tabControl.Top - 1);
+                addTabButtonPanel.Location = new Point(lastTabRect.Right + toolMenu.Width + 4, tabControl.Top + 2);
             }
             else
             {
-                addButton.Location = new Point(toolMenu.Right + 1, tabControl.Top - 1);
+                addTabButtonPanel.Location = new Point(toolMenu.Right + 1, tabControl.Top);
             }
-            addButton.BringToFront();
+            addTabButtonPanel.BringToFront();
+        }
+        private void MoveAddButton(int right)
+        {
+            addTabButtonPanel.Location = new Point(addTabButtonPanel.Left + right, addTabButtonPanel.Top);
+            addTabButtonPanel.BringToFront();
         }
 
         private void LoadFileOnNewTabPage(string fullFileName)
@@ -540,6 +593,17 @@ namespace VectorDrawForms
             canvas.MouseUp += new MouseEventHandler(ViewPortMouseUp);
             canvas.DialogProcessor.ReadFile(fullFileName);
 
+            if (ConfigurationManager.AppSettings["UIMode"] == UIMode.Light.ToString())
+            {
+                tabPage.BackColor = ApplicationColors.MainUILight;
+                tabPage.BorderStyle = BorderStyle.None;
+            }
+            else
+            {
+                tabPage.BackColor = ApplicationColors.SecondaryUIDark;
+                tabPage.BorderStyle = BorderStyle.None;
+            }
+
             tabPage.Controls.Add(canvas);
             tabControl.Controls.Add(tabPage);
 
@@ -557,12 +621,17 @@ namespace VectorDrawForms
                     this.ForeColor = ApplicationColors.MainUIDark;
                     this.BackColor = ApplicationColors.MainUILight;
 
+                    addTabButton.ForegroundColor = System.Windows.Media.Brushes.DarkGray;
+
+                    foreach (var tab in tabControl.TabPages.OfType<TabPage>())
+                        tab.BackColor = ApplicationColors.MainUILight;   
+
                     //canvas.BackColor = Color.White;
-                    coordinatesLabel.BackColor = Color.White;
-                    label1.BackColor = Color.White;
-                    selectedShapesCountLabel.BackColor = Color.White;
+                    coordinatesLabel.BackColor = ApplicationColors.MainUILight;
+                    label1.BackColor = ApplicationColors.MainUILight;
+                    selectedShapesCountLabel.BackColor = ApplicationColors.MainUILight;
                     newShapeStrokeThicknessTextBox.ForeColor = ApplicationColors.SecondaryUIDark;
-                    newShapeStrokeThicknessTextBox.BackColor = Color.White;
+                    newShapeStrokeThicknessTextBox.BackColor = ApplicationColors.MainUILight;
 
                     //Assign light color mode to main menu
                     mainMenu.ForeColor = ApplicationColors.MainUIDark;
@@ -593,6 +662,11 @@ namespace VectorDrawForms
                     enableDisableDarkModeSettingsButton.Text = "Disable Dark Mode";
                     this.ForeColor = ApplicationColors.MainUILight;
                     this.BackColor = ApplicationColors.MainUIDark;
+
+                    foreach (var tab in tabControl.TabPages.OfType<TabPage>())
+                        tab.BackColor = ApplicationColors.SecondaryUIDark;
+
+                    addTabButton.ForegroundColor = System.Windows.Media.Brushes.White;
 
                     //canvas.BackColor = ApplicationColors.MainUIDark;
                     coordinatesLabel.BackColor = ApplicationColors.MainUIDark;
@@ -633,11 +707,11 @@ namespace VectorDrawForms
             }
         }
 
-        public void SaveShapesToPNG(string filePath)
+        public void HandleSaveToFile(string filePath, ImageFormat imageFormat)
         {
             if (CurrentCanvas == null)
             {
-                MessageBox.Show($"Couldn't save to {filePath} png file. There is no canvas.", "Error",
+                MessageBox.Show($"Couldn't save to {filePath} file. There is no canvas selected.", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -651,6 +725,9 @@ namespace VectorDrawForms
             // Create a Graphics object to draw on the Bitmap
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
+                if (imageFormat != ImageFormat.Png)
+                    graphics.FillRectangle(new SolidBrush(CurrentCanvas.BackColor), CurrentCanvas.Bounds);
+
                 foreach (var shape in CurrentDialogProcessor.ShapeList)
                 {
                     shape.DrawSelf(graphics);
@@ -658,7 +735,7 @@ namespace VectorDrawForms
             }
 
             // Save the Bitmap as a PNG file
-            bitmap.Save(filePath, ImageFormat.Png);
+            bitmap.Save(filePath, imageFormat);
 
             // Dispose of the resources of the Bitmap
             bitmap.Dispose();
@@ -921,7 +998,7 @@ namespace VectorDrawForms
             RemoveTabPage(tabPage);
         }
 
-        private void AddButton_Click(object sender, EventArgs e)
+        private void AddButton_Click(object sender)
         {
             CreateNewTabPage();
             tabControl.SelectedIndex = tabControl.Controls.Count - 1;
@@ -940,6 +1017,10 @@ namespace VectorDrawForms
             IShape selectedShape = dialogProcessor.ContainsPoint(e.Location);
             if (selectedShape == null)
                 ClearSelections();
+
+            if (CurrentCanvas.IsResizing)
+                return;
+            
 
             if (selectionToolButton.Checked)
             {
@@ -973,6 +1054,10 @@ namespace VectorDrawForms
                 {
                     selectedShape.FillColor = SelectedColor;
                     RedrawCanvas();
+                }
+                else
+                {
+                    CurrentCanvas.BackColor = SelectedColor;
                 }
             }
             else if (lineToolButton.Checked)
@@ -1059,26 +1144,36 @@ namespace VectorDrawForms
             var dialogProcessor = CurrentDialogProcessor;
             var endPoint = e.Location;
 
+            if (CurrentCanvas.WasResizingPerformed)
+            {
+                CurrentCanvas.WasResizingPerformed = false;
+                return;
+            }
+
             if (selectionToolButton.Checked)
             {
                 dialogProcessor.IsDragging = false;
             }
             else
             {
+                IShape shape = null;
                 if (lineToolButton.Checked)
-                    dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+                    shape = dialogProcessor.DrawLineShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
 
                 else if (rectangleToolButton.Checked)
-                    dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+                    shape = dialogProcessor.DrawRectangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
 
                 else if (elipseToolButton.Checked)
-                    dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+                    shape = dialogProcessor.DrawEllipseShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
 
                 else if (triangleToolButton.Checked)
-                    dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
-                 
+                    shape = dialogProcessor.DrawTriangleShape(previewShapeStartPoint, endPoint, SelectedColor, StrokeThickness);
+
                 else if (dotToolButton.Checked)
-                    dialogProcessor.DrawDotShape(endPoint, SelectedColor);
+                    shape = dialogProcessor.DrawDotShape(endPoint, SelectedColor);
+
+                if (shape != null && shape.Rectangle.Width < 5 && shape.Rectangle.Height < 5)
+                    dialogProcessor.DeleteShape(shape);
 
                 DisposeShapePreview();
                 RedrawCanvas();
@@ -1255,6 +1350,17 @@ namespace VectorDrawForms
             GroupSelection();
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            var dialogProcessor = CurrentDialogProcessor;
+            if (!e.Control && e.KeyCode == Keys.Up)
+            {
+                dialogProcessor.MoveSelectedShapes(SelectionMovePixels, MoveDirection.Up);
+                RedrawCanvas();
+            }
+        }
+
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             var dialogProcessor = CurrentDialogProcessor;
@@ -1312,6 +1418,11 @@ namespace VectorDrawForms
                     dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
                     RedrawCanvas();
                 }
+            }
+            else if (!e.Control && e.KeyCode == Keys.Up)
+            {
+                dialogProcessor.MoveSelectedShapes(SelectionMovePixels, MoveDirection.Up);
+                RedrawCanvas();
             }
         }
 

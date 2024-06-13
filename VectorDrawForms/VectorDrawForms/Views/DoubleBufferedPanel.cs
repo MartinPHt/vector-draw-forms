@@ -11,7 +11,7 @@ using VectorDrawForms.Processors;
 
 namespace VectorDrawForms.Views
 {
-    public partial class DoubleBufferedPanel : UserControl
+    public partial class DoubleBufferedPanel : ResizableUserControl
     {
         #region Fields
         /// <summary>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using VectorDrawForms.Models;
+using static VectorDrawForms.Models.Shape;
 
 namespace VectorDrawForms.Processors
 {
@@ -62,7 +63,6 @@ namespace VectorDrawForms.Processors
         #endregion
 
         #region Methods
-
         /// <summary>
         /// Checks if a point is in the element. Finds the "top" element ie. the one we see under the mouse.
         /// </summary>
@@ -129,7 +129,29 @@ namespace VectorDrawForms.Processors
             {
                 MessageBox.Show($"Error has occured while reading the file. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
 
+        public void DeleteShape(IShape shape)
+        {
+            ShapeList.Remove(shape);
+            selections.Remove(shape);
+        }
+
+        public void MoveSelectedShapes(int pixels, MoveDirection direction)
+        {
+            foreach (var shape in selections)
+            {
+                var rectangle = shape.Rectangle;
+
+                if (direction == MoveDirection.Up)
+                    shape.Rectangle = new RectangleF(rectangle.X, rectangle.Y - pixels, rectangle.Width, rectangle.Height);
+                else if (direction == MoveDirection.Down)
+                    shape.Rectangle = new RectangleF(rectangle.X, rectangle.Y + pixels, rectangle.Width, rectangle.Height);
+                else if (direction == MoveDirection.Right)
+                    shape.Rectangle = new RectangleF(rectangle.X + pixels, rectangle.Y, rectangle.Width, rectangle.Height);
+                else
+                    shape.Rectangle = new RectangleF(rectangle.X - pixels, rectangle.Y, rectangle.Width, rectangle.Height);
+            }
         }
 
         /// <summary>
@@ -427,7 +449,7 @@ namespace VectorDrawForms.Processors
         /// <exception cref="ArgumentException"></exception>
         public void BringShapeOneLayerDown(IShape shape)
         {
-            try 
+            try
             {
                 if (ShapeList.Contains(shape) && ShapeList.Count > 1)
                 {
