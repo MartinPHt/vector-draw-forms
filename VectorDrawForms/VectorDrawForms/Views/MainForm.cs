@@ -50,6 +50,7 @@ namespace VectorDrawForms
 
         #region Constants
         private int SelectionMovePixels = 4;
+        private int MaxAllowedTabs = 10;
         #endregion
 
         #region Properties
@@ -480,7 +481,7 @@ namespace VectorDrawForms
             tabPageShell.Items.Add("Close", null, TabPageShellOnCloseClick);
 
             addTabButtonPositionerTimer = new Timer();
-            addTabButtonPositionerTimer.Interval = 100;
+            addTabButtonPositionerTimer.Interval = 50;
             addTabButtonPositionerTimer.Tick += AddTabButtonPositionerTimer_Tick;
             addTabButtonPositionerTimer.Start();
         }
@@ -513,20 +514,29 @@ namespace VectorDrawForms
 
         private void CreateNewTabPage()
         {
+            if (tabControl.TabPages.OfType<TabPage>().Count() == MaxAllowedTabs)
+            {
+                MessageBox.Show($"Cannot open more than 10 tabs. Please close unused tabs and try again.", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             TabPage tabPage = new TabPage()
             {
                 Text = $"Untitled{createdCanvases + 1}",
                 Tag = $"Untitled{createdCanvases + 1}",
+                AutoScroll = true,
             };
 
             var canvas = new DoubleBufferedPanel()
             {
-                Height = 400,
-                Width = 600,
+                Height = 420,
+                Width = 770,
                 MinimumSize = new Size(50, 50),
                 Location = new Point(0, 0),
                 TabIndex = 4,
                 Name = $"canvas{createdCanvases}",
+                BorderStyle = BorderStyle.FixedSingle,
             };
 
             canvas.Paint += new PaintEventHandler(ViewPortPaint);
@@ -549,7 +559,6 @@ namespace VectorDrawForms
             tabControl.Controls.Add(tabPage);
 
             createdCanvases++;
-            PositionAddButton();
         }
 
         private void PositionAddButton()
@@ -573,10 +582,18 @@ namespace VectorDrawForms
 
         private void LoadFileOnNewTabPage(string fullFileName)
         {
+            if (tabControl.TabPages.OfType<TabPage>().Count() == MaxAllowedTabs)
+            {
+                MessageBox.Show($"Cannot open more than 10 tabs. Please close unused tabs and try again.", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             TabPage tabPage = new TabPage()
             {
                 Text = Path.GetFileName(fullFileName),
-                Tag = fullFileName
+                Tag = fullFileName,
+                AutoScroll = true,
             };
 
             var canvas = new DoubleBufferedPanel()
@@ -624,7 +641,7 @@ namespace VectorDrawForms
                     addTabButton.ForegroundColor = System.Windows.Media.Brushes.DarkGray;
 
                     foreach (var tab in tabControl.TabPages.OfType<TabPage>())
-                        tab.BackColor = ApplicationColors.MainUILight;   
+                        tab.BackColor = ApplicationColors.MainUILight;
 
                     //canvas.BackColor = Color.White;
                     coordinatesLabel.BackColor = ApplicationColors.MainUILight;
@@ -913,10 +930,7 @@ namespace VectorDrawForms
                 return;
 
             if (EnsureUnsavedWorkIsNotLost())
-            {
                 tabControl.TabPages.Remove(SelectedTab);
-                PositionAddButton();
-            }
         }
 
         private void RemoveTabPage(TabPage tabPage)
@@ -925,10 +939,7 @@ namespace VectorDrawForms
                 return;
 
             if (EnsureUnsavedWorkIsNotLost(tabPage))
-            {
                 tabControl.TabPages.Remove(tabPage);
-                PositionAddButton();
-            }
         }
         #endregion 
 
@@ -1002,7 +1013,6 @@ namespace VectorDrawForms
         {
             CreateNewTabPage();
             tabControl.SelectedIndex = tabControl.Controls.Count - 1;
-            PositionAddButton();
         }
 
         private void ViewPortMouseDown(object sender, MouseEventArgs e)
@@ -1020,7 +1030,7 @@ namespace VectorDrawForms
 
             if (CurrentCanvas.IsResizing)
                 return;
-            
+
 
             if (selectionToolButton.Checked)
             {
@@ -1208,9 +1218,9 @@ namespace VectorDrawForms
                 selectedToolStripButton = e.ClickedItem as ToolStripButton;
 
                 if (selectedToolStripButton == selectionToolButton)
-                    CurrentCanvas.Cursor = Cursors.Default;
+                    CurrentCanvas.CurrentCursor = Cursors.Default;
                 else
-                    CurrentCanvas.Cursor = Cursors.Cross;
+                    CurrentCanvas.CurrentCursor = Cursors.Cross;
             }
             catch { }
         }
@@ -1299,7 +1309,6 @@ namespace VectorDrawForms
                 LoadFileOnNewTabPage(dialog.FileName);
                 tabControl.SelectedIndex = tabControl.Controls.Count - 1;
             }
-            PositionAddButton();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)

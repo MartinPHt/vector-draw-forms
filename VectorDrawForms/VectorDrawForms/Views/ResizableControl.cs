@@ -9,6 +9,7 @@ namespace VectorDrawForms.Views
         private const int ResizeHandleSize = 10;
         private bool isResizing = false;
         private Point lastMousePosition;
+        private Cursor currentCursor = Cursors.Default;
         #endregion
 
         #region Constructor
@@ -36,6 +37,17 @@ namespace VectorDrawForms.Views
         }
 
         public bool WasResizingPerformed { get; set; }
+
+        /// <summary>
+        /// The cursor which will be shown when mouse enters the <see cref="ResizableUserControl"/>.<br></br>
+        /// Note that this property does not exclude the case when mouse enters the resize square. Mouse cursor will be changed to SizeNWSE once it enters the resize square no matter the circumstances.
+        /// </summary>
+        public Cursor CurrentCursor
+        {
+            get { return currentCursor; }
+            set { currentCursor = value; }
+        }
+
         #endregion
 
         #region Methods
@@ -61,7 +73,7 @@ namespace VectorDrawForms.Views
             }
             else
             {
-                this.Cursor = IsInResizeHandle(e.Location) ? Cursors.SizeNWSE : Cursors.Default;
+                this.Cursor = IsInResizeHandle(e.Location) ? Cursors.SizeNWSE : currentCursor;
             }
         }
 
