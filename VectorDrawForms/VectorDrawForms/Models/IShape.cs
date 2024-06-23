@@ -50,11 +50,6 @@ namespace VectorDrawForms.Models
         Color StrokeColor { get; set; }
 
         /// <summary>
-        /// The <see cref="Pen"/> which is used when selection rectangle is drawn.
-        /// </summary>
-        Pen SelectionPen { get; set; }
-
-        /// <summary>
         /// Checks if point belongs to the element.
         /// </summary>
         /// <param name="point">Point</param>

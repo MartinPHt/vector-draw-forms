@@ -148,18 +148,9 @@ namespace VectorDrawForms.Models
             get { return isSelected; }
             set { isSelected = value; }
         }
-
-        /// <summary>
-        /// The <see cref="Pen"/> which is used when selection rectangle is drawn.
-        /// </summary>
-        private Pen selectionPen = ApplicationConstants.Instance.SelectionPen;
-        public virtual Pen SelectionPen
-        {
-            get { return selectionPen; }
-            set {  selectionPen = value; }
-        }
         #endregion
 
+        #region Methods
         /// <summary>
         /// Checks if point belongs to the element.
         /// </summary>
@@ -176,15 +167,11 @@ namespace VectorDrawForms.Models
         /// <param name="grfx">Where to render the element.</param>
         public virtual void DrawSelf(Graphics grfx)
         {
-            if (IsSelected)
-            {
-                grfx.DrawRectangle(selectionPen, Rectangle.X - StrokeThickness / 2 - 1, 
-                    Rectangle.Y - StrokeThickness / 2 - 1, 
-                    Rectangle.Width + StrokeThickness + 2, 
-                    Rectangle.Height + StrokeThickness + 2);
-            }
-        }
 
+        }
+        #endregion
+
+        #region Enums
         public enum MoveDirection
         {
             Up,
@@ -192,5 +179,6 @@ namespace VectorDrawForms.Models
             Left,
             Right
         }
+        #endregion
     }
 }

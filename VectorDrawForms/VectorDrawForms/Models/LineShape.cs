@@ -23,7 +23,7 @@ namespace VectorDrawForms.Models
                 lineDirection = Direction.Inverted;
         }
 
-        public LineShape(PointF startPoint, PointF endPoint, Color color, int strokeThickness, bool isPreviewShape = false) : this(startPoint, endPoint, isPreviewShape)
+        public LineShape(PointF startPoint, PointF endPoint, Color color, float strokeThickness, bool isPreviewShape = false) : this(startPoint, endPoint, isPreviewShape)
         {
             StrokeColor = color;
             StrokeThickness = strokeThickness;
