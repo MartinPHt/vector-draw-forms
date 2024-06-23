@@ -26,8 +26,6 @@ namespace VectorDrawForms
         private TransparentButton addTabButton;
         private Point tabPageShellPoint;
 
-        private Size lastTabSize = new Size();
-
         //Drawing fiels
         private bool isDrawingPerformed = false;
         private PointF previewShapeStartPoint;
@@ -35,6 +33,7 @@ namespace VectorDrawForms
         private int createdCanvases = 0;
 
         private Timer addTabButtonPositionerTimer;
+        private Timer refreshCurrentCanvasTimer;
         #endregion
 
         #region Constructor
@@ -178,7 +177,7 @@ namespace VectorDrawForms
         private void HandleDragging(MouseEventArgs e)
         {
             CurrentDialogProcessor.TranslateTo(e.Location);
-            RedrawCanvas();
+            RedrawCurrentCanvas();
         }
 
         /// <summary>
@@ -239,7 +238,7 @@ namespace VectorDrawForms
             try
             {
                 CurrentDialogProcessor.PasteSelection();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
             catch (Exception ex)
             {
@@ -264,7 +263,7 @@ namespace VectorDrawForms
             try
             {
                 CurrentDialogProcessor.CutSelection();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
             catch (Exception ex)
             {
@@ -286,7 +285,7 @@ namespace VectorDrawForms
                 if (confirmResult == DialogResult.Yes)
                 {
                     CurrentDialogProcessor.DeleteSelection();
-                    RedrawCanvas();
+                    RedrawCurrentCanvas();
                 }
             }
             catch (Exception ex)
@@ -448,7 +447,7 @@ namespace VectorDrawForms
         /// Invalidates the entire surface of the current canvas, causes it to be redrawn and indicates change being made.
         /// Use when there is a change in the model.
         /// </summary>
-        private void RedrawCanvas()
+        private void RedrawCurrentCanvas()
         {
             try
             {
@@ -467,7 +466,7 @@ namespace VectorDrawForms
         private void ClearSelections()
         {
             var dialogProcessor = CurrentDialogProcessor;
-            dialogProcessor.Selections.Clear();
+            dialogProcessor.ClearSelection();
             selectedShapesCountLabel.Text = dialogProcessor.Selections.Count.ToString();
         }
 
@@ -484,6 +483,16 @@ namespace VectorDrawForms
             addTabButtonPositionerTimer.Interval = 50;
             addTabButtonPositionerTimer.Tick += AddTabButtonPositionerTimer_Tick;
             addTabButtonPositionerTimer.Start();
+
+            refreshCurrentCanvasTimer = new Timer();
+            refreshCurrentCanvasTimer.Interval = 300;
+            refreshCurrentCanvasTimer.Tick += refreshCurrentCanvasTimer_Tick;
+            refreshCurrentCanvasTimer.Start();
+        }
+
+        private void refreshCurrentCanvasTimer_Tick(object sender, EventArgs e)
+        {
+            RedrawCurrentCanvas();
         }
 
         private void AddTabButtonPositionerTimer_Tick(object sender, EventArgs e)
@@ -771,7 +780,7 @@ namespace VectorDrawForms
                 }
 
                 CurrentDialogProcessor.GroupSelectedShapes();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
             catch (Exception ex)
             {
@@ -793,7 +802,7 @@ namespace VectorDrawForms
                 }
 
                 CurrentDialogProcessor.UngroupSelectedShape();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
             catch (Exception ex)
             {
@@ -843,7 +852,7 @@ namespace VectorDrawForms
                 {
                     if (dialogProcessor.Selections.Count == 1)
                     {
-                        var firstShape = dialogProcessor.Selections[0];
+                        var firstShape = dialogProcessor.GetSelectedShapeAt(0);
                         var dialog
                             = new ShapeEditorForm(firstShape.Width, firstShape.Height, firstShape.RotationAngle, firstShape.StrokeThickness, firstShape.StrokeColor, firstShape.FillColor);
 
@@ -880,7 +889,7 @@ namespace VectorDrawForms
                 }
                 else
                 {
-                    var firstShape = dialogProcessor.Selections[0];
+                    var firstShape = dialogProcessor.GetSelectedShapeAt(0);
                     var dialog
                         = new ShapeEditorForm(firstShape.StrokeThickness, firstShape.StrokeColor, firstShape.FillColor);
 
@@ -897,7 +906,7 @@ namespace VectorDrawForms
             {
                 //Go back to Selection Tool
                 selectionToolButton.PerformClick();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
         }
 
@@ -1041,7 +1050,7 @@ namespace VectorDrawForms
                     {
                         //Add the new selection if it is not in the selections list
                         if (!dialogProcessor.Selections.Contains(selectedShape))
-                            dialogProcessor.Selections.Add(selectedShape);
+                            dialogProcessor.AddSelection(selectedShape);
                     }
                     else
                     {
@@ -1049,26 +1058,24 @@ namespace VectorDrawForms
                         ClearSelections();
 
                         //Add the selected shape if there is any
-                        dialogProcessor.Selections.Add(selectedShape);
+                        dialogProcessor.AddSelection(selectedShape);
                     }
 
                     //Indicate dragging and update last location in dialog processor
                     dialogProcessor.IsDragging = true;
                     dialogProcessor.LastLocation = e.Location;
-                    RedrawCanvas();
+                }
+                else
+                {
+                    ClearSelections();
                 }
             }
             else if (bucketToolButton.Checked)
             {
                 if (selectedShape != null)
-                {
                     selectedShape.FillColor = SelectedColor;
-                    RedrawCanvas();
-                }
                 else
-                {
                     CurrentCanvas.BackColor = SelectedColor;
-                }
             }
             else if (lineToolButton.Checked)
             {
@@ -1077,7 +1084,6 @@ namespace VectorDrawForms
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
-                RedrawCanvas();
             }
             else if (rectangleToolButton.Checked)
             {
@@ -1086,7 +1092,6 @@ namespace VectorDrawForms
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
-                RedrawCanvas();
             }
             else if (elipseToolButton.Checked)
             {
@@ -1095,7 +1100,6 @@ namespace VectorDrawForms
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
-                RedrawCanvas();
             }
             else if (triangleToolButton.Checked)
             {
@@ -1104,13 +1108,14 @@ namespace VectorDrawForms
                 currentDrawnShape.StrokeColor = Color.LightGray;
                 dialogProcessor.ShapeList.Add(currentDrawnShape);
                 isDrawingPerformed = true;
-                RedrawCanvas();
             }
             else if (eraserToolButton.Checked)
             {
                 dialogProcessor.EraseShapes(e.Location);
-                RedrawCanvas();
             }
+
+            //Redraw current canvas
+            RedrawCurrentCanvas();
         }
 
         /// <summary>
@@ -1126,7 +1131,7 @@ namespace VectorDrawForms
             if (eraserToolButton.Checked && e.Button == MouseButtons.Left)
             {
                 CurrentDialogProcessor.EraseShapes(e.Location);
-                RedrawCanvas();
+                RedrawCurrentCanvas();
                 return;
             }
 
@@ -1141,7 +1146,7 @@ namespace VectorDrawForms
             {
                 //Update the drawn shape
                 currentDrawnShape.Rectangle = ShapeUtility.CalculateRectangle(previewShapeStartPoint, e.Location);
-                RedrawCanvas();
+                RedrawCurrentCanvas();
                 return;
             }
         }
@@ -1186,7 +1191,7 @@ namespace VectorDrawForms
                     dialogProcessor.DeleteShape(shape);
 
                 DisposeShapePreview();
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
         }
 
@@ -1230,7 +1235,7 @@ namespace VectorDrawForms
             HandleEditShape();
         }
 
-        private void UpdateMultipleShapes(List<IShape> shapes, Color strokeColor, Color fillColor, float strokeThickness)
+        private void UpdateMultipleShapes(IEnumerable<IShape> shapes, Color strokeColor, Color fillColor, float strokeThickness)
         {
             foreach (var shape in shapes)
             {
@@ -1262,12 +1267,12 @@ namespace VectorDrawForms
                 if (dialogProcessor.Selections.Count > 1)
                 {
                     dialogProcessor.GroupSelectedShapes();
-                    RedrawCanvas();
+                    RedrawCurrentCanvas();
                 }
-                else if (dialogProcessor.Selections[0] is GroupShape)
+                else if (dialogProcessor.GetSelectedShapeAt(0) is GroupShape)
                 {
                     dialogProcessor.UngroupSelectedShape();
-                    RedrawCanvas();
+                    RedrawCurrentCanvas();
                 }
                 else
                 {
@@ -1339,7 +1344,7 @@ namespace VectorDrawForms
                 if (EnsureUnsavedWorkIsNotLost())
                 {
                     CurrentDialogProcessor.ClearShapes();
-                    RedrawCanvas();
+                    RedrawCurrentCanvas();
                 }
             }
             catch (Exception ex)
@@ -1366,7 +1371,7 @@ namespace VectorDrawForms
             if (!e.Control && e.KeyCode == Keys.Up)
             {
                 dialogProcessor.MoveSelectedShapes(SelectionMovePixels, MoveDirection.Up);
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
         }
 
@@ -1416,22 +1421,22 @@ namespace VectorDrawForms
             {
                 if (dialogProcessor.Selections.Count == 1)
                 {
-                    dialogProcessor.BringShapeOneLayerUp(dialogProcessor.Selections[0]);
-                    RedrawCanvas();
+                    dialogProcessor.BringShapeOneLayerUp(dialogProcessor.GetSelectedShapeAt(0));
+                    RedrawCurrentCanvas();
                 }
             }
             else if (e.Control && e.KeyCode == Keys.Down)
             {
                 if (dialogProcessor.Selections.Count == 1)
                 {
-                    dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
-                    RedrawCanvas();
+                    dialogProcessor.BringShapeOneLayerDown(dialogProcessor.GetSelectedShapeAt(0));
+                    RedrawCurrentCanvas();
                 }
             }
             else if (!e.Control && e.KeyCode == Keys.Up)
             {
                 dialogProcessor.MoveSelectedShapes(SelectionMovePixels, MoveDirection.Up);
-                RedrawCanvas();
+                RedrawCurrentCanvas();
             }
         }
 
@@ -1497,8 +1502,8 @@ namespace VectorDrawForms
 
             if (dialogProcessor.Selections.Count == 1)
             {
-                dialogProcessor.BringShapeOneLayerUp(dialogProcessor.Selections[0]);
-                RedrawCanvas();
+                dialogProcessor.BringShapeOneLayerUp(dialogProcessor.GetSelectedShapeAt(0));
+                RedrawCurrentCanvas();
             }
         }
 
@@ -1508,8 +1513,8 @@ namespace VectorDrawForms
 
             if (dialogProcessor.Selections.Count == 1)
             {
-                dialogProcessor.BringShapeOneLayerDown(dialogProcessor.Selections[0]);
-                RedrawCanvas();
+                dialogProcessor.BringShapeOneLayerDown(dialogProcessor.GetSelectedShapeAt(0));
+                RedrawCurrentCanvas();
             }
         }
 

@@ -26,10 +26,9 @@ namespace VectorDrawForms.Processors
         /// <summary>
         /// Selected element
         /// </summary>
-        public List<IShape> Selections
+        public IReadOnlyCollection<IShape> Selections
         {
             get { return selections; }
-            private set { selections = value; }
         }
 
         private List<IShape> coppiedSelection = new List<IShape>();
@@ -114,6 +113,78 @@ namespace VectorDrawForms.Processors
             shape.Location = new PointF(shape.Location.X + p.X - lastLocation.X, shape.Location.Y + p.Y - lastLocation.Y);
         }
 
+        /// <summary>
+        /// Clears all selections from the current <see cref="DialogProcessor"/>.
+        /// </summary>
+        public void ClearSelection()
+        {
+            RemoveSelectionRange(selections);
+        }
+
+        /// <summary>
+        /// Gets the shape at the given index
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public IShape GetSelectedShapeAt(int index)
+        {
+            return selections[index];
+        }
+
+        /// <summary>
+        /// Removes the provided shape to the selections only if it is contained in the ShapesList of current <see cref="DialogProcessor"/>.
+        /// </summary>
+        /// <param name="shape"></param>
+        public void RemoveSelection(IShape shape)
+        {
+            if (ShapeList.Contains(shape))
+            {
+                shape.IsSelected = false;
+                selections.Remove(shape);
+            }
+        }
+
+        /// <summary>
+        /// Removes the provided shapes to the selections only if they are contained in the ShapesList of current <see cref="DialogProcessor"/>.
+        /// </summary>
+        /// <param name="shape"></param>
+        public void RemoveSelectionRange(IEnumerable<IShape> shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                if (ShapeList.Contains(shape))
+                    shape.IsSelected = false;
+            }
+            selections = selections.Except(shapes).ToList();
+        }
+
+        /// <summary>
+        /// Adds the provided shape to the selections only if it is contained in the ShapesList of current <see cref="DialogProcessor"/>.
+        /// </summary>
+        /// <param name="shape"></param>
+        public void AddSelection(IShape shape)
+        {
+            if (ShapeList.Contains(shape))
+            {
+                shape.IsSelected = true;
+                selections.Add(shape);
+            }
+        }
+
+        /// <summary>
+        /// Adds the provided shapes to the selections only if they are contained in the ShapesList of current <see cref="DialogProcessor"/>.
+        /// </summary>
+        /// <param name="shape"></param>
+        public void AddSelectionRange(IEnumerable<IShape> shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                if (ShapeList.Contains(shape))
+                    shape.IsSelected = true;
+            }
+            selections.AddRange(shapes);
+        }
+
         public void ReadFile(string path)
         {
             try
@@ -133,8 +204,8 @@ namespace VectorDrawForms.Processors
 
         public void DeleteShape(IShape shape)
         {
+            RemoveSelection(shape);
             ShapeList.Remove(shape);
-            selections.Remove(shape);
         }
 
         public void MoveSelectedShapes(int pixels, MoveDirection direction)
@@ -159,7 +230,7 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void PrepareForCleenSheet()
         {
-            selections.Clear();
+            ClearSelection();
             ShapeList.Clear();
         }
 
@@ -168,8 +239,8 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void DeleteSelection()
         {
+            ClearSelection();
             ShapeList = ShapeList.Except(selections).ToList();
-            selections.Clear();
         }
 
         /// <summary>
@@ -177,8 +248,8 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void ClearShapes()
         {
+            ClearSelection();
             ShapeList.Clear();
-            selections.Clear();
         }
 
         /// <summary>
@@ -195,17 +266,17 @@ namespace VectorDrawForms.Processors
             //add the shapes from the current selection 
             group.SubShapes.AddRange(selections);
 
+            //Clear selected primitives
+            ClearSelection();
+
             //Remove the selected shapes from shape list
             ShapeList = ShapeList.Except(selections).ToList();
 
             //add the group to the list of primitives
             ShapeList.Add(group);
 
-            //Clear selected primitives
-            selections.Clear();
-
             //add the group
-            selections.Add(group);
+            AddSelection(group);
         }
 
         private RectangleF CalculateGroupRectangle(List<IShape> shapes)
@@ -248,10 +319,10 @@ namespace VectorDrawForms.Processors
         {
             if (selections.Count == 1 && selections[0] is GroupShape)
             {
+                ClearSelection();
                 var group = (GroupShape)selections[0];
                 ShapeList.AddRange(group.SubShapes);
                 ShapeList.Remove(group);
-                selections.Clear();
             }
             else
             {
@@ -263,6 +334,9 @@ namespace VectorDrawForms.Processors
         {
             if (coppiedSelection.Count <= 0)
                 return;
+
+            //Clear selections and coppied selections
+            ClearSelection();
 
             List<IShape> newShapes = new List<IShape>();
             if (coppiedSelection.Count == 1)
@@ -292,10 +366,7 @@ namespace VectorDrawForms.Processors
                 newShapes.AddRange(group.SubShapes);
             }
 
-            //Clear selections and coppied selections
-            selections.Clear();
-
-            selections.AddRange(newShapes);
+            AddSelectionRange(newShapes);
         }
 
         public void CopySelection()
@@ -327,10 +398,10 @@ namespace VectorDrawForms.Processors
         /// <param name="endPoint"></param>
         public IShape DrawRectangleShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
+            ClearSelection();
             RectangleShape rect = new RectangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(rect);
-            selections.Clear();
-            selections.Add(rect);
+            AddSelection(rect);
             return rect;
         }
 
@@ -342,10 +413,10 @@ namespace VectorDrawForms.Processors
         /// <param name="endPoint"></param>
         public IShape DrawLineShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
+            ClearSelection();
             LineShape line = new LineShape(startPoint, endPoint, strokeColor, strokeThickness);
             ShapeList.Add(line);
-            selections.Clear();
-            selections.Add(line);
+            AddSelection(line);
             return line;
         }
 
@@ -357,10 +428,10 @@ namespace VectorDrawForms.Processors
         /// <param name="endPoint"></param>
         public IShape DrawTriangleShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
+            ClearSelection();
             TriangleShape triangle = new TriangleShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(triangle);
-            selections.Clear();
-            selections.Add(triangle);
+            AddSelection(triangle);
             return triangle;
         }
 
@@ -372,10 +443,10 @@ namespace VectorDrawForms.Processors
         /// <param name="endPoint"></param>
         public IShape DrawEllipseShape(PointF startPoint, PointF endPoint, Color strokeColor, int strokeThickness)
         {
+            ClearSelection();
             EllipseShape elipse = new EllipseShape(ShapeUtility.CalculateRectangle(startPoint, endPoint), strokeColor, strokeThickness);
             ShapeList.Add(elipse);
-            selections.Clear();
-            selections.Add(elipse);
+            AddSelection(elipse);
             return elipse;
         }
 
@@ -387,10 +458,10 @@ namespace VectorDrawForms.Processors
         /// <param name="endPoint"></param>
         public IShape DrawDotShape(PointF point, Color color)
         {
+            ClearSelection();
             DotShape dot = new DotShape(point.X, point.Y, color);
             ShapeList.Add(dot);
-            selections.Clear();
-            selections.Add(dot);
+            AddSelection(dot);
             return dot;
         }
 

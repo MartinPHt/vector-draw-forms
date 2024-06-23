@@ -10,6 +10,11 @@ namespace VectorDrawForms.Models
         RectangleF Rectangle { get; set; }
 
         /// <summary>
+		/// Indicates weather the shape is selected or not.
+		/// </summary>
+        bool IsSelected { get; set; }
+
+        /// <summary>
 		/// Width of the element.
 		/// </summary>
         float Width { get; set; }
@@ -44,12 +49,17 @@ namespace VectorDrawForms.Models
         /// </summary>
         Color StrokeColor { get; set; }
 
-		/// <summary>
-		/// Checks if point belongs to the element.
-		/// </summary>
-		/// <param name="point">Point</param>
-		/// <returns>Returns true if the point belongs to the element and false if it does not</returns>
-		bool Contains(PointF point);
+        /// <summary>
+        /// The <see cref="Pen"/> which is used when selection rectangle is drawn.
+        /// </summary>
+        Pen SelectionPen { get; set; }
+
+        /// <summary>
+        /// Checks if point belongs to the element.
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>Returns true if the point belongs to the element and false if it does not</returns>
+        bool Contains(PointF point);
 
         /// <summary>
         /// Renders the element.

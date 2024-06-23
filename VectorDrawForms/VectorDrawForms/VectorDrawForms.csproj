@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Helpers\ApplicationColors.cs" />
+    <Compile Include="Assets\Helpers\ApplicationConstants.cs" />
     <Compile Include="Assets\Helpers\RelayCommand.cs" />
     <Compile Include="Assets\Helpers\Renderers.cs" />
     <Compile Include="Views\ResizableControl.cs">
