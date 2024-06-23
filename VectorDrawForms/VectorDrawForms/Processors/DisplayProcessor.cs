@@ -24,6 +24,12 @@ namespace VectorDrawForms.Processors
             get { return selectionPen; }
         }
 
+        private Pen selectionPenInverted = ApplicationConstants.Instance.SelectionPenInverted;
+        public Pen SelectionPenInverted
+        {
+            get { return selectionPenInverted; }
+        }
+
         private List<IShape> selections = new List<IShape>();
         /// <summary>
         /// Selected element
@@ -149,9 +155,8 @@ namespace VectorDrawForms.Processors
 		public virtual void Draw(Graphics grfx)
 		{
 			foreach (IShape item in ShapeList)
-			{
 				DrawShape(grfx, item);
-			}
+			
 			DrawSelectionElements(grfx);
 		}
 
@@ -175,6 +180,11 @@ namespace VectorDrawForms.Processors
 			foreach (var shape in Selections)
 			{
                 grfx.DrawRectangle(selectionPen, shape.Rectangle.X - shape.StrokeThickness / 2 - 1,
+                    shape.Rectangle.Y - shape.StrokeThickness / 2 - 1,
+                    shape.Rectangle.Width + shape.StrokeThickness + 2,
+                    shape.Rectangle.Height + shape.StrokeThickness + 2);
+
+                grfx.DrawRectangle(selectionPenInverted, shape.Rectangle.X - shape.StrokeThickness / 2 - 1,
                     shape.Rectangle.Y - shape.StrokeThickness / 2 - 1,
                     shape.Rectangle.Width + shape.StrokeThickness + 2,
                     shape.Rectangle.Height + shape.StrokeThickness + 2);

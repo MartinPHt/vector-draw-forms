@@ -555,7 +555,6 @@
         private System.Windows.Forms.ToolStripMenuItem groupSelectionMenuButton;
         private System.Windows.Forms.ToolStripMenuItem ungroupSelectionMenuButton;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label selectedShapesCountLabel;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton dotToolButton;
@@ -574,6 +573,7 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.ToolStripMenuItem closeTabToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip tabPageShell;
+        private System.Windows.Forms.Label selectedShapesCountLabel;
     }
 }
 

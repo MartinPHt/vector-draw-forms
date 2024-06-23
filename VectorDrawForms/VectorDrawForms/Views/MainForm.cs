@@ -519,6 +519,7 @@ namespace VectorDrawForms
             this.Controls.Add(addTabButtonPanel);
 
             CreateNewTabPage();
+            selectionToolButton.PerformClick();
         }
 
         private void CreateNewTabPage()
@@ -607,10 +608,11 @@ namespace VectorDrawForms
 
             var canvas = new DoubleBufferedPanel()
             {
-                Dock = DockStyle.Fill,
-                Location = new Point(45, 24),
+                MinimumSize = new Size(50, 50),
+                Location = new Point(0, 0),
                 TabIndex = 4,
                 Name = $"canvas{createdCanvases}",
+                BorderStyle = BorderStyle.FixedSingle,
             };
 
             canvas.Paint += new PaintEventHandler(ViewPortPaint);
@@ -618,6 +620,8 @@ namespace VectorDrawForms
             canvas.MouseMove += new MouseEventHandler(ViewPortMouseMove);
             canvas.MouseUp += new MouseEventHandler(ViewPortMouseUp);
             canvas.DialogProcessor.ReadFile(fullFileName);
+            canvas.Height = canvas.DialogProcessor.CalculatePopulatedHeight() + 10;
+            canvas.Width = canvas.DialogProcessor.CalculatePopulatedWidth() + 10;
 
             if (ConfigurationManager.AppSettings["UIMode"] == UIMode.Light.ToString())
             {
@@ -1311,6 +1315,7 @@ namespace VectorDrawForms
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
+                selectionToolButton.PerformClick();
                 LoadFileOnNewTabPage(dialog.FileName);
                 tabControl.SelectedIndex = tabControl.Controls.Count - 1;
             }

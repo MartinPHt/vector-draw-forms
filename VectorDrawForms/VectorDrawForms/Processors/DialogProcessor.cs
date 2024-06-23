@@ -102,6 +102,44 @@ namespace VectorDrawForms.Processors
             shape.Location = new PointF(shape.Location.X + p.X - lastLocation.X, shape.Location.Y + p.Y - lastLocation.Y);
         }
 
+        /// <summary>
+        /// Calculates the height which is needed for the population of shapes.
+        /// </summary>
+        /// <returns></returns>
+        public int CalculatePopulatedHeight()
+        {
+            float height = 0; //y
+            foreach (var shape in ShapeList)
+            {
+                if (shape.Rectangle.Bottom > height)
+                {
+                    height = shape.Rectangle.Bottom;
+                }
+            }
+            return (int)Math.Round(height);
+        }
+
+        /// <summary>
+        /// Calculates the width which is needed for the population of shapes.
+        /// </summary>
+        /// <returns></returns>
+        public int CalculatePopulatedWidth()
+        {
+            float width = 0; //x
+            foreach (var shape in ShapeList)
+            {
+                if (shape.Rectangle.Right > width)
+                {
+                    width = shape.Rectangle.Right;
+                }
+            }
+            return (int)Math.Round(width);
+        }
+
+        /// <summary>
+        /// Reads vdfile, deserializes its content into <see cref="IShape"/> objects and populates current instance of <see cref="DialogProcessor"/>.
+        /// </summary>
+        /// <param name="path"></param>
         public void ReadFile(string path)
         {
             try

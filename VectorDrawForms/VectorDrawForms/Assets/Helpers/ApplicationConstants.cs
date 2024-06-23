@@ -26,6 +26,12 @@ namespace VectorDrawForms
         { 
             get { return selectionPen; } 
         }
+
+        private Pen selectionPenInverted = new Pen(Color.White, 1.5f) { DashStyle = DashStyle.Dash, DashOffset = 2 };
+        public Pen SelectionPenInverted
+        { 
+            get { return selectionPenInverted; } 
+        }
         #endregion
 
         #region Methods
@@ -43,6 +49,9 @@ namespace VectorDrawForms
             if (selectionPen.DashOffset < -10)
                 selectionPen.DashOffset = 0;
 
+            selectionPenInverted.DashOffset += 2;
+            if (selectionPenInverted.DashOffset > 10)
+                selectionPenInverted.DashOffset = 0;
         }
         #endregion
     }
