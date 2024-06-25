@@ -69,6 +69,23 @@ namespace VectorDrawForms.Processors
         }
 
         /// <summary>
+        /// Checks if a point is in one of the selected <see cref="Shape"/>. Finds the "top" element ie. the one we see under the mouse. 
+        /// </summary>
+        /// <param name="point">Indicated point</param>
+        /// <returns>The shape element to which the given point belongs.</returns>
+        public IShape ContainsInResuzeRectanges(PointF point)
+        {
+            for (int i = Selections.Count - 1; i >= 0; i--)
+            {
+                if (Selections[i].ContainsInResizeRectangles(point))
+                {
+                    return Selections[i];
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Translation of the selected element to a vector defined by the passed <see cref="PointF"/> p parameter.
         /// </summary>
         /// <param name="p">Translation vector.</param>

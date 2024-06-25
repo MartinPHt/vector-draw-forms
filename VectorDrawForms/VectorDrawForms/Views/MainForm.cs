@@ -28,6 +28,7 @@ namespace VectorDrawForms
 
         //Drawing fiels
         private bool isDrawingPerformed = false;
+        private bool isShapeResizingPerformed = false;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
         private int createdCanvases = 0;
@@ -954,6 +955,14 @@ namespace VectorDrawForms
             if (EnsureUnsavedWorkIsNotLost(tabPage))
                 tabControl.TabPages.Remove(tabPage);
         }
+
+        private void RefreshCurrentCanvasCursor()
+        {
+            if (selectedToolStripButton == selectionToolButton)
+                CurrentCanvas.CurrentCursor = Cursors.Default;
+            else
+                CurrentCanvas.CurrentCursor = Cursors.Cross;
+        }
         #endregion 
 
         #region Event Handling Methods (Functionality, Buttons)
@@ -1044,6 +1053,13 @@ namespace VectorDrawForms
             if (CurrentCanvas.IsResizing)
                 return;
 
+            // Handle Resizing of shape
+            var shape = CurrentDialogProcessor.ContainsInResuzeRectanges(e.Location);
+            if (shape != null)
+            {
+                isShapeResizingPerformed = true;
+                return;
+            }
 
             if (selectionToolButton.Checked)
             {
@@ -1132,6 +1148,77 @@ namespace VectorDrawForms
             //Update coordinates
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
+            //Get selected shape only if mouse point is on top of one of its resize rectangles
+            var shape = CurrentDialogProcessor.ContainsInResuzeRectanges(e.Location);
+            if (shape != null)
+            {
+                //Handle resizing if any
+                if (isShapeResizingPerformed)
+                {
+                    if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomRight))
+                    {
+                        //resize from bottom right.
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopRight))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomLeft))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomMid))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidRight))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopMid))
+                    {
+
+                    }
+                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidLeft))
+                    {
+
+                    }
+                    return;
+                }
+
+                //Change cursor when mouse enters the resize squares
+                var canvas = CurrentCanvas;
+                if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft)
+                    || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomRight))
+                {
+                    canvas.CurrentCursor = Cursors.SizeNWSE;
+                }
+                else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopRight)
+                    || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomLeft))
+                {
+                    canvas.CurrentCursor = Cursors.SizeNESW;
+                }
+                else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopMid)
+                    || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomMid))
+                {
+                    canvas.CurrentCursor = Cursors.SizeNS;
+                }
+                else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidLeft)
+                    || shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidRight))
+                {
+                    canvas.CurrentCursor = Cursors.SizeWE;
+                }
+            }
+            else
+            {
+                RefreshCurrentCanvasCursor();
+            }
+
+
             if (eraserToolButton.Checked && e.Button == MouseButtons.Left)
             {
                 CurrentDialogProcessor.EraseShapes(e.Location);
@@ -1159,6 +1246,9 @@ namespace VectorDrawForms
         {
             if (e.Button != MouseButtons.Left)
                 return;
+
+            //Reset resizing flag
+            isShapeResizingPerformed = false;
 
             var dialogProcessor = CurrentDialogProcessor;
             var endPoint = e.Location;
@@ -1226,10 +1316,7 @@ namespace VectorDrawForms
 
                 selectedToolStripButton = e.ClickedItem as ToolStripButton;
 
-                if (selectedToolStripButton == selectionToolButton)
-                    CurrentCanvas.CurrentCursor = Cursors.Default;
-                else
-                    CurrentCanvas.CurrentCursor = Cursors.Cross;
+                RefreshCurrentCanvasCursor();
             }
             catch { }
         }

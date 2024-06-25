@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using static VectorDrawForms.Models.Shape;
 
 namespace VectorDrawForms.Models
 {
@@ -53,13 +55,34 @@ namespace VectorDrawForms.Models
         /// Checks if point belongs to the element.
         /// </summary>
         /// <param name="point">Point</param>
-        /// <returns>Returns true if the point belongs to the element and false if it does not</returns>
+        /// <returns>Returns true if the point belongs to the element and false if it does not</returns>.
         bool Contains(PointF point);
+
+        /// <summary>
+        /// Checks if point belongs to the <see cref="Shape"/>'s Resize rectangles.
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>Returns true if the point belongs to the element's resize rectangles and false if it does not</returns>
+        bool ContainsInResizeRectangles(PointF point);
 
         /// <summary>
         /// Renders the element.
         /// </summary>
         /// <param name="grfx">Where to render the element.</param>
         void DrawSelf(Graphics grfx);
+
+        /// <summary>
+        /// Gets the rectangles that are used for resizing when the <see cref="Shape"/> is selected.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<ResizeRectangle, RectangleF> ResizeRectangles { get; }
+
+        /// <summary>
+        /// Checks if the provided <see cref="PointF"/> is contained in the given <see cref="ResizeRectangle"/> of the shape.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        bool MouseOverResizeRect(PointF point, ResizeRectangle rectangle);
     }
 }

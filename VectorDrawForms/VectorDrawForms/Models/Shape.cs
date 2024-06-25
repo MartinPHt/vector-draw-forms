@@ -1,19 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace VectorDrawForms.Models
 {
     [Serializable]
-    public class Shape : IShape
+    public abstract class Shape : IShape //TODO: Create new ResizableShape class and move the resize functionality there.
     {
         #region Constructors
-        public Shape()
-        {
-        }
-
         public Shape(RectangleF rect)
         {
-            rectangle = rect;
+            this.Rectangle = rect;
         }
 
         public Shape(IShape shape)
@@ -21,11 +18,16 @@ namespace VectorDrawForms.Models
             this.Height = shape.Height;
             this.Width = shape.Width;
             this.Location = shape.Location;
-            this.rectangle = shape.Rectangle;
+            this.Rectangle = shape.Rectangle;
 
             this.FillColor = shape.FillColor;
             this.StrokeColor = shape.StrokeColor;
         }
+        #endregion
+
+        #region Constants
+        private const int RESIZE_RECTANGLE_HEIGHT = 8;
+        private const int RESIZE_RECTANGLE_WIDTH = 8;
         #endregion
 
         #region Properties
@@ -37,7 +39,11 @@ namespace VectorDrawForms.Models
         public virtual RectangleF Rectangle
         {
             get { return rectangle; }
-            set { rectangle = value; }
+            set
+            {
+                rectangle = value;
+                CalculateResizeRectangles();
+            }
         }
 
         /// <summary>
@@ -78,7 +84,11 @@ namespace VectorDrawForms.Models
         public virtual float Width
         {
             get { return Rectangle.Width; }
-            set { rectangle.Width = value; }
+            set
+            {
+                rectangle.Width = value;
+                CalculateResizeRectangles();
+            }
         }
 
         /// <summary>
@@ -87,7 +97,11 @@ namespace VectorDrawForms.Models
         public virtual float Height
         {
             get { return Rectangle.Height; }
-            set { rectangle.Height = value; }
+            set
+            {
+                rectangle.Height = value;
+                CalculateResizeRectangles();
+            }
         }
 
         private float rotationAngle;
@@ -106,7 +120,11 @@ namespace VectorDrawForms.Models
         public virtual PointF Location
         {
             get { return Rectangle.Location; }
-            set { rectangle.Location = value; }
+            set
+            {
+                rectangle.Location = value;
+                CalculateResizeRectangles();
+            }
         }
 
         /// <summary>
@@ -148,17 +166,36 @@ namespace VectorDrawForms.Models
             get { return isSelected; }
             set { isSelected = value; }
         }
+
+        public Dictionary<ResizeRectangle, RectangleF> ResizeRectangles { get; private set; } = new Dictionary<ResizeRectangle, RectangleF>();
         #endregion
 
         #region Methods
         /// <summary>
-        /// Checks if point belongs to the element.
+        /// Checks if point belongs to the <see cref="Shape"/>.
         /// </summary>
         /// <param name="point">Point</param>
         /// <returns>Returns true if the point belongs to the element and false if it does not</returns>
         public virtual bool Contains(PointF point)
         {
             return Rectangle.Contains(point.X, point.Y);
+        }
+
+        /// <summary>
+        /// Checks if point belongs to the <see cref="Shape"/>'s Resize rectangles.
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>Returns true if the point belongs to the element's resize rectangles and false if it does not</returns>
+        public virtual bool ContainsInResizeRectangles(PointF point)
+        {
+            return MouseOverResizeRect(point, ResizeRectangle.TopLeft)
+                || MouseOverResizeRect(point, ResizeRectangle.TopRight)
+                || MouseOverResizeRect(point, ResizeRectangle.TopMid)
+                || MouseOverResizeRect(point, ResizeRectangle.BottomLeft)
+                || MouseOverResizeRect(point, ResizeRectangle.BottomRight)
+                || MouseOverResizeRect(point, ResizeRectangle.BottomMid)
+                || MouseOverResizeRect(point, ResizeRectangle.MidLeft)
+                || MouseOverResizeRect(point, ResizeRectangle.MidRight);
         }
 
         /// <summary>
@@ -169,6 +206,40 @@ namespace VectorDrawForms.Models
         {
 
         }
+
+        public void CalculateResizeRectangles()
+        {
+            //points
+            var x_Left = rectangle.X - ApplicationConstants.Instance.SelectionPen.Width - RESIZE_RECTANGLE_WIDTH / 2;
+            var x_Right = rectangle.Right - RESIZE_RECTANGLE_WIDTH / 2;
+            var x_Mid = rectangle.X + rectangle.Width / 2 - RESIZE_RECTANGLE_WIDTH / 2;
+            var y_Top = rectangle.Y - ApplicationConstants.Instance.SelectionPen.Width - RESIZE_RECTANGLE_HEIGHT / 2;
+            var y_Bottom = rectangle.Bottom - RESIZE_RECTANGLE_HEIGHT / 2;
+            var y_Mid = rectangle.Y + rectangle.Height / 2 - RESIZE_RECTANGLE_HEIGHT / 2;
+
+            ResizeRectangles = new Dictionary<ResizeRectangle, RectangleF>
+            {
+                { ResizeRectangle.TopLeft, new RectangleF(x_Left, y_Top, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.TopRight, new RectangleF(x_Right, y_Top, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.TopMid, new RectangleF(x_Mid, y_Top, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.BottomLeft, new RectangleF(x_Left, y_Bottom, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.BottomRight, new RectangleF(x_Right, y_Bottom, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.BottomMid, new RectangleF(x_Mid, y_Bottom, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.MidLeft, new RectangleF(x_Left, y_Mid, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+                { ResizeRectangle.MidRight, new RectangleF(x_Right, y_Mid, RESIZE_RECTANGLE_WIDTH, RESIZE_RECTANGLE_HEIGHT) },
+            };
+        }
+
+        /// <summary>
+        /// Checks if the provided <see cref="PointF"/> is contained in the given <see cref="ResizeRectangle"/> of the shape.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        public bool MouseOverResizeRect(PointF point, ResizeRectangle rectangle)
+        {
+            return ResizeRectangles[rectangle].Contains(point.X, point.Y);
+        }
         #endregion
 
         #region Enums
@@ -178,6 +249,18 @@ namespace VectorDrawForms.Models
             Down,
             Left,
             Right
+        }
+
+        public enum ResizeRectangle
+        {
+            TopLeft,
+            TopRight,
+            TopMid,
+            BottomLeft,
+            BottomRight,
+            BottomMid,
+            MidLeft,
+            MidRight
         }
         #endregion
     }

@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using VectorDrawForms.Models;
-using System;
 using System.Linq;
+using static VectorDrawForms.Models.Shape;
+using System.Collections.ObjectModel;
 
 namespace VectorDrawForms.Processors
 {
-	public class DisplayProcessor : IDisplayProcessor
+    public class DisplayProcessor : IDisplayProcessor
     {
         #region Constructor
         public DisplayProcessor()
-		{
-		}
+        {
+        }
         #endregion
 
         #region Properties
@@ -34,7 +35,7 @@ namespace VectorDrawForms.Processors
         /// <summary>
         /// Selected element
         /// </summary>
-        public IReadOnlyCollection<IShape> Selections
+        public IReadOnlyList<IShape> Selections
         {
             get { return selections; }
         }
@@ -43,11 +44,11 @@ namespace VectorDrawForms.Processors
         /// List containing all elements forming the image.
         /// </summary>
         private List<IShape> shapeList = new List<IShape>();
-		public List<IShape> ShapeList
-		{
-			get { return shapeList; }
-			set { shapeList = value; }
-		}
+        public List<IShape> ShapeList
+        {
+            get { return shapeList; }
+            set { shapeList = value; }
+        }
 
         #endregion
 
@@ -143,22 +144,23 @@ namespace VectorDrawForms.Processors
         /// Redraws all elements in shapeList of passed <see cref="PaintEventArgs"/>.Graphics
         /// </summary>
         public void ReDraw(object sender, PaintEventArgs e)
-		{
-			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			Draw(e.Graphics);
-		}
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            Draw(e.Graphics);
+        }
 
-		/// <summary>
-		/// Visualization. Loop through all items in the list and call their renderer method.
-		/// </summary>
-		/// <param name="grfx">Where to perform the visualization.</param>
-		public virtual void Draw(Graphics grfx)
-		{
-			foreach (IShape item in ShapeList)
-				DrawShape(grfx, item);
-			
-			DrawSelectionElements(grfx);
-		}
+        /// <summary>
+        /// Visualization. Loop through all items in the list and call their renderer method.
+        /// </summary>
+        /// <param name="grfx">Where to perform the visualization.</param>
+        public virtual void Draw(Graphics grfx)
+        {
+            foreach (IShape item in ShapeList)
+                DrawShape(grfx, item);
+
+            if (selections.Count > 0)
+                DrawSelectionElements(grfx);
+        }
 
         /// <summary>
         /// Renders a given shape element.
@@ -166,9 +168,9 @@ namespace VectorDrawForms.Processors
         /// <param name="grfx">Where to perform the visualization.</param>
         /// <param name="item">Visualization element.</param>
         public virtual void DrawShape(Graphics grfx, IShape item)
-		{
-			item.DrawSelf(grfx);
-		}
+        {
+            item.DrawSelf(grfx);
+        }
 
         /// <summary>
         /// Renders all selection elements.
@@ -177,17 +179,131 @@ namespace VectorDrawForms.Processors
         /// <param name="item">Visualization element.</param>
         private void DrawSelectionElements(Graphics grfx)
         {
-			foreach (var shape in Selections)
-			{
-                grfx.DrawRectangle(selectionPen, shape.Rectangle.X - shape.StrokeThickness / 2 - 1,
-                    shape.Rectangle.Y - shape.StrokeThickness / 2 - 1,
-                    shape.Rectangle.Width + shape.StrokeThickness + 2,
-                    shape.Rectangle.Height + shape.StrokeThickness + 2);
+            foreach (var shape in Selections)
+            {
+                //Shape's rectangle & strokeThickness
+                var rectangle = shape.Rectangle;
+                var strokeThickness = shape.StrokeThickness;
 
-                grfx.DrawRectangle(selectionPenInverted, shape.Rectangle.X - shape.StrokeThickness / 2 - 1,
-                    shape.Rectangle.Y - shape.StrokeThickness / 2 - 1,
-                    shape.Rectangle.Width + shape.StrokeThickness + 2,
-                    shape.Rectangle.Height + shape.StrokeThickness + 2);
+                //Main selection dash rectangle
+                grfx.DrawRectangle(selectionPen,
+                    rectangle.X - strokeThickness / 2 - 1,
+                    rectangle.Y - strokeThickness / 2 - 1,
+                    rectangle.Width + strokeThickness + 2,
+                    rectangle.Height + strokeThickness + 2);
+
+                //Inverted color selection dash rectangle
+                grfx.DrawRectangle(selectionPenInverted,
+                    rectangle.X - strokeThickness / 2 - 1,
+                    rectangle.Y - strokeThickness / 2 - 1,
+                    rectangle.Width + strokeThickness + 2,
+                    rectangle.Height + strokeThickness + 2);
+
+                //Resize Rectangles
+
+                //Top Left
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopLeft].Height);
+
+                //Top Right
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopRight].Height);
+
+                //Top Mid
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].X,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Y,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Width,
+                    shape.ResizeRectangles[ResizeRectangle.TopMid].Height);
+
+                //Bottom Left
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomLeft].Height);
+
+                //Bottom Right
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomRight].Height);
+
+                //Bottom Mid
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].X,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Y,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Width,
+                    shape.ResizeRectangles[ResizeRectangle.BottomMid].Height);
+
+                //Mid left 
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].X,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Y,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Width,
+                    shape.ResizeRectangles[ResizeRectangle.MidLeft].Height);
+
+                //Mid right 
+                grfx.DrawRectangle(Pens.Black,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Height);
+
+                grfx.FillRectangle(Brushes.White,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].X,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Y,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Width,
+                    shape.ResizeRectangles[ResizeRectangle.MidRight].Height);
             }
         }
         #endregion
