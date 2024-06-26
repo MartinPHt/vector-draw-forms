@@ -45,8 +45,21 @@ namespace VectorDrawForms.Models
 			{
 				m.RotateAt(RotationAngle, new PointF(Rectangle.Left + (Rectangle.Width / 2), Rectangle.Top + (Rectangle.Height / 2)));
 				grfx.Transform = m;
-                grfx.FillRectangle(new SolidBrush(FillColor), Rectangle);
-                grfx.DrawRectangle(new Pen(StrokeColor, StrokeThickness), Rectangle.X, Rectangle.Y, Rectangle.Width, Rectangle.Height);
+
+                grfx.FillRectangle(
+					new SolidBrush(FillColor), 
+					Math.Min(Rectangle.X, Rectangle.Right),
+					Math.Min(Rectangle.Y, Rectangle.Bottom),
+					Math.Abs(Rectangle.Right - Rectangle.X),
+					Math.Abs(Rectangle.Bottom - Rectangle.Y));
+
+                grfx.DrawRectangle(
+					new Pen(StrokeColor, StrokeThickness),
+					Math.Min(Rectangle.X, Rectangle.Right),
+					Math.Min(Rectangle.Y, Rectangle.Bottom),
+					Math.Abs(Rectangle.Right - Rectangle.X),
+					Math.Abs(Rectangle.Bottom - Rectangle.Y));
+
 				grfx.ResetTransform();
             }
         }

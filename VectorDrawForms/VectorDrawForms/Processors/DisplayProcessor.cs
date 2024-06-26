@@ -6,6 +6,7 @@ using VectorDrawForms.Models;
 using System.Linq;
 using static VectorDrawForms.Models.Shape;
 using System.Collections.ObjectModel;
+using System;
 
 namespace VectorDrawForms.Processors
 {
@@ -187,17 +188,17 @@ namespace VectorDrawForms.Processors
 
                 //Main selection dash rectangle
                 grfx.DrawRectangle(selectionPen,
-                    rectangle.X - strokeThickness / 2 - 1,
-                    rectangle.Y - strokeThickness / 2 - 1,
-                    rectangle.Width + strokeThickness + 2,
-                    rectangle.Height + strokeThickness + 2);
+                    Math.Min(rectangle.X, rectangle.Right) - strokeThickness / 2 - 1,
+                    Math.Min(rectangle.Y, rectangle.Bottom) - strokeThickness / 2 - 1,
+                    Math.Abs(rectangle.Right - rectangle.X) + strokeThickness + 2,
+                    Math.Abs(rectangle.Bottom - rectangle.Y) + strokeThickness + 2);
 
                 //Inverted color selection dash rectangle
                 grfx.DrawRectangle(selectionPenInverted,
-                    rectangle.X - strokeThickness / 2 - 1,
-                    rectangle.Y - strokeThickness / 2 - 1,
-                    rectangle.Width + strokeThickness + 2,
-                    rectangle.Height + strokeThickness + 2);
+                    Math.Min(rectangle.X, rectangle.Right) - strokeThickness / 2 - 1,
+                    Math.Min(rectangle.Y, rectangle.Bottom) - strokeThickness / 2 - 1,
+                    Math.Abs(rectangle.Right - rectangle.X) + strokeThickness + 2,
+                    Math.Abs(rectangle.Bottom - rectangle.Y) + strokeThickness + 2);
 
                 //Resize Rectangles
 
