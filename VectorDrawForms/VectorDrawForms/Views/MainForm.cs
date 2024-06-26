@@ -32,6 +32,7 @@ namespace VectorDrawForms
         private ResizeRectangle resizeRectangleUsed;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
+        private IShape currentResizedShape = null;
         private int createdCanvases = 0;
 
         private Timer addTabButtonPositionerTimer;
@@ -1051,6 +1052,7 @@ namespace VectorDrawForms
             if (shape != null)
             {
                 isShapeResizingPerformed = true;
+                currentResizedShape = shape;
                 return;
             }
 
@@ -1149,18 +1151,18 @@ namespace VectorDrawForms
             //Update coordinates
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
+            //Handle resizing if any
+            if (isShapeResizingPerformed && currentResizedShape != null)
+            {
+                currentResizedShape.PerformResize(e.Location, resizeRectangleUsed);
+                RedrawCurrentCanvas();
+                return;
+            }
+
             //Get selected shape only if mouse point is on top of one of its resize rectangles
             var shape = CurrentDialogProcessor.ContainsPointInResizeRectanges(e.Location);
             if (shape != null)
             {
-                //Handle resizing if any
-                if (isShapeResizingPerformed)
-                {
-                    shape.PerformResize(e.Location, resizeRectangleUsed);
-                    RedrawCurrentCanvas();
-                    return;
-                }
-
                 //Change cursor when mouse enters the resize squares
                 var canvas = CurrentCanvas;
                 if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft)
@@ -1222,6 +1224,7 @@ namespace VectorDrawForms
             if (isShapeResizingPerformed)
             {
                 isShapeResizingPerformed = false;
+                currentResizedShape = null;
                 return;
             }
 
