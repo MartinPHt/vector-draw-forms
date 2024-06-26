@@ -29,6 +29,7 @@ namespace VectorDrawForms
         //Drawing fiels
         private bool isDrawingPerformed = false;
         private bool isShapeResizingPerformed = false;
+        private ResizeRectangle resizeRectangleUsed;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
         private int createdCanvases = 0;
@@ -1045,6 +1046,14 @@ namespace VectorDrawForms
             if (e.Button != MouseButtons.Left)
                 return;
 
+            // Handle Resizing of shape
+            var shape = CurrentDialogProcessor.ContainsPointInResizeRectanges(e.Location, out resizeRectangleUsed);
+            if (shape != null)
+            {
+                isShapeResizingPerformed = true;
+                return;
+            }
+
             //Clear selections if selected shape is null
             IShape selectedShape = dialogProcessor.ContainsPoint(e.Location);
             if (selectedShape == null)
@@ -1052,14 +1061,6 @@ namespace VectorDrawForms
 
             if (CurrentCanvas.IsResizing)
                 return;
-
-            // Handle Resizing of shape
-            var shape = CurrentDialogProcessor.ContainsInResuzeRectanges(e.Location);
-            if (shape != null)
-            {
-                isShapeResizingPerformed = true;
-                return;
-            }
 
             if (selectionToolButton.Checked)
             {
@@ -1149,44 +1150,14 @@ namespace VectorDrawForms
             coordinatesLabel.Text = string.Format("{0}, {1}", e.Location.X, e.Location.Y);
 
             //Get selected shape only if mouse point is on top of one of its resize rectangles
-            var shape = CurrentDialogProcessor.ContainsInResuzeRectanges(e.Location);
+            var shape = CurrentDialogProcessor.ContainsPointInResizeRectanges(e.Location);
             if (shape != null)
             {
                 //Handle resizing if any
                 if (isShapeResizingPerformed)
                 {
-                    if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomRight))
-                    {
-                        //resize from bottom right.
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopRight))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomLeft))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomMid))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidRight))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopMid))
-                    {
-
-                    }
-                    else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.MidLeft))
-                    {
-
-                    }
+                    shape.PerformResize(e.Location, resizeRectangleUsed);
+                    RedrawCurrentCanvas();
                     return;
                 }
 
@@ -1248,7 +1219,11 @@ namespace VectorDrawForms
                 return;
 
             //Reset resizing flag
-            isShapeResizingPerformed = false;
+            if (isShapeResizingPerformed)
+            {
+                isShapeResizingPerformed = false;
+                return;
+            }
 
             var dialogProcessor = CurrentDialogProcessor;
             var endPoint = e.Location;

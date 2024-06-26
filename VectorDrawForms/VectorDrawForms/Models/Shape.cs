@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Media.Media3D;
+using System.Windows.Shapes;
 
 namespace VectorDrawForms.Models
 {
@@ -199,6 +201,63 @@ namespace VectorDrawForms.Models
         }
 
         /// <summary>
+        /// Checks if point belongs to the <see cref="Shape"/>'s Resize rectangles.
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>Returns true if the point belongs to the element's resize rectangles and false if it does not</returns>
+        public virtual bool ContainsInResizeRectangles(PointF point, out ResizeRectangle resizeRectangleUsed)
+        {
+            bool contained;
+            if (MouseOverResizeRect(point, ResizeRectangle.TopLeft))
+            {
+                resizeRectangleUsed = ResizeRectangle.TopLeft;
+                contained = true;
+            }
+            else if (MouseOverResizeRect(point, ResizeRectangle.TopRight)) 
+            {
+                resizeRectangleUsed = ResizeRectangle.TopRight;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.TopMid)) 
+            {
+                resizeRectangleUsed = ResizeRectangle.TopMid;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.BottomLeft)) 
+            {
+                resizeRectangleUsed = ResizeRectangle.BottomLeft;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.BottomRight)) 
+            {
+                resizeRectangleUsed = ResizeRectangle.BottomRight;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.BottomMid))
+            {
+                resizeRectangleUsed = ResizeRectangle.BottomMid;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.MidLeft))
+            {
+                resizeRectangleUsed = ResizeRectangle.MidLeft;
+                contained = true;
+            }
+            else if(MouseOverResizeRect(point, ResizeRectangle.MidRight))
+            {
+                resizeRectangleUsed = ResizeRectangle.MidRight;
+                contained = true;
+            }
+            else
+            {
+                resizeRectangleUsed = ResizeRectangle.None;
+                contained = false;
+            }
+
+            return contained;
+        }
+
+        /// <summary>
         /// Renders the element.
         /// </summary>
         /// <param name="grfx">Where to render the element.</param>
@@ -240,6 +299,74 @@ namespace VectorDrawForms.Models
         {
             return ResizeRectangles[rectangle].Contains(point.X, point.Y);
         }
+
+        public void PerformResize(Point location, ResizeRectangle resizeRect)
+        {
+            if (resizeRect == ResizeRectangle.BottomRight)
+            {
+                Rectangle = RectangleF.FromLTRB(
+                    Rectangle.X, 
+                    Rectangle.Y, 
+                    location.X, 
+                    location.Y);
+            }
+            else if (resizeRect == ResizeRectangle.TopRight)
+            {
+                Rectangle = RectangleF.FromLTRB(
+                    Rectangle.X, 
+                    location.Y, 
+                    location.X, 
+                    Rectangle.Bottom);
+            }
+            else if (resizeRect == ResizeRectangle.MidRight)
+            {
+                Rectangle = new RectangleF(
+                    Rectangle.X, 
+                    Rectangle.Y, 
+                    Rectangle.Width + location.X - Rectangle.Right, 
+                    Rectangle.Height);
+            }
+            else if (resizeRect == ResizeRectangle.TopLeft)
+            {
+                Rectangle = RectangleF.FromLTRB(
+                    location.X,
+                    location.Y,
+                    Rectangle.Right,
+                    Rectangle.Bottom);
+            }
+            else if (resizeRect == ResizeRectangle.BottomLeft)
+            {
+                Rectangle = RectangleF.FromLTRB(
+                    location.X,
+                    Rectangle.Y,
+                    Rectangle.Right,
+                    location.Y);
+            }
+            else if (resizeRect == ResizeRectangle.BottomMid)
+            {
+                Rectangle = new RectangleF(
+                    Rectangle.X,
+                    Rectangle.Y,
+                    Rectangle.Width,
+                    Rectangle.Height + location.Y - Rectangle.Bottom);
+            }
+            else if (resizeRect == ResizeRectangle.TopMid)
+            {
+                Rectangle = new RectangleF(
+                    Rectangle.X,
+                    location.Y,
+                    Rectangle.Width,
+                    Rectangle.Height + Rectangle.Y - location.Y);
+            }
+            else if (resizeRect == ResizeRectangle.MidLeft)
+            {
+                Rectangle = new RectangleF(
+                    location.X,
+                    Rectangle.Y,
+                    Rectangle.Width + Rectangle.X - location.X,
+                    Rectangle.Height);
+            }
+        }
         #endregion
 
         #region Enums
@@ -253,6 +380,7 @@ namespace VectorDrawForms.Models
 
         public enum ResizeRectangle
         {
+            None,
             TopLeft,
             TopRight,
             TopMid,

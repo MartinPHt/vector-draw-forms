@@ -73,7 +73,7 @@ namespace VectorDrawForms.Processors
         /// </summary>
         /// <param name="point">Indicated point</param>
         /// <returns>The shape element to which the given point belongs.</returns>
-        public IShape ContainsInResuzeRectanges(PointF point)
+        public IShape ContainsPointInResizeRectanges(PointF point)
         {
             for (int i = Selections.Count - 1; i >= 0; i--)
             {
@@ -82,6 +82,24 @@ namespace VectorDrawForms.Processors
                     return Selections[i];
                 }
             }
+            return null;
+        }
+
+        /// <summary>
+        /// Checks if a point is in one of the selected <see cref="Shape"/>. Finds the "top" element ie. the one we see under the mouse. 
+        /// </summary>
+        /// <param name="point">Indicated point</param>
+        /// <returns>The shape element to which the given point belongs.</returns>
+        public IShape ContainsPointInResizeRectanges(PointF point, out ResizeRectangle resizeRectangleUsed)
+        {
+            for (int i = Selections.Count - 1; i >= 0; i--)
+            {
+                if (Selections[i].ContainsInResizeRectangles(point, out resizeRectangleUsed))
+                {
+                    return Selections[i];
+                }
+            }
+            resizeRectangleUsed = ResizeRectangle.None;
             return null;
         }
 

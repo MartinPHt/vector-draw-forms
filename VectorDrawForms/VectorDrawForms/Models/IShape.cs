@@ -66,6 +66,13 @@ namespace VectorDrawForms.Models
         bool ContainsInResizeRectangles(PointF point);
 
         /// <summary>
+        /// Checks if point belongs to the <see cref="Shape"/>'s Resize rectangles.
+        /// </summary>
+        /// <param name="point">Point</param>
+        /// <returns>Returns true if the point belongs to the element's resize rectangles and false if it does not</returns>
+        bool ContainsInResizeRectangles(PointF point, out ResizeRectangle resizeRectangleUsed);
+
+        /// <summary>
         /// Renders the element.
         /// </summary>
         /// <param name="grfx">Where to render the element.</param>
@@ -84,5 +91,12 @@ namespace VectorDrawForms.Models
         /// <param name="rectangle"></param>
         /// <returns></returns>
         bool MouseOverResizeRect(PointF point, ResizeRectangle rectangle);
+
+        /// <summary>
+        /// Performs resize from the center of the <see cref="Shape"/>'s rectangle to the provided resize rectangle
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="bottomRight"></param>
+        void PerformResize(Point location, ResizeRectangle resizeRect);
     }
 }
