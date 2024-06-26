@@ -468,6 +468,7 @@ namespace VectorDrawForms.Processors
                         break;
 
                     ShapeList.Remove(shape);
+                    Selections.Remove(shape);
                 }
             }
             catch { }
