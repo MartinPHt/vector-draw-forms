@@ -235,7 +235,21 @@ namespace VectorDrawForms.Processors
             //Create new Group shape from the selected shapes
             GroupShape group = new GroupShape(rect);
 
-            //add the shapes from the current selection 
+            //Preserve layers in the group
+            for (int i = 0; i < Selections.Count; i++)
+            {
+                for (int j = 1; j < Selections.Count; j++)
+                {
+                    if (ShapeList.IndexOf(Selections[i]) > ShapeList.IndexOf(Selections[j]))
+                    {
+                        var temp = Selections[i];
+                        Selections[i] = Selections[j];
+                        Selections[j] = temp;
+                    }
+                }
+            }
+
+            //add the shapes from the current selection
             group.SubShapes.AddRange(Selections);
 
             //Remove the selected shapes from shape list

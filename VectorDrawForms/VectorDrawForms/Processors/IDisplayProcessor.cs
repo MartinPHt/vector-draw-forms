@@ -9,6 +9,8 @@ namespace VectorDrawForms.Processors
     {
         List<IShape> ShapeList { get; set; }
 
+        List<IShape> Selections { get; }
+
         void Draw(Graphics grfx);
 
         void ReDraw(object sender, PaintEventArgs e);

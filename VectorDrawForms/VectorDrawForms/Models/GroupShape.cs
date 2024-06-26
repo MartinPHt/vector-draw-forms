@@ -5,7 +5,7 @@ using System.Drawing;
 namespace VectorDrawForms.Models
 {
     [Serializable]
-    public class GroupShape : Shape
+    public class GroupShape : Shape //TODO: Remove resizing for shapes.
     {
         #region Constructor
         public GroupShape(RectangleF rect) : base(rect)

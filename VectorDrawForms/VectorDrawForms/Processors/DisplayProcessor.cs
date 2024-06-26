@@ -36,7 +36,7 @@ namespace VectorDrawForms.Processors
         /// <summary>
         /// Selected element
         /// </summary>
-        public IReadOnlyList<IShape> Selections
+        public List<IShape> Selections
         {
             get { return selections; }
         }

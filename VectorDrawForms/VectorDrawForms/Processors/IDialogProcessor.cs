@@ -6,7 +6,6 @@ namespace VectorDrawForms.Processors
 {
     public interface IDialogProcessor : IDisplayProcessor
     {
-        IReadOnlyList<IShape> Selections { get; }
         List<IShape> CoppiedSelection { get; }
         bool IsDragging { get; set; }
         PointF LastLocation { get; set; }
