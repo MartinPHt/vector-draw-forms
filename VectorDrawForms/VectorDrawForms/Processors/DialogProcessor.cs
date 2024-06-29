@@ -374,8 +374,11 @@ namespace VectorDrawForms.Processors
             //Add selections to copy buffer
             coppiedSelection.AddRange(Selections);
 
-            //Remove cut shapes
+            //Exclude Selections from ShapeList
             ShapeList = ShapeList.Except(Selections).ToList();
+
+            //Remove cut shapes
+            ClearSelection();
         }
 
         /// <summary>

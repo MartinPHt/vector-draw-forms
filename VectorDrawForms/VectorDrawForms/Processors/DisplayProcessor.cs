@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using VectorDrawForms.Models;
 using System.Linq;
 using static VectorDrawForms.Models.Shape;
-using System.Collections.ObjectModel;
 using System;
 
 namespace VectorDrawForms.Processors
@@ -60,7 +59,11 @@ namespace VectorDrawForms.Processors
         /// </summary>
         public void ClearSelection()
         {
-            RemoveSelectionRange(selections);
+            foreach (var shape in selections)
+            {
+                shape.IsSelected = false;
+            }
+            selections.Clear();
         }
 
         /// <summary>
