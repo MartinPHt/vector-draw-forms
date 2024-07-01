@@ -28,10 +28,32 @@ namespace VectorDrawForms.Models
 		/// </summary>
 		public override bool Contains(PointF point)
 		{
-			if (base.Contains(point))
-				return true;
+			if (Rectangle.Width >= 0 && Rectangle.Height >= 0)
+			{
+				return Rectangle.Contains(point.X, point.Y);
+			}
 			else
-				return false;
+			{
+                bool containedOnAbscissa = false;
+                bool containedOnOrdinate = false;
+                if (Rectangle.Width < 0 && Rectangle.Height < 0)
+                {
+                    containedOnAbscissa = point.X <= Rectangle.X && point.X >= Rectangle.X - Math.Abs(Rectangle.Width);
+                    containedOnOrdinate = point.Y <= Rectangle.Y && point.Y >= Rectangle.Y - Math.Abs(Rectangle.Height);
+                }
+                else if (Rectangle.Width < 0)
+                {
+                    containedOnAbscissa = point.X <= Rectangle.X && point.X >= Rectangle.X - Math.Abs(Rectangle.Width);
+                    containedOnOrdinate = point.Y >= Rectangle.Y && point.Y <= Rectangle.Bottom;
+                }
+                else
+                {
+                    containedOnAbscissa = point.X >= Rectangle.X && point.X <= Rectangle.Right;
+                    containedOnOrdinate = point.Y <= Rectangle.Y && point.Y >= Rectangle.Y - Math.Abs(Rectangle.Height);
+                }
+
+                return containedOnAbscissa && containedOnOrdinate;
+            }
 		}
 
         /// <summary>
