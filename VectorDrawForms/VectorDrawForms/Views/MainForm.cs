@@ -1168,12 +1168,24 @@ namespace VectorDrawForms
                 if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft)
                     || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomRight))
                 {
-                    canvas.CurrentCursor = Cursors.SizeNWSE;
+                    if ((shape.Rectangle.Width >= 0 && shape.Rectangle.Height >= 0) 
+                        || (shape.Rectangle.Width < 0 && shape.Rectangle.Height < 0))
+                    {
+                        canvas.CurrentCursor = Cursors.SizeNWSE;
+                    }
+                    else
+                        canvas.CurrentCursor = Cursors.SizeNESW;
                 }
                 else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopRight)
                     || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomLeft))
                 {
-                    canvas.CurrentCursor = Cursors.SizeNESW;
+                    if ((shape.Rectangle.Width >= 0 && shape.Rectangle.Height >= 0)
+                        || (shape.Rectangle.Width < 0 && shape.Rectangle.Height < 0))
+                    {
+                        canvas.CurrentCursor = Cursors.SizeNESW;
+                    }
+                    else
+                        canvas.CurrentCursor = Cursors.SizeNWSE;
                 }
                 else if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopMid)
                     || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomMid))
