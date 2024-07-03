@@ -238,7 +238,7 @@ namespace VectorDrawForms.Processors
             //Preserve layers in the group
             for (int i = 0; i < Selections.Count; i++)
             {
-                for (int j = 1; j < Selections.Count; j++)
+                for (int j = i + 1; j < Selections.Count; j++)
                 {
                     if (ShapeList.IndexOf(Selections[i]) > ShapeList.IndexOf(Selections[j]))
                     {
