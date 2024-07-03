@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Drawing.Drawing2D;
+using System.Collections.Generic;
+using VectorDrawForms.Models;
 
 namespace VectorDrawForms
 {
@@ -42,6 +44,62 @@ namespace VectorDrawForms
             else
                 y = y2;
 
+            return new RectangleF(x, y, width, height);
+        }
+
+        public static RectangleF CalculateGroupRectangle(IEnumerable<IShape> shapes)
+        {
+            //starting point
+            float x = float.MaxValue;
+            float y = float.MaxValue;
+
+            //end point
+            float x1 = float.MinValue;
+            float y1 = float.MinValue;
+            foreach (IShape shape in shapes)
+            {
+                if (shape.Width >= 0)
+                {
+                    if (x > shape.Rectangle.X)
+                        x = shape.Rectangle.X;
+
+                    if (x1 < shape.Rectangle.Right)
+                        x1 = shape.Rectangle.Right;
+                }
+                else
+                {
+                    var currentX = shape.Rectangle.X - Math.Abs(shape.Rectangle.Width);
+                    if (x > currentX)
+                        x = currentX;
+
+                    if (x1 < shape.Rectangle.X)
+                        x1 = shape.Rectangle.X;
+                }
+
+                if (shape.Height >= 0)
+                {
+                    if (y > shape.Rectangle.Y)
+                        y = shape.Rectangle.Y;
+
+                    if (y1 < shape.Rectangle.Bottom)
+                        y1 = shape.Rectangle.Bottom;
+                }
+                else
+                {
+                    var currentY = shape.Rectangle.Y - Math.Abs(shape.Rectangle.Height);
+                    if (y > currentY)
+                        y = currentY;
+
+                    if (y1 < shape.Rectangle.Y)
+                        y1 = shape.Rectangle.Y;
+                }
+            }
+
+            //calculate rectangle width
+            float width = Math.Abs(x - x1);
+
+            //calculate rectangle height
+            float height = Math.Abs(y - y1);
             return new RectangleF(x, y, width, height);
         }
 

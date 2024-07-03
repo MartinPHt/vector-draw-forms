@@ -230,7 +230,7 @@ namespace VectorDrawForms.Processors
         public void GroupSelectedShapes()
         {
             // Calculate Group Rectangle
-            RectangleF rect = CalculateGroupRectangle(Selections);
+            RectangleF rect = ShapeUtility.CalculateGroupRectangle(Selections);
 
             //Create new Group shape from the selected shapes
             GroupShape group = new GroupShape(rect);
@@ -263,38 +263,6 @@ namespace VectorDrawForms.Processors
 
             //add the group
             AddSelection(group);
-        }
-
-        private RectangleF CalculateGroupRectangle(IEnumerable<IShape> shapes)
-        {
-            //starting point
-            float x = float.MaxValue;
-            float y = float.MaxValue;
-
-            //end point
-            float x1 = float.MinValue;
-            float y1 = float.MinValue;
-            foreach (IShape shape in shapes)
-            {
-                if (x > shape.Rectangle.X)
-                    x = shape.Rectangle.X;
-
-                if (y > shape.Rectangle.Y)
-                    y = shape.Rectangle.Y;
-
-                if (x1 < shape.Rectangle.Right)
-                    x1 = shape.Rectangle.Right;
-
-                if (y1 < shape.Rectangle.Bottom)
-                    y1 = shape.Rectangle.Bottom;
-            }
-
-            //calculate rectangle width
-            float width = Math.Abs(x - x1);
-
-            //calculate rectangle height
-            float height = Math.Abs(y - y1);
-            return new RectangleF(x, y, width, height);
         }
 
         /// <summary>
@@ -333,7 +301,7 @@ namespace VectorDrawForms.Processors
             else
             {
                 // Calculate Group Rectangle
-                RectangleF rect = CalculateGroupRectangle(coppiedSelection);
+                RectangleF rect = ShapeUtility.CalculateGroupRectangle(coppiedSelection);
 
                 //Create new Group shape from the selected shapes
                 GroupShape group = new GroupShape(rect);
