@@ -21,7 +21,7 @@ namespace VectorDrawForms
         #region Properties
         public static ApplicationConstants Instance { get; } = new ApplicationConstants();
 
-        private Pen selectionPen = new Pen(Color.Black, 1.5f) { DashStyle = DashStyle.Dash };
+        private Pen selectionPen = new Pen(Color.Gray, 1.5f) { DashStyle = DashStyle.Dash };
         public Pen SelectionPen 
         { 
             get { return selectionPen; } 

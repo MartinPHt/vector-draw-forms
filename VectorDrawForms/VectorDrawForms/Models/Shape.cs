@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
 
 namespace VectorDrawForms.Models
 {
     [Serializable]
-    public abstract class Shape : IShape //TODO: Create new ResizableShape class and move the resize functionality there.
+    public abstract class Shape : IShape //TODO: Create new ResizableShape class and move the resize functionality there.|
     {
         #region Constructors
         public Shape(RectangleF rect)
@@ -261,10 +259,7 @@ namespace VectorDrawForms.Models
         /// Renders the element.
         /// </summary>
         /// <param name="grfx">Where to render the element.</param>
-        public virtual void DrawSelf(Graphics grfx)
-        {
-
-        }
+        public abstract void DrawSelf(Graphics grfx);
 
         public void CalculateResizeRectangles()
         {

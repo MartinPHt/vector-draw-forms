@@ -153,8 +153,6 @@ namespace VectorDrawForms.Models
 
         public override void DrawSelf(Graphics grfx)
         {
-            base.DrawSelf(grfx);
-
             using (Matrix m = new Matrix())
             {
                 m.RotateAt(RotationAngle, new PointF(Rectangle.Left + (Rectangle.Width / 2), Rectangle.Top + (Rectangle.Height / 2)));

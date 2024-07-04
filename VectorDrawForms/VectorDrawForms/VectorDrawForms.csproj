@@ -64,6 +64,8 @@
     <Compile Include="Assets\Helpers\RelayCommand.cs" />
     <Compile Include="Assets\Helpers\Renderers.cs" />
     <Compile Include="Models\IGroupShape.cs" />
+    <Compile Include="Models\ISelectionToolRectangleShape.cs" />
+    <Compile Include="Models\SelectionToolRectangleShape.cs" />
     <Compile Include="Views\ResizableControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

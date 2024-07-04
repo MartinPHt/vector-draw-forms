@@ -12,6 +12,11 @@ namespace VectorDrawForms.Processors
 {
     public class DialogProcessor : DisplayProcessor, IDialogProcessor
     {
+        #region Fields
+        private PointF selectionRectangleStartPoint;
+        private ISelectionToolRectangleShape selectionRectangle = null;
+        #endregion
+
         #region Constructor
         public DialogProcessor()
         {
@@ -51,6 +56,14 @@ namespace VectorDrawForms.Processors
         #endregion
 
         #region Methods
+        public override void Draw(Graphics grfx)
+        {
+            base.Draw(grfx);
+
+            if (selectionRectangle != null)
+                DrawShape(grfx, selectionRectangle);
+        }
+
         /// <summary>
         /// Checks if a point is in the element. Finds the "top" element ie. the one we see under the mouse.
         /// </summary>
@@ -499,6 +512,36 @@ namespace VectorDrawForms.Processors
             {
                 MessageBox.Show($"Error has occured while bringing the layer down. Exception message:" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Selects all shapes whichj are contained in the provided <see cref="RectangleF"/>
+        /// </summary>
+        /// <param name="rectangle"></param>
+        public void SelectShapesWithinSelectionRectangle()
+        {
+            foreach (var shape in ShapeList)
+            {
+                if (shape.Rectangle.IntersectsWith(selectionRectangle.Rectangle))
+                    AddSelection(shape);
+            }
+        }
+
+        public void RefreshSelectionRectangle(Point endPoint)
+        {
+            selectionRectangle.Rectangle = ShapeUtility.CalculateRectangle(selectionRectangleStartPoint, endPoint);
+        }
+
+        public void InitializeSelectionRectangle(PointF startPoint)
+        {
+            selectionRectangleStartPoint = startPoint;
+            selectionRectangle = new SelectionToolRectangleShape(new RectangleF(selectionRectangleStartPoint.X, selectionRectangleStartPoint.Y, 0, 0));
+        }
+
+        public void DisposeSelectionRectangle()
+        {
+            selectionRectangleStartPoint = Point.Empty;
+            selectionRectangle = null;
         }
         #endregion
     }

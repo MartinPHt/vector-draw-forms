@@ -29,6 +29,7 @@ namespace VectorDrawForms
         //Drawing fiels
         private bool isDrawingPerformed = false;
         private bool isShapeResizingPerformed = false;
+        private bool isSelectingPerformed = false;
         private ResizeRectangle resizeRectangleUsed;
         private PointF previewShapeStartPoint;
         private IShape currentDrawnShape = null;
@@ -826,12 +827,26 @@ namespace VectorDrawForms
             try
             {
                 isDrawingPerformed = false;
-
-                if (CurrentDialogProcessor.ShapeList.Contains(currentDrawnShape))
-                    CurrentDialogProcessor.ShapeList.Remove(currentDrawnShape);
-
+                CurrentDialogProcessor.ShapeList.Remove(currentDrawnShape);
                 previewShapeStartPoint = Point.Empty;
                 currentDrawnShape = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unexpexted error has occured while disposing shape preview. Exception message: {ex.Message}.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Handles the disposal of the selection rectangle draw and returns the form to its normal state
+        /// </summary>
+        private void DisposeSelectionToolRectangle()
+        {
+            try
+            {
+                isSelectingPerformed = false;
+                CurrentDialogProcessor.DisposeSelectionRectangle();
             }
             catch (Exception ex)
             {
@@ -1090,7 +1105,12 @@ namespace VectorDrawForms
                 }
                 else
                 {
+                    //Clear selections
                     ClearSelections();
+
+                    //Create selection shape
+                    dialogProcessor.InitializeSelectionRectangle(e.Location);
+                    isSelectingPerformed = true;
                 }
             }
             else if (bucketToolButton.Checked)
@@ -1168,7 +1188,7 @@ namespace VectorDrawForms
                 if (shape.MouseOverResizeRect(e.Location, ResizeRectangle.TopLeft)
                     || shape.MouseOverResizeRect(e.Location, ResizeRectangle.BottomRight))
                 {
-                    if ((shape.Rectangle.Width >= 0 && shape.Rectangle.Height >= 0) 
+                    if ((shape.Rectangle.Width >= 0 && shape.Rectangle.Height >= 0)
                         || (shape.Rectangle.Width < 0 && shape.Rectangle.Height < 0))
                     {
                         canvas.CurrentCursor = Cursors.SizeNWSE;
@@ -1225,6 +1245,14 @@ namespace VectorDrawForms
                 RedrawCurrentCanvas();
                 return;
             }
+
+            if (isSelectingPerformed)
+            {
+                //Update the selection shape
+                CurrentDialogProcessor.RefreshSelectionRectangle(e.Location);
+                RedrawCurrentCanvas();
+                return;
+            }
         }
 
         private void ViewPortMouseUp(object sender, MouseEventArgs e)
@@ -1252,6 +1280,13 @@ namespace VectorDrawForms
             if (selectionToolButton.Checked)
             {
                 dialogProcessor.IsDragging = false;
+
+                if (isSelectingPerformed)
+                {
+                    CurrentDialogProcessor.SelectShapesWithinSelectionRectangle();
+                    DisposeSelectionToolRectangle();
+                    RedrawCurrentCanvas();
+                }
             }
             else
             {
