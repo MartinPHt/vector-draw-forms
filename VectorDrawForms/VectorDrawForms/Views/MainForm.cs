@@ -839,23 +839,6 @@ namespace VectorDrawForms
         }
 
         /// <summary>
-        /// Handles the disposal of the selection rectangle draw and returns the form to its normal state
-        /// </summary>
-        private void DisposeSelectionToolRectangle()
-        {
-            try
-            {
-                isSelectingPerformed = false;
-                CurrentDialogProcessor.DisposeSelectionRectangle();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Unexpexted error has occured while disposing shape preview. Exception message: {ex.Message}.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        /// <summary>
         /// Opens <see cref="ShapeEditorForm"/> and handles the edit of the shape and redrawing of canvas
         /// </summary>
         private void HandleEditShape()
@@ -1083,14 +1066,13 @@ namespace VectorDrawForms
             {
                 if (selectedShape != null)
                 {
-                    //Check if the left mouse key is pressed and if ctrl was pressed when the mouse click occured
-                    if ((ModifierKeys & Keys.Control) == Keys.Control)
+                    bool isShapeAlreadySelected = dialogProcessor.Selections.Contains(selectedShape);
+                    if ((ModifierKeys & Keys.Control) == Keys.Control && !isShapeAlreadySelected)
                     {
-                        //Add the new selection if it is not in the selections list
-                        if (!dialogProcessor.Selections.Contains(selectedShape))
-                            dialogProcessor.AddSelection(selectedShape);
+                        //Add the new selection
+                        dialogProcessor.AddSelection(selectedShape);
                     }
-                    else
+                    else if (!isShapeAlreadySelected)
                     {
                         //Clear the selection since ctrl wasn't pressed.
                         ClearSelections();
@@ -1284,7 +1266,8 @@ namespace VectorDrawForms
                 if (isSelectingPerformed)
                 {
                     CurrentDialogProcessor.SelectShapesWithinSelectionRectangle();
-                    DisposeSelectionToolRectangle();
+                    CurrentDialogProcessor.DisposeSelectionRectangle();
+                    isSelectingPerformed = false;
                     RedrawCurrentCanvas();
                 }
             }

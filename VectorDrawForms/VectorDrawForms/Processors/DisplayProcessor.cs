@@ -105,7 +105,7 @@ namespace VectorDrawForms.Processors
         /// <param name="shape"></param>
         public void AddSelection(IShape shape)
         {
-            if (ShapeList.Contains(shape))
+            if (ShapeList.Contains(shape) && !selections.Contains(shape))
             {
                 shape.IsSelected = true;
                 selections.Add(shape);
