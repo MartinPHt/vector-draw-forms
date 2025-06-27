@@ -80,7 +80,7 @@ namespace VectorDrawForms.Models
         /// </summary>
         public override void DrawSelf(Graphics grfx)
         {
-            base.DrawSelf(grfx);
+            //base.DrawSelf(grfx);
 
             foreach (var shape in subShapes)
             {
